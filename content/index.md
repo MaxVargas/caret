@@ -2,7 +2,7 @@
 title: Welcome to Max^s spot on the internet!
 ---
 
-Feel free to click around --- my website presence is still under development but Quartz seems like a cool way to handle things.
+Feel free to click around --- my website presence is still under construction but Quartz seems like a cool way to handle things.
 
 A bit about me and this my plan for this place: I got a PhD in 2023 and decided to leave academics. I studied math and wanted to get more experience with software and computation. I also wanted more free time to invest in exploring and learning about whatever I want! As such, this site might end up becoming a log of whatever has been occupying my time recently. I'll add things to this site as they come along (and as I choose to add them) and try to keep this semi-regularly updated. No plans are super set in stone.
 
