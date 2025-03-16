@@ -11,7 +11,7 @@ How: I'm still learning how to better (best is a far dream haha) set up my syste
 - [[Nur]]. Import packages outside of what's available in `nixpkgs`.
 - [[Games]].
 - [[Nvidia]].
-- [[Wayland]].
+- [[Wayland]] and [[Hyprland]].
 - A basic [[Shell]].
 - Some [[Error]] chasing.
 
