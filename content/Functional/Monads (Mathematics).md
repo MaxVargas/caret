@@ -1,4 +1,6 @@
-
+---
+date: 2025 February
+---
 Before getting to monads, we ought to start with monoids (it's the first piece of abstract nonsense in the definition that a monad is "a monoid in the category of endofunctors"). I'll mention that a lot of the definitions here are what you'd find through other online resources. I'm just aggregating it here and including some examples. I'd imagine this mostly serves as a refresher to people who have seen the theory before. I'll also try to keep examples approachable if you've only run into linear algebra, set theory, and other basics. But it's worth noting that there's a slew of interesting examples if you're familiar with more.
 
 ---------------

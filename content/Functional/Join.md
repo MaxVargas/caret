@@ -1,3 +1,6 @@
+---
+date: 2025 February
+---
 [[Monads (Mathematics)]]
 [[Monads (Programming)]]
 

@@ -1,4 +1,6 @@
-
+---
+date: 2025 February
+---
 To be terse, a monoid is an object $M$, equipped with maps $m: M\otimes M\to M$ and $u:1\to M$ making the following diagrams commute (I'm choosing not to be precise about $1$ or $\otimes$, or the canonical arrows $\textnormal{can} : 1\otimes M \to M$ and $M\otimes 1\to M$):
 
 ![[monoid_law.png]]

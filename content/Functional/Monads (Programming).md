@@ -1,3 +1,6 @@
+---
+date: 2025 February
+---
 The programmer's monad is presented differently than the mathematicians. For the presentation here, I'm going to follow notions as in Haskell. Fortunately, the Haskellian definition has some commonality to the mathematical one in that it builds on the definition of functors. 
 
 ---------

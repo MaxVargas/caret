@@ -1,3 +1,6 @@
+---
+date: 2025 February
+---
 A *category* $\mathcal{C}$ is the data of 
 - a collection[^1] of 'objects' $\mathbb{O}(\mathcal{C})$,
 - a collection of 'morphisms' (or arrows) $\textnormal{Hom}_{\mathcal{C}}(X,Y) = \{f: X\to Y\}$[^2] for each $X,Y\in\mathbb{O}(\mathcal{C})$, 

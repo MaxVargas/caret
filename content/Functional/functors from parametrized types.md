@@ -1,3 +1,6 @@
+---
+date: 2025 February
+---
 With enough pondering, it should be reasonable to convince yourself that there's often an obvious attempt to turn a parametrized type into a functor. For example, the list functor `[]` that sends a type `a` to the set of lists `[a]` can be extended to a functor where `fmap f :: [a] -> [b]` just applies `f` to each element of a given list `[a1, ..., an]`. There's a certain naturality to figure out these evaluations.
 
 It turns out that if this "obvious" attempt actually turns out to give a functor, it's unique! Really, what I ought to say, is that any two functors constructed from the same parametrized type must actually be equal. 

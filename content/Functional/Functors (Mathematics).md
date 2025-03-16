@@ -1,3 +1,6 @@
+---
+date: 2025 February
+---
 Normally, you learn about functions when encountering set theory. Sets don't really have structure, so a function doesn't really need to satisfy much apart from passing the vertical line test[^4]. As one learns more math, it becomes common to care about sets with some extra structure and you'll want your functions to respect this extra structure. For example, when a student learns about groups, they learn to care about group homomorphisms. Or when they learn of topological spaces, they'll care about continuous maps. There's a similar moral with category theory (although a category isn't "just" a set with extra structure like those previous examples).
 [^4]:I'm being terse here again, avoiding the formal definition of a function.
 

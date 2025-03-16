@@ -1,3 +1,6 @@
+---
+date: 2025 February
+---
 A functor is the data of a parametric type `f`, along with a function 
 ```
 fmap :: (a -> b) -> f a -> f b

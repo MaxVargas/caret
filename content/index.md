@@ -17,3 +17,4 @@ Anyways, quick points on my research are below, will only write a little here bu
 
 The other pages on this site are mostly a collection of loose personal notes, and are **likely to be filled with mistakes and inconsistencies**. Again, I'll try to keep the AI commentary minimal, sticking to other endeavors.
 - On the equivalence of [[Monads (Mathematics)]] and [[Monads (Programming)]] through [[Join]]. (Gotta start somewhere...)
+- Switching from Windows to [[NixOS]].
