@@ -1,3 +1,6 @@
+---
+date: 2025 March
+---
 I've been curious to play around with some creative coding practices, for example [nannou](https://nannou.cc/). The installation wasn't trivial, mainly because of issues with `alsa` and still learning about the nix ecosystem.
 
 Being a beginner with nix (i ought to go back and carefully read the docs now that I know how to get some basics set up), the setup I have is almost assuredly suboptimal, but if it works then it works.
