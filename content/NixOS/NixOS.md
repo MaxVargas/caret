@@ -13,6 +13,7 @@ How: I'm still learning how to better (best is a far dream haha) set up my syste
 - [[Nvidia]].
 - [[Wayland]] and [[Hyprland]].
 - A basic [[Shell]].
+- A basic [[Flakes (Example)]].
 - Some [[Error]] chasing.
 
 Resources: There's a couple of particularly useful resources that others have put together to help on the Nix journey. The main ones I've been using are:
