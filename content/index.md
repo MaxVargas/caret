@@ -3,11 +3,13 @@ title: Max^s spot.
 ---
 Feel free to click around --- my website presence is still under construction but Quartz seems like a cool way to handle things.
 
-A bit about me and this my plan for this place: I got a PhD in 2023 studying math. By the end of it, I realized I wanted to get more experience with software and computation. After a while of the pencil-and-paper routine, I found that data is a satisfyingly concrete object to play around with. I still get to access some neat math / stats here and there but I also get the back-and-forth with something "real". There's the added bonus that data is naturally impactful haha. Another reason I left academics was because I wanted more free time to invest in exploring and learning about whatever I want (I couldn't really see myself doing that in the alternate)! As such, this site might end up becoming a log of whatever has been occupying my time recently. I'll add things to this site as they come along (and as I choose to add them) and try to keep this semi-regularly updated. No plans are super set in stone.
+A bit about me and this my plan for this place: 
+- I'm a mathematician-turned-technologist. I got a PhD in 2023 and realized that I wanted more experience with software and computation by the end of it. Data happened to be a satisfyingly concrete object to work with --- I still get to access some neat math / stats here and there while also being able to back-and-forth with something "real". There's the added bonus that data has a natural impact too haha.
+- I could label myself a "data scientist" or "ML engineer" due to recent endeavors but I'm trying out the "technologist" label. I think it supersedes both of the former concepts and I want to constrain myself to certain lines of work. Even though data and AI industry is booming, it's important to have free time to explore new problem areas and I can't predict what I'll be working on in 10 years time. This is also related to a large reason I left academics.
+- This site will likely become a log of whatever has been occupying my (free) time recently. I'll add as these things come along (and as I choose to add them). No plans are super set in stone.
+- Sometimes I take pictures of things. There's a small sample over in [[Photos]].
 
-Sometimes I take pictures of things. There's a small sample over in [[Photos]].
-
-Since graduating, I've been working full time doing some neat AI + ML stuff. I'll limit the exposure I give to the day job, but a short description is below. I also like finding time to learn better software practices and, in general, learning. I've recently been working on migrating away from windows to Unix/Linux/NixOS.
+Most recently I've been doing some neat AI + ML stuff. I'll limit the exposure I give to the day job, but a short description is below. I also like finding time to develop better software practices and, in general, learning. I've recently been working on migrating away from windows to Unix/Linux/NixOS.
 
 Anyways, quick points on what I've worked on below, will only write a little here but I'm happy to discuss further. Largely in LLMs (and some vision) consisting of:
 - Explainable AI. Essentially trying to unpack data that gets embedded by foundation models, but there's different spins on what that could mean.
