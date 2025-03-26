@@ -43,3 +43,10 @@ pkgs.mkShell {
 ```
 
 Obviously you can include other, non-python packages inside of `packages`.
+
+Note: Sometimes I get a strange error that yields unavailable CUDA devices. [This thread](https://discuss.pytorch.org/t/userwarning-cuda-initialization-cuda-unknown-error-this-may-be-due-to-an-incorrectly-set-up-environment-e-g-changing-env-variable-cuda-visible-devices-after-program-start-setting-the-available-devices-to-be-zero/129335/2) helps my system. In particular, once you launch `nix-shell` and if you're getting a "CUDA unknown error", try:
+```
+sudo rmmod nvidia_uvm
+sudo modprobe nvidia_uvm
+```
+Then cuda will hopefully be available again.
