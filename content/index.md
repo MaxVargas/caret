@@ -1,7 +1,12 @@
 ---
 title: Max^s spot.
 ---
-Feel free to click around --- my website presence is still under construction but Quartz seems like a cool way to handle things.
+Feel free to click around --- I'm testing [Quartz](https://quartz.jzhao.xyz/) as a way to compartmentalize some notes.
+
+Other links:
+- [LinkedIn](https://www.linkedin.com/in/max-vargas-b95013bb/)
+- [Github](https://github.com/maxvargas)
+- Email: (full name, no vowels) at gmail.com
 
 A bit about me and this my plan for this place: 
 - I'm a mathematician-turned-technologist. I got a PhD in 2023 and realized by the end that I wanted more experience with software and computation. Data happened to be a satisfyingly concrete object to work with --- I still get to access some neat math / stats here and there while also being able to back-and-forth with something "real". There's also the added bonus that data has a natural impact too haha
