@@ -9,7 +9,7 @@ Other links:
 - Email: (full name, no vowels) at gmail.com
 
 A bit about me and this my plan for this place: 
-- I'm a mathematician-turned-technologist. I got a PhD in 2023 and realized by the end that I wanted more experience with software and computation. Data happened to be a satisfyingly concrete object to work with --- I still get to access some neat math / stats here and there while also being able to back-and-forth with something "real". There's also the added bonus that data has a natural impact too haha
+- I'm a mathematician-turned-technologist. I got a PhD in 2023 and realized by the end that I wanted more experience with software, computation, and the likes. Data happened to be a satisfyingly concrete object to work with --- I still get to access some neat math / stats here and there while also being able to back-and-forth with something "real". There's also the added bonus that data has a natural impact too haha
 - I could label myself a "data scientist" or "ML engineer" due to recent endeavors but I'm trying out the "technologist" label. I think it supersedes both of the former concepts and I don't want to constrain myself to certain lines of work. Even though data and AI industry is booming, I think it's important to have freedom to explore new problem areas and I can't predict what I'll be working on in 10 years time. This is also related to a large reason I left academics.
 - This site will likely become a log of whatever has been occupying my (free) time recently. I'll add as these things come along (and as I choose to add them). No plans are super set in stone.
 - Sometimes I take pictures of things. There's a small sample over in [[Photos]].
