@@ -15,6 +15,7 @@ How: I'm still learning how to better (best is a far dream haha) set up my syste
 - A basic [[Shell]].
 - A basic [[Flakes (Example)]].
 - Some [[Error]] chasing.
+- [[Mounting drives]] (usb, etc)
 
 Resources: There's a couple of particularly useful resources that others have put together to help on the Nix journey. The main ones I've been using are:
 - [NixOS & Flakes Book by Ryan Yin](https://nixos-and-flakes.thiscute.world/) is useful for a modernized(?) view on configuration with Flakes and Home-Manager.
