@@ -19,3 +19,9 @@ Here's a sample from 2023:
 ![[star.jpg | 200]]![[ball.jpg | 200]]![[fox.jpg | 200]]
 
 ![[chippy.jpg | 200]]![[clif.jpg | 200]]![[seal.jpg | 200]]
+
+2025:
+![[puff.JPG | 200]]![[squirrel.JPG | 200]]![[paint.JPG|200]]
+![[edge.JPG | 200]]![[moon.JPG | 200]]![[sunflower.JPG|200]]
+![[sinusoid.JPG|200]]![[under.JPG|200]]![[reach.JPG|200]]
+![[buzz.JPG|200]]![[hmm.JPG|200]![[paint.JPG|200]]![[oxic.JPG|200]]
