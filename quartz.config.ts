@@ -20,12 +20,12 @@ const config: QuartzConfig = {
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "modified",
     theme: {
-      fontOrigin: "googleFonts",
-      cdnCaching: true,
+      fontOrigin: "local",
+      // cdnCaching: true,
       typography: {
-        title: "Raleway",
-        header: "Schibsted Grotesk",
-        body: "Source Sans Pro", // "Fantasque"
+        title: "Sixgun", // "Raleway",
+        header: "Raleway", // "Schibsted Grotesk",
+        body: "Fantasque", // "Source Sans Pro", 
         code: "IBM Plex Mono",
       },
       colors: {
