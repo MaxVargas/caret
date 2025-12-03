@@ -23,7 +23,7 @@ const config: QuartzConfig = {
       fontOrigin: "googleFonts",
       cdnCaching: true,
       typography: {
-        // title: "Sixgun",
+        title: "Raleway",
         header: "Schibsted Grotesk",
         body: "Source Sans Pro", // "Fantasque"
         code: "IBM Plex Mono",
