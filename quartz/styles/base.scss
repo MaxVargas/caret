@@ -367,7 +367,7 @@ h4,
 h5,
 h6,
 thead {
-  font-family: "Sixgun"; //var(--headerFont);
+  font-family: var(--headerFont); //"Sixgun";
   color: var(--dark);
   font-weight: revert;
   margin-bottom: 0;
