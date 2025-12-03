@@ -5,7 +5,7 @@ import { QuartzPluginData } from "../plugins/vfile"
 import { JSXInternal } from "preact/src/jsx"
 import { FontSpecification, getFontSpecificationName, ThemeKey } from "./theme"
 import path from "path"
-import { QUARTZ } from "./path"
+import { joinSegments, QUARTZ } from "./path"
 import { formatDate, getDate } from "../components/Date"
 import readingTime from "reading-time"
 import { i18n } from "../i18n"
@@ -14,6 +14,7 @@ import { styleText } from "util"
 const defaultHeaderWeight = [700]
 const defaultBodyWeight = [400]
 
+const sixgunFontPath = joinSegments(QUARTZ, "static", "Sixgun.TTF")
 export async function getSatoriFonts(headerFont: FontSpecification, bodyFont: FontSpecification) {
   // Get all weights for header and body fonts
   const headerWeights: FontWeight[] = (

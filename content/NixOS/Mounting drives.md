@@ -9,3 +9,5 @@ Then you can copy files over from `/media/usb` into any more permanent location.
 ```
 sudo umount /media/usb
 ```
+
+Follow the leads here if you run into a read-only file system error: [link](https://nixos.wiki/wiki/NTFS).
