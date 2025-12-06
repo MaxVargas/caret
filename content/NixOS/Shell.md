@@ -2,7 +2,7 @@
 date: 2025 March
 ---
 This is a very basic shell for ML / data science in python, setting up pytorch but very little else and you'll almost certainly want to add in extras. You can activate it with `nix-shell`. TODO: learn how to upgrade this the "flake way"?
-```
+```nix
 {
   pkgs ? import <nixpkgs> { config = {allowUnfree=true;}; }
 }:
@@ -57,7 +57,7 @@ FSH
 
 I've been occasionally finding myself needing to start a FSH shell because some code bases like to use dynamically linked executables. The nix pages state [this is a last resort](https://nix.dev/guides/faq#how-to-run-non-nix-executables), but using a FSH shell seems to (me) be the quickest/easiest way around this. In the meantime I'll have to go back and pick up the fundamentals on how to "properly" resolve my issues. Anyways, here's a nix flake that you can use to load up an FSH shell. In this example, I am wanting to use the `uv` python package manager. 
 
-```
+```nix
 {
   description = "Python 3.11 development environment";
   outputs = { self, nixpkgs }:

@@ -9,7 +9,7 @@ Being a beginner with nix (i ought to go back and carefully read the docs now th
 `nannou`
 
 My first N attempts all found me staring at some issue with `alsa`... I eventually found my way to [Ninjaman10p's comment](https://www.reddit.com/r/NixOS/comments/1almuft/why_cant_nix_as_setup_by_cargo2nix_see_alsa_in_my/) to get an initial flake up and running for `nannou`. Unfortunately I still wasn't able to run any examples due to complaints with `rustPlatform.buildRustPackage`. Eventually the following `flake.nix` inside of the cloned `nannou` repo ended up working, following some tips I found [here](https://artemis.sh/2023/07/08/nix-rust-project-with-git-dependencies.html) about sha256 keys:
-```
+```nix
 {
   description = "A very basic nannou";
 
@@ -53,7 +53,7 @@ My first N attempts all found me staring at some issue with `alsa`... I eventual
 }
 ```
 The flake got me through my `alsa` issues and other problems with miscellaneous packages, but now I needed the help of this [thread](https://github.com/nannou-org/nannou/issues/618) to take care of wayland issues that came up! 
-```
+```nix
 let
   pkgs = import <nixpkgs> { };
 in with pkgs;

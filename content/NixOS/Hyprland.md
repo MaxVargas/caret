@@ -13,7 +13,7 @@ As far as setting this thing up.... it was admittedly kind of a pain to get the 
 `flake.nix`
 
 Inside of `flake.nix`, you'll want to introduce hyprland to your inputs. Since I'm using home-manager to handle configuration, you need that too.
-```
+```nix
 inputs = {
   nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
   home-manager = {
@@ -26,7 +26,7 @@ inputs = {
 }
 ```
 Further down, you'll want to include these inputs into `specialArgs` for your host as instructed in the [documentation](https://wiki.hyprland.org/Nix/Hyprland-on-NixOS/):
-```
+```nix
 outputs = {nixpkgs, ...} @ inputs: {
 nixosConfigurations.HOSTNAME = nixpkgs.lib.nixosSystem {
   specialArgs = { inherit inputs; }; # this is the important part
@@ -38,7 +38,7 @@ nixosConfigurations.HOSTNAME = nixpkgs.lib.nixosSystem {
 -----------------
 `configuration.nix`
 Include the `hyprland` cachix into you config file so that you can access pre-compiled binaries to save time when rebuilding your system. 
-```
+```nix
 nix.settings.substituters = [
   ...
   "https://hyprland.cachix.org"
@@ -52,7 +52,7 @@ nix.settings.trusted-public-keys = [
 If you're like me, you might be coming from some other desktop environment like GNOME. This was the hardest part to find information IMO. This is what I found works for me. That said, it's probably not the "ideal" or "correct" way to do it and there's probably a cleaner way.. but it's a learning process.
 
 Enable hyprland and a couple other settings:
-```
+```nix
 programs.hyprland = {
   enable = true;
   xwayland.enable = true;
@@ -66,7 +66,7 @@ xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
 ```
 
 Here's a couple environment variables. If you're using an Nvidia card, you'll want those last four too.
-```
+```nix
 environment.sessionVariables = {
   # If your cursor becomes invisible
   WLR_NO_HARDWARE_CURSORS = "1";
@@ -88,7 +88,7 @@ Home manager.
 At this point, (again if you're like me) then you'll have no desktop and will be running directly through a `tty` session. With luck, the `Hyprland` command should work and boot up. Now it's a matter of setting things up though home-manager. 
 
 When you ran the `Hyprland` command, a configuration file should have been made somewhere like `~./config/hypr/hyperland.conf`. To handle things through home-manager, I decided to move the configuration into my `/etc/nixos/` directory:
-```
+```nix
 /etc/nixos/home-manager/
 ├── core.nix
 ├── programs
@@ -106,7 +106,7 @@ When you ran the `Hyprland` command, a configuration file should have been made 
     └── terminals.nix
 ```
 You'll notice another config file `start.sh`. This is run when hyprland starts up. Now that your config is in place, you're ready to set tell home-manager to handle your hyprland preferences. Inside of `programs/desktop.nix` (loaded through `programs/defaults.nix`), set the following:
-```
+```nix
 {config, pkgs, ... }: 
 {
   home.packages = with pkgs; [

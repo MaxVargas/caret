@@ -2,12 +2,12 @@
 date: 2025 February
 ---
 The notion of applicative is meant to encapsulate functions that can have many inputs. To put shortly, an applicative is the data of a functor `f` with the following extra data:
-```
+```haskell
 pure  :: a -> f a
 (<*>) :: f (a -> b) -> f a -> f b 
 ```
 This data has to satisfy the following conditions:
-```
+```haskell
 pure id <*> x   = x
 pure (g x)      = pure g <*> pure x
 x <*> pure y    = pure (\g -> g y) <*> x

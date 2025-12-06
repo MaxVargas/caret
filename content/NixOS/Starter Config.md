@@ -4,7 +4,7 @@ date: 2025 March
 An outline of the configuration structure I'm using while learning NixOS. A lot of this structure is influenced by the content in the [NixOS & Flakes Book by Ryan Yin](https://nixos-and-flakes.thiscute.world/) and is based off of the author's [i3-kickstarter](https://github.com/ryan4yin/nix-config/tree/i3-kickstarter).
 
 File structure:
-```
+```nix
 /etc/nixos/
 ├── flake.lock
 ├── flake.nix
@@ -40,13 +40,13 @@ I shouldn't try to give a full explanation here -- that's what those explanation
 -----------------------
 
 - To run nvidia things, you need to set `nixpkgs.allowUnfree = true;` in `nixos/configuration.nix`. Then you'll also want the following block
-```
+```nix
 services.xserver.videoDrivers = [ "nvidia" ];
 hardware.nvidia.open = true;
 hardware.graphics.enable = true;
 ```
 - I saw a comment somewhere that steam can be buggy if deploying with home-manager. So easiest to set it directly in the config, though this makes it a system-wide application... not a huge issue for me since I'm running a single-user system:
-```
+```nix
 programs.steam = {
   enable = true;
   gamescopeSession.enable = true;
@@ -63,7 +63,7 @@ programs.gamemode.enable = true;
 
 ------------------
 Cachix is a nice service to download package binaries. This lets you save time so that you don't have to compile large packages on your own system. Feel free to explore the [site](https://app.cachix.org/). As an example, if you want to run [Hyprland](https://hyprland.org/), you can include the following in your configuration.
-```
+```nix
 nix.settings.substituters = [
   ...
   "https://hyprland.cachix.org"

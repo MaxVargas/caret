@@ -3,7 +3,7 @@ date: 2025 March
 ---
 This part I got from Vimjoyer's video on the topic. Setting up steam starts with the following in the configuration file:
 
-```
+```nix
 programs.steam = {
   enable = true;
   gamescopeSession.enable = true;
@@ -19,7 +19,7 @@ programs.gamemode.enable = true;
 ```
 
 You also want to install `protonup` and when using home-manager, set
-```
+```nix
 home.sessionvariables = {
   STEAM_EXTRA_COMPAT_TOOLS_PATHS = 
     "\${HOME}/.steam/root/compatibilitytools.d"
