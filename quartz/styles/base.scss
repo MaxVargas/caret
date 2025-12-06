@@ -9,16 +9,16 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  // src: url("/caret/static/Fantasque.woff2") format("woff2");
-  src: url("/static/Fantasque.woff2") format("woff2");
+  src: url("/caret/static/Fantasque.woff2") format("woff2");
+  // src: url("/static/Fantasque.woff2") format("woff2");
 }
 @font-face {
   font-family: "Sixgun";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  // src: url("/caret/static/Sixgun.TTF") format("truetype");
-  src: url("/static/Sixgun.TTF") format("truetype");
+  src: url("/caret/static/Sixgun.TTF") format("truetype");
+  // src: url("/static/Sixgun.TTF") format("truetype");
 }
 @font-face {
   font-family: "Aporetic";
@@ -26,16 +26,16 @@
   font-weight: 300;
   font-width: ultra-expanded;
   font-display: swap;
-  // src: url("/caret/static/aporetic-serif-normalupright.ttf") format("truetype");
-  src: url("/static/aporetic-serif-normalregularupright.ttf") format("truetype");
+  src: url("/caret/static/aporetic-serif-normalupright.ttf") format("truetype");
+  // src: url("/static/aporetic-serif-normalregularupright.ttf") format("truetype");
 }
 @font-face {
   font-family: "Euler";
   font-style: normal;
   font-weight: 300;
   font-display: swap;
-  // src: url("/caret/static/aporetic-serif-normalupright.ttf") format("truetype");
-  src: url("/static/Euler-Math.otf") format("opentype");
+  src: url("/caret/static/aporetic-serif-normalupright.ttf") format("truetype");
+  // src: url("/static/Euler-Math.otf") format("opentype");
 }
 
 html {
