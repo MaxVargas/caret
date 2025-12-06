@@ -15,6 +15,8 @@ const defaultHeaderWeight = [700]
 const defaultBodyWeight = [400]
 
 const sixgunFontPath = joinSegments(QUARTZ, "static", "Sixgun.TTF")
+const resolvedSixgunPath = path.resolve(sixgunFontPath)
+console.log(resolvedSixgunPath)
 export async function getSatoriFonts(headerFont: FontSpecification, bodyFont: FontSpecification) {
   // Get all weights for header and body fonts
   const headerWeights: FontWeight[] = (
@@ -59,10 +61,25 @@ export async function getSatoriFonts(headerFont: FontSpecification, bodyFont: Fo
 
   // Filter out any failed fetches and combine header and body fonts
   const fonts: SatoriOptions["fonts"] = [
-    ...headerFonts.filter((font): font is NonNullable<typeof font> => font !== null),
-    ...bodyFonts.filter((font): font is NonNullable<typeof font> => font !== null),
+    ...headerFonts.map((data, idx) => ({
+      name: headerFontName,
+      data,
+      weight: headerWeights[idx],
+      style: "normal" as const,
+    })),
+    ...bodyFonts.map((data, idx) => ({
+      name: bodyFontName,
+      data,
+      weight: bodyWeights[idx],
+      style: "normal" as const,
+    })),
+    {
+      name: "Sixgun",
+      data: await fs.readFile(resolvedSixgunPath),
+      weight: 400,
+      style: "normal" as const,
+    },
   ]
-
   return fonts
 }
 
