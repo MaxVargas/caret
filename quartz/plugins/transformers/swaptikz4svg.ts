@@ -11,18 +11,6 @@ const defaultOptions: Options = {
 
 const tikzRegex = new RegExp("\`\`\`tikz\\n([\\s\\S]*?)\\n\`\`\`", "g")
 
-function nonAsyncTex2svg(s: stringn): Promise<string> {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const result = await tex2svg(s, {showConsole: true});
-      resolve(result);
-    } catch (error) {
-      reject(error);
-    }
-  });
-}
-
-
 export const TikZ: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
   const ops = { ...defaultOptions, ...userOpts }
   return {

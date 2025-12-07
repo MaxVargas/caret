@@ -665,3 +665,7 @@ iframe.pdf {
   transition: width 0.2s ease;
   z-index: 9999;
 }
+
+.tikz-color{
+  filter: brightness(0) saturate(100%) invert(var(--tikzInvert)) sepia(var(--tikzSepia)) saturate(var(--tikzSaturate)) hue-rotate(var(--tikzHueRotate)) brightness(var(--tikzBrightness)) contrast(var(--tikzContrast));
+}

@@ -2,9 +2,9 @@
 date: 2025 February
 ---
 Normally, you learn about functions when encountering set theory. Sets don't really have structure, so a function doesn't really need to satisfy much apart from passing the vertical line test[^4]. As one learns more math, it becomes common to care about sets with some extra structure and you'll want your functions to respect this extra structure. For example, when a student learns about groups, they learn to care about group homomorphisms. Or when they learn of topological spaces, they'll care about continuous maps. There's a similar moral with category theory (although a category isn't "just" a set with extra structure like those previous examples).
-[^4]:I'm being terse here again, avoiding the formal definition of a function.
-
-Morally, a functor is a function between two categories. That is to say, a (covariant[^5]) functor $\mathcal{F}:\mathcal{C}\to \mathcal{D}$ from a category $\mathcal{C}$ to another category $\mathcal{D}$ is just a way to go from the first category to the second in such a way that the categorical structure gets preserved. Keeping in mind that some of the core data of a category is just its objects and morphisms, $\mathcal{F}$ needs a way to send objects of $\mathcal{C}$ to objects of $\mathcal{D}$, and similarly for morphisms, satisfying some structural constraints. More precisely, $\mathcal{F}$ consists of the data:
+	[^4]:I'm being terse here again, avoiding the formal definition of a function.
+	
+Morally, a functor is a function between two categories. That is to say, a (covariant[^5]) functor $\mathcal{F} : \mathcal{C} \to \mathcal{D}$ from a category $\mathcal{C}$ to another category $\mathcal{D}$ is just a way to go from the first category to the second in such a way that the categorical structure gets preserved. Keeping in mind that some of the core data of a category is just its objects and morphisms, $\mathcal{F}$ needs a way to send objects of $\mathcal{C}$ to objects of $\mathcal{D}$, and similarly for morphisms, satisfying some structural constraints. More precisely, $\mathcal{F}$ consists of the data:
 - An assignment $\mathcal{F}X\in \mathbb{O}(\mathcal{D})$ for each $X\in \mathbb{\mathcal{C}}$.
 - An assignment $\mathcal{F}(g): \mathcal{F}X \to \mathcal{F}Y$ for each $g: X\to Y \in \textnormal{Hom}_{\mathcal{C}}(X,Y)$.
 These assignments have to satisfy the following structural rules:

@@ -154,6 +154,12 @@ ${stylesheet.join("\n\n")}
   --tertiary: ${theme.colors.lightMode.tertiary};
   --highlight: ${theme.colors.lightMode.highlight};
   --textHighlight: ${theme.colors.lightMode.textHighlight};
+  --tikzInvert: ${"33%"};
+  --tikzSepia: ${"16%"};
+  --tikzSaturate: ${"973%"};
+  --tikzHueRotate: ${"339deg"};
+  --tikzBrightness: ${"94%"};
+  --tikzContrast: ${"89%"};
 
   --titleFont: "${getFontSpecificationName(theme.typography.title || theme.typography.header)}", ${DEFAULT_SANS_SERIF};
   --headerFont: "${getFontSpecificationName(theme.typography.header)}", ${DEFAULT_SANS_SERIF};
@@ -171,6 +177,13 @@ ${stylesheet.join("\n\n")}
   --tertiary: ${theme.colors.darkMode.tertiary};
   --highlight: ${theme.colors.darkMode.highlight};
   --textHighlight: ${theme.colors.darkMode.textHighlight};
+  --tikzInvert: ${"100%"};
+  --tikzSepia: ${"25%"};
+  --tikzSaturate: ${"3700%"};
+  --tikzHueRotate: ${"304deg"};
+  --tikzBrightness: ${"103%"};
+  --tikzContrast: ${"80%"};
+
 }
 `
 }
