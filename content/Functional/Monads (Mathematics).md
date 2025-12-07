@@ -27,7 +27,7 @@ I guess we now have 'arrows between arrows,' so it might be useful to specify ou
 - a morphism $\alpha_X : \mathcal{F}X\to \mathcal{G}X$ for each $X\in\mathbb{O}(\mathcal{C})$.
 This data has to satisfy the rule that for any arrow $f: X\to Y$ between objects of $\mathcal{C}$, we have an equality of morphisms $\alpha_Y \circ \mathcal{F}(f) = \mathcal{G}(f) \circ \alpha_X$. This is often depicted diagrammatically as saying that the following diagram commutes (traversing the arrows through the top right corner gives the same result as the traversal through the bottom left).
 
-![TikZ  SVG](attachments/functional/monadmath/01.svg)
+![TikZ SVG](attachments/functional/monadmath/01.svg)
 
 Examples of natural transformations:
 - Letting $X$ be a set, consider the functor $X\times?$ from the previous section. If we let $f:X\to X$ be any function on $X$, then the family of maps $$\alpha_Y : X\times Y\to X\times Y, \hspace{20pt} (x,y) \mapsto (f(x), f(y))$$ is a natural transformation $\alpha: X\times? \implies X\times?$.
