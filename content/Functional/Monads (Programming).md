@@ -36,19 +36,19 @@ mx >>= return    = mx
 
 The operator `(>>=)` is typically called *bind* and it has an interesting property. It's definition gives a way to, from a map `f :: a -> mb`, construct a map `ma -> mb`. In particular, the first rule imposes a commuting diagram:
 
-![[monad11.png | 220]]
+![TikZ SVG](attachments/functional/monadprog/01.svg)
 
 This gives a certain sense that `m a` reflects certain properties of `a`.  That is, if we take `M` to be the category of types of the form `m z` for any type `z`, this property says that any map `a -> m b` from `a` into `M` can be factored through `m a`. We can see this as a type of pattern matching too. If we're given (1) some object `mx :: m a` of the form `mx = pure x` for some `x :: a` and (2) a function `f :: a -> m b`, the bind operator lets us effectively apply `f` to `x`. That is, it lets us "unwrap" the monadic application of `m`. This also turns out to be related to a mathematical/categorical notion of reflection, but let's continue for now.
 
 Heading into the second condition, notice that if we replace `f` with `return` in the diagram above, we get:
 
-![[monad12.png | 270]]
+![TikZ SVG](attachments/functional/monadprog/02.svg)
 
 This is just saying that the function `? >>= return :: m a -> m a` is the identity *when restricting to the image of `return :: a -> m a`*. The second condition requires that this function actually be the identity on the entirety of `m a`.
 
 The third axiom can also be expressed in terms of a commuting diagram. Below, the solid diagram represents the relevant condition, and the dotted lines give (to me) relevant context.
 
-![[monad13.png | 360]]
+![TikZ SVG](attachments/functional/monadprog/03.svg)
 
 Parsing out this diagram essentially says that the bind operator respects composition of functions. Morally, I'd like `h` to be the composition of `f` and `g`, but we don't quite have that since we're not actually dealing with the domains of these functions but rather their `return` types.
 

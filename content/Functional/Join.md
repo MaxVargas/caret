@@ -19,12 +19,12 @@ join mmx =
 	   x  <- mx
 	   return x
 ```
-From here, one has to prove that the `return` and `join` maps satisfy the unit and multiplication axioms for a monad^[1]. Notice that, by the condition `mx >>= return = mx`, `join` can be re-expressed simply as `join mmx = mmx >>= id`, or `join = ? >>= id`.
-[1]: As well as satisfying certain naturality conditions!
+From here, one has to prove that the `return` and `join` maps satisfy the unit and multiplication axioms for a monad[^1]. Notice that, by the condition `mx >>= return = mx`, `join` can be re-expressed simply as `join mmx = mmx >>= id`, or `join = ? >>= id`.
+[^1]: As well as satisfying certain naturality conditions!
 
 For the unit axiom, we need the following diagram to commute on both triangles.
 
-![[join1.png | 270]]
+![TikZ SVG](attachments/functional/join/01.svg)
 
 I ought to clarify what I mean by `rtn.id` and its sibling. What we really want is the "horizontal composition" of natural transformations between the natural transformations `id :: m => m` and `rtn :: Id => m`. Concretely, the natural transformation is defined on each type `a` via `rtn.id :: m a -> m (m a), mx -> return mx`.  Now, running this through `join` gives, by definition:
 ```haskell
@@ -32,7 +32,7 @@ join (return mx) = (return mx) >>= id = mx
 ```
 The sibling case turns out to be more difficult (in my opinion). This is mainly due to the fact that the horizontal composition `id.rtn` can be defined by `id.rtn = fmap return`. Reasoning about `fmap return` and `join` requires an understanding between the monad structures with `fmap`, and discussion on this seems spread thin. For this reason, the commutativity of the associativity diagram is also left undone:
 
-![[join2.png | 270]]
+![TikZ SVG](attachments/functional/join/02.svg)
 
 Here, the maps `join.id` and `id.join` are defined similarly to that found in [[Monads (Mathematics)]]:
 ```haskell

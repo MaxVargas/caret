@@ -27,13 +27,13 @@ I guess we now have 'arrows between arrows,' so it might be useful to specify ou
 - a morphism $\alpha_X : \mathcal{F}X\to \mathcal{G}X$ for each $X\in\mathbb{O}(\mathcal{C})$.
 This data has to satisfy the rule that for any arrow $f: X\to Y$ between objects of $\mathcal{C}$, we have an equality of morphisms $\alpha_Y \circ \mathcal{F}(f) = \mathcal{G}(f) \circ \alpha_X$. This is often depicted diagrammatically as saying that the following diagram commutes (traversing the arrows through the top right corner gives the same result as the traversal through the bottom left).
 
-![[monad1.png | 180]]
+![TikZ  SVG](attachments/functional/monadmath/01.svg)
 
 Examples of natural transformations:
 - Letting $X$ be a set, consider the functor $X\times?$ from the previous section. If we let $f:X\to X$ be any function on $X$, then the family of maps $$\alpha_Y : X\times Y\to X\times Y, \hspace{20pt} (x,y) \mapsto (f(x), f(y))$$ is a natural transformation $\alpha: X\times? \implies X\times?$.
 - **Nonexample** If $f_1, f_2 :  G\to H$ are graph homomorphisms, then consider the functors $\mathcal{F}_1, \mathcal{F}_2: \mathcal{C}(G)\to\mathcal{C}(H)$ from as defined in the section on functors. Suppose we can find paths $p_v : f_1(v)\rightsquigarrow f_2(v)$ for all $v\in V$. Then for each path (i.e., morphism) $q: v\rightsquigarrow w$ in $\mathcal{C}(G)$, we can build a diagram as below. However, this diagram *does not* commute since, in general, the two paths are not equal. So the family of paths $(p_v)_{v\in V}$  does not form a natural transformation. 
 
-![[monad2.png | 400]]
+![TikZ SVG](attachments/functional/monadmath/02.svg)
 
 - Currying; I won't go into much precise detail on this example since, technically speaking, one wants to work with the notion of "contravariant" functors which I haven't talked about at all. But some programmers (blah blah functional programming) often treat a function on two variables as "a function of one variable which outputs another function of one variable". That is, given some function $f: X\times Y\to Z$ whose inputs are pairs $(x,y)$, we can define a function $\bar{f}: X\to (Y\to Z)$ by the following definition: $$x\mapsto (y\mapsto f(x,y))$$ in other words, $\bar{f}(x)$ is a function $Y\to Z$, and $\bar{f}(x)(y) := f(x,y)$. This gives a map $\bar{?} : \textnormal{Hom}_{\textbf{Set}}(X\times Y, Z) \to \textnormal{Hom}_{\textbf{Set}}(X, \textnormal{Hom}_{\textbf{Set}}(Y, Z))$ defined by $f\mapsto \bar{f}$. It turns out this map is a bijection, and actually defines a natural transformation between two appropriately defined functors. This turns out to be an isomorphism, which I won't go into here, but this word 'isomorphism' tells us that $f$ and $\bar{f}$ are equivalent though the given bijection. Again, intuitively this means that your functions on two variables can be thought of as a cascade of functions of a single variable where you're just plugging in one variable at a time.[^1] 
 I consider the last example a special case of the *tensor-Hom* adjunction.
@@ -53,7 +53,7 @@ In fact, $\mathcal{E}nd(\mathcal{C})$ turns out to be a *strict* monoidal catego
 
 Now we can write what it means for a functor $\mathcal{M}$ to be a monoid in this category. Going back to the phrase "a monoid in the category of endofunctors", we just need $\mathcal{M}$ to satisfy the monoid axioms. For now, let's let $\textnormal{Id}$ denote the identity endofunctor: $\textnormal{Id} X = X$ for all $X\in\mathbb{O}(\mathcal{C})$ and you can guess what it does on morphisms. All we'll need for $\mathcal{M}$ to have the structurer of a monad is  *just* some morphisms (i.e. natural transformation) $m: \mathcal{M}\circ\mathcal{M} \to \mathcal{M}$ and $u:\textnormal{Id}\to\mathcal{M}$ that make those diagrams from [[Monoids]] commute, which I'll copy for this context below. Note that these natural transformations entail a collection of maps $m_X : \mathcal{M}\circ \mathcal{M}\ X \to \mathcal{M}\ X$ and $u_X : X\to \mathcal{M} X$ (satisfying the naturality condition, of course). Then the monoid diagrams entail that for each $X$, there is a commuting diagram:
 
-![[monad3.png]]
+![TikZ SVG](attachments/functional/monadmath/03.svg), ![TikZ SVG](attachments/functional/monadmath/04.svg)
 
 Now, there's a bit of notation here which I've not explained. First, it's worth commenting on $\textnormal{Id}$. Since it acts trivially on all objects, there's a natural identification
 $$
