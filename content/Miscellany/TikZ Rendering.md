@@ -1,8 +1,6 @@
 
 I've no idea how to do this in a good way haha
 
-OK the color thing still isn't working. But it works locally.....
-
 The original plan was to use a package like `node-tikzjax` to automate the process of taking TikZ code to generate SVG images, but I wasn't able to find a package that actually worked.
 
 So now I'm taking a much simpler approach, albeit a little more manual:
