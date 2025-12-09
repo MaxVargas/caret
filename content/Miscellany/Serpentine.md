@@ -1,7 +1,7 @@
 ---
-date: 2025 August
+date: 2025 December
 ---
-I found that the more I wrote, the less I wanted to say. So I'll try to err on the shorter side.
+I originally drafted this note in August 2025. I found that the more I wrote, the less I wanted to say. So I'll try to err on the shorter side.
 
 The AI space has grown and (IMO) saturated. After spending a few years at a research firm in the field, I grew disinterested. There's many reasons for this, likely too many for me to document at once. Here's a few reasons:
 - In a general sense, I don't know what problem AI is trying to solve. What follows is that basic research in AI loses meaning in any given context.
