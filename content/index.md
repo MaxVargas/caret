@@ -17,6 +17,7 @@ A bit about me and this my plan for this place:
  I also like finding time to develop better software practices and, in general, learning. I've recently been into rockhounding and cleaning up a video game backlog.
 
 Here's some quick points on what I've worked on below, will only write a little here but I'm happy to discuss further (contact info above). 
+- AI-intersects cybersecurity. Recently this leans into applications of AI for cyber, but IMO the security of AI systems is arguably more necessary.
 - Explainable AI. Essentially trying to unpack data that gets embedded by foundation models, but there's different spins on what that could mean.
 	- Studying the embedding spaces of deep neural networks (DNNs) to extract interpretable, explainable, and high-level information about our data. There's a cute (feel free to read between the lines on my usage of "cute") application to understanding differences between AI-generated and real data. You can find the article [by clicking here](https://www.science.org/doi/10.1126/sciadv.adx4082)
 	- Sparse autoencoders and other areas of "mechanistic interpretability". 
