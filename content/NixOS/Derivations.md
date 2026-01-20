@@ -45,7 +45,11 @@ builtins.attrNames ( derivation {
   builder = "${pkgs.bash}/bin/bash"; 
   system = builtins.currentSystem; 
   src = path-to-blah.tar.gz;
-  args = [ ./setup ];
+  args = [ ./setup.sh ];
+  buildInputs = [
+	inp1
+	inp2
+  ];
   ... 
 } )
 
@@ -65,4 +69,6 @@ builtins.attrNames ( derivation {
 # ]
 ```
 
-I threw in some optional parameters `args` and `src`; you can throw basically anything else into the derivation function. You can even include parameters which are themselves [functions which can be called to return other derivations](https://nixos.org/guides/nix-pills/14-override-design-pattern.html). When you call `nix-build` on this derivation, it runs `builder` using the arguments provided in `args` with environment variables corresponding to the attributes themselves.
+I threw in some optional parameters `args`, `src`, and `builtInputs`; you can throw basically anything else into the derivation function. You can even include parameters which are themselves [functions which can be called to return other derivations](https://nixos.org/guides/nix-pills/14-override-design-pattern.html). When you call `nix-build` on this derivation, it runs `builder` using the arguments provided in `args` with environment variables corresponding to the attributes themselves.
+
+So in this example, `nix-build` will essentially call `bash setup.sh` and the setup script will be able to access variables like `${src}` and `${buildInputs}`. 
