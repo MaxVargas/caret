@@ -1,5 +1,7 @@
 ---
 date: 2025 March
+tags:
+  - nixos
 ---
 ```nix
 services.xserver.videoDrivers = [ "nvidia" ];

@@ -1,5 +1,8 @@
 ---
 date: 2025 February
+tags:
+  - FP
+  - math
 ---
 The notion of applicative is meant to encapsulate functions that can have many inputs. To put shortly, an applicative is the data of a functor `f` with the following extra data:
 ```haskell

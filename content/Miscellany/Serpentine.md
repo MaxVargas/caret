@@ -1,5 +1,7 @@
 ---
 date: 2025 December
+tags:
+  - misc
 ---
 I originally drafted this note in August 2025. I found that the more I wrote, the less I wanted to say. So I'll try to err on the shorter side.
 

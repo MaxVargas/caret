@@ -1,5 +1,7 @@
 ---
 date: 2025 February
+tags:
+  - FP
 ---
 With enough pondering, it should be reasonable to convince yourself that there's often an obvious attempt to turn a parametrized type into a functor. For example, the list functor `[]` that sends a type `a` to the set of lists `[a]` can be extended to a functor where `fmap f :: [a] -> [b]` just applies `f` to each element of a given list `[a1, ..., an]`. There's a certain naturality to figure out these evaluations.
 

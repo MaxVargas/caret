@@ -1,5 +1,7 @@
 ---
 date: 2025 March
+tags:
+  - nix
 ---
 Nixpkgs has plenty of stuff... but it's not everything. In particular, lots of people have developed useful packages which haven't made their way onto nixpkgs yet (for various possible reasons). You can import nur to access these extras. Inside of `nixos/configuration.nix`, you can add 
 ```nix

@@ -1,5 +1,7 @@
 ---
 date: 2025 March
+tags:
+  - nixos
 ---
 An outline of the configuration structure I'm using while learning NixOS. A lot of this structure is influenced by the content in the [NixOS & Flakes Book by Ryan Yin](https://nixos-and-flakes.thiscute.world/) and is based off of the author's [i3-kickstarter](https://github.com/ryan4yin/nix-config/tree/i3-kickstarter).
 

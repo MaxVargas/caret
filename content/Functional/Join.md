@@ -1,5 +1,8 @@
 ---
 date: 2025 February
+tags:
+  - math
+  - FP
 ---
 [[Monads (Mathematics)]]
 [[Monads (Programming)]]

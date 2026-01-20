@@ -1,5 +1,7 @@
 ---
 date: 2025 March
+tags:
+  - nixos
 ---
 This part I got from Vimjoyer's video on the topic. Setting up steam starts with the following in the configuration file:
 

@@ -1,4 +1,8 @@
-
+---
+date: 2025 December
+tags:
+  - web
+---
 I've no idea how to do this in a good way haha
 
 The original plan was to use a package like `node-tikzjax` to automate the process of taking TikZ code to generate SVG images, but I wasn't able to find a package that actually worked.

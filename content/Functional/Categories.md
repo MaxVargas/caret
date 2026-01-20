@@ -1,5 +1,7 @@
 ---
 date: 2025 February
+tags:
+  - math
 ---
 A *category* $\mathcal{C}$ is the data of 
 - a collection[^1] of 'objects' $\mathbb{O}(\mathcal{C})$,

@@ -1,5 +1,7 @@
 ---
 date: 2025 March
+tags:
+  - nix
 ---
 I've been curious to play around with some creative coding practices, for example [nannou](https://nannou.cc/). The installation wasn't trivial, mainly because of issues with `alsa` and still learning about the nix ecosystem.
 

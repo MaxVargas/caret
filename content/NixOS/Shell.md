@@ -1,6 +1,11 @@
 ---
 date: 2025 March
+tags:
+  - nix
 ---
+From the man pages:
+`nix-shell` starts an interactive shell based on a nix expression. This command will build the dependencies of the specified derivation (see [[Derivations]]).
+
 This is a very basic shell for ML / data science in python, setting up pytorch but very little else and you'll almost certainly want to add in extras. You can activate it with `nix-shell`. TODO: learn how to upgrade this the "flake way"?
 ```nix
 {

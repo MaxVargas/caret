@@ -1,5 +1,7 @@
 ---
 date: 2025 March
+tags:
+  - nixos
 ---
 A few times when reconfiguring and rebuilding my NixOS system, I've run into a partial log that contains the following. 
 ```

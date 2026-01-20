@@ -1,3 +1,8 @@
+---
+tags:
+  - linux
+---
+
 Simple enough, I mainly just want a quick reference so that I can transfer pictures from an SD card to internal storage. This is just following the instructions over [here](https://askubuntu.com/questions/37767/how-to-access-a-usb-flash-drive-from-the-terminal). First, find the drive you want to pull data from using `lsblk`. 
 
 Second, create a mount point:

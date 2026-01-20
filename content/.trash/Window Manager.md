@@ -1,6 +1,11 @@
 ---
-date: 2025 March
+date: 2026 January
+tags:
+  - linux
+  - nix
 ---
+
+
 I guess this is a way to organize your screen and applications to configurable tiles on your screen. Visually, I'm thinking tmux at the desktop layer..
 
 As in other pages, I'm starting with Vimjoyer's [video](https://www.youtube.com/watch?v=61wGzIv12Ds). 

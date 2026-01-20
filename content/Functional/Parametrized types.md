@@ -1,5 +1,7 @@
 ---
 date: 2025 February
+tags:
+  - FP
 ---
 
 The point here isn't to get into too much detail but you can loosely think about 'types' as sets.[^1] A parametrized type can be thought of as a construction of a new type, from a given input type. In practice, this can be thought of as a function which takes a given type of objects and produces some new output type. 
