@@ -71,4 +71,6 @@ builtins.attrNames ( derivation {
 
 I threw in some optional parameters `args`, `src`, and `builtInputs`; you can throw basically anything else into the derivation function. You can even include parameters which are themselves [functions which can be called to return other derivations](https://nixos.org/guides/nix-pills/14-override-design-pattern.html). When you call `nix-build` on this derivation, it runs `builder` using the arguments provided in `args` with environment variables corresponding to the attributes themselves.
 
-So in this example, `nix-build` will essentially call `bash setup.sh` and the setup script will be able to access variables like `${src}` and `${buildInputs}`. 
+So in this example, `nix-build` will essentially call `bash setup.sh` and the setup script will be able to access variables like `${src}` and `${buildInputs}`. A couple things to note:
+- The import call to `<nixpkgs>` is syntax that tells nix to load up the `nixpkgs` expression. It'll look within the environment variable `$NIX_PATH`.
+- Whenever you refer to variables like `${src}` in `setup.sh`, it wont actually be the local path. Nix will copy anything it needs over to the store and use that instead. So `${src}` will be something like `/nix/store/<hash>-setup.sh`
