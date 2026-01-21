@@ -13,7 +13,8 @@ const config: QuartzConfig = {
     enableSPA: true,
     enablePopovers: true,
     analytics: {
-      provider: "plausible",
+      provider: "goatcounter",
+      websiteId: "caret",
     },
     locale: "en-US",
     baseUrl: "MaxVargas.github.io/caret",
