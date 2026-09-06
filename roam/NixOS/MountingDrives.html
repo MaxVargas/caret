@@ -1,0 +1,27 @@
+<p>
+Simple enough, I mainly just want a quick reference so that I can transfer
+pictures from an SD card to internal storage. This is just following the
+instructions over <a href="https://askubuntu.com/questions/37767/how-to-access-a-usb-flash-drive-from-the-terminal">here</a>. First, find the drive you want to pull data from using
+<code>lsblk</code>.
+</p>
+
+<p>
+Second, create a mount point:
+</p>
+<div class="org-src-container">
+<pre class="src src-bash"><code><span style="color: #92a65e; font-weight: bold;">sudo</span> <span style="color: #92a65e; font-weight: bold;">mkdir</span> /media/usb
+<span style="color: #92a65e; font-weight: bold;">sudo</span> mount /dev/sdxX /media/usb
+</code></pre>
+</div>
+<p>
+Then you can copy files over from <code>/media/usb</code> into any more permanent location.
+Once copying is done, you can unmount with
+</p>
+<div class="org-src-container">
+<pre class="src src-bash"><code><span style="color: #92a65e; font-weight: bold;">sudo</span> umount /media/usb
+</code></pre>
+</div>
+
+<p>
+Follow the leads here if you run into a read-only file system error: <a href="https://nixos.wiki/wiki/NTFS">link</a>.
+</p>

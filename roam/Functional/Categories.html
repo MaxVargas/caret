@@ -1,0 +1,79 @@
+<p>
+A <b>category</b> \(\mathcal{C}\) is the data of
+</p>
+<ul class="org-ul">
+<li>a collection<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup> of &rsquo;objects&rsquo; \(\mathbb{O}(\mathcal{C})\),</li>
+<li>a collection of &rsquo;morphisms&rsquo; (or arrows) \(\textnormal{Hom}_{\mathcal{C}}(X,Y) =
+  \{f: X\to Y\}\)<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup> for each \(X,Y\in\mathbb{O}(\mathcal{C})\),</li>
+<li>a rule to compose arrows; given \(f: X\to Y\) and \(g: Y\to Z\), then there is an
+arrow \(g\circ f : X\to Z\)<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>,</li>
+<li>for each \(X\in\mathbb{O}(\mathcal{C})\), a distinguished identity morphism \(1_X :
+  X\to X\).</li>
+</ul>
+<p>
+Further, this data has to satisfy the following criteria:
+</p>
+<ul class="org-ul">
+<li>(Associativity) We have for any \(f: W\to X, g: X\to Y, h: Y\to Z\), that \(h\circ (g\circ f) =
+  (h\circ g) \circ f)\) as arrows \(W\to Z\).</li>
+<li>(Unital) For all \(X,Y\in \mathbb{O}(\mathcal{C})\) and \(f:X\to Y\), we have \(f\circ 1_X
+  = f\). Similarly, for any \(g: Y\to X\), we have \(1_X \circ g = g\).</li>
+</ul>
+
+<p>
+There&rsquo;s plenty of examples of categories. These two, we&rsquo;ve already seen:
+</p>
+<ul class="org-ul">
+<li>The category, <b>Set</b>, whose objects are (small) sets and morphisms are your
+typical functions.</li>
+<li>The category, \(\textbf{Vec}_{\mathbb{F}}\), whose objects are vector spaces over a
+given field \(\mathbb{F}\) and morphisms are linear maps.</li>
+</ul>
+<p>
+Here&rsquo;s a few other examples:
+</p>
+<ul class="org-ul">
+<li>Given a (directed) graph \(G\) with vertices \(V\) and edges \(E\), we can build a
+category \(\mathcal{C}(G)\) whose objects are precisely the vertex set \(V\). The
+morphism set \(\textnormal{Hom}_{\mathcal{C}{G}}(v, w)\) is precisely the set of
+paths \(v\rightsquigarrow w\), (including the empty path in the case \(v=w\)).</li>
+<li>Again consider a graph \(G\). We can build a different category \(\mathcal{E}(G)\)
+whose objects are the set of all paths in \(G\), including empty paths (of which
+there is one for each \(v\in V\)). Morphisms between two paths \(p:
+  v\rightsquigarrow w\) and \(p': v'\rightsquigarrow w'\) will consist of pairs
+\((\psi, \varphi)\) where \(\psi\) is a path \(v'\rightsquigarrow v\) and \(\varphi\) is a path
+\(w\rightsquigarrow w'\). In the diagram below, the arrow (which goes to the
+right) from \(v\rightsquigarrow w\) to \(v'\rightsquigarrow w'\) consists of <b>both</b>
+horizontal arrows. The composition is a bit interesting here: given paths
+\(p:v\rightsquigarrow w\), \(p:v'\rightsquigarrow w'\), \(p:v''\rightsquigarrow
+  w''\) and morphisms \((\psi, \varphi) : p\to p'\) and \((\psi', \varphi'): p'\to p''\) , we have \((\psi',
+  \varphi')\circ(\psi, \varphi) := (\psi\cdot\psi', \varphi'\cdot \varphi)\), using \(\cdot\) to denote path concatenation.</li>
+</ul>
+
+<figure class="tikz-cd">  <img src="tikz/7cb99bf744c8273b594f170525da806d7666b1c29f7d5a7bc9575d6a510d3985.svg" alt="TikZ-CD diagram">  </figure>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+Sometimes you see talk about classes vs. sets&hellip; this isn&rsquo;t an important
+detail&hellip; but if you use the formalism of Grothendieck Universes then you can
+run with everything being a set (within your universe) and not have to worry
+about classes&hellip;
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+Given \(f\in \textnormal{Hom}_{\mathcal{C}}(X,Y)\), sometimes
+I&rsquo;ll write \(f:X\to Y\) instead. This makes it clearer (to me) which way the
+direction is going, and notationally this always makes composition easier in my
+head.
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3" role="doc-backlink">3</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+The composition is just amounts to &rsquo;stacking the arrows&rsquo;: \(g\circ f = X
+\xrightarrow{f} Y \xrightarrow{g} Z\).
+</p></div></div>
+
+
+</div>
+</div>

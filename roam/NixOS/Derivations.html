@@ -1,0 +1,162 @@
+<p>
+I&rsquo;m finally coming around to learning more about nix and how to package programs
+for my own personal use. Reading the nix pills is good! Some of the specifics
+are a bit outdated and don&rsquo;t touch on some &ldquo;modern&rdquo; features like flakes, but it
+covers fundamental concepts that are worth understanding.
+</p>
+
+<p>
+One of the main purposes of the nix language is in the packaging process, and
+derivations are the building blocks to do so. Whenever you package something
+using nix, these derivations are used as a specification for the package and the
+contents are built on such specifications. The derivations and output content
+can be found in the nix store (usually <code>/nix/store</code>). You generally won&rsquo;t be
+writing derivations yourself, but rather use builtin utilities to create
+derivations.
+</p>
+<div id="outline-container-org143be39" class="outline-2">
+<h2 id="org143be39"><span class="section-number-2">1.</span> What is a derivation? It&rsquo;s a special kind of attribute set that</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+needs particular elements in its definition. As an example, we can inspect the
+derivation specs for the item below. Within an interactive environment using
+<code>nix repl</code>, we can verify that the drv file contains an attribute set:
+</p>
+<div class="org-src-container">
+<pre class="src src-nix"><code><span style="color: #cae682;">drv</span> = <span style="color: #e5786d;">import</span> <span style="color: #e5786d;">/nix/store/xsqhh6s0c3fa9va5gnk6mdifm7zqwvmh-bash52-037.drv</span>
+builtins.isAttrs drv <span style="color: #99968b;">#true
+</span>builtins.attrNames drv <span style="color: #99968b;"># [ "all" "drvPath" "name" "out" "outPath" "outputName" "type" ]
+</span>
+drv.name <span style="color: #99968b;"># "bash52-037"
+</span>drv.type <span style="color: #99968b;"># "derivation"</span>
+</code></pre>
+</div>
+
+<p>
+I&rsquo;ll note that nix knows to distinguish derivations from other, more generic,
+attribute sets by catching that <code>drv.type = "derivation"</code>. So in a very
+simplistic case, a derivation is just an attribute set with an attribute <code>type</code>
+that is set to <code>"derivation"</code>. The interesting bits come from creating a
+derivation that &ldquo;works&rdquo;.
+</p>
+</div>
+</div>
+<div id="outline-container-orgc4396bb" class="outline-2">
+<h2 id="orgc4396bb"><span class="section-number-2">2.</span> Creating a derivation. Nix has builtin utilities</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+for creating functioning derivations that will compile and package software. The
+fact that <code>drv.type = "derivation"</code> only means that nix will treat the attribute
+set like a derivation.
+</p>
+
+<p>
+The <a href="https://nix.dev/manual/nix/2.28/language/derivations">derivation</a> builtin function is one such utility, but there are others as well (e.g.
+<code>pkgs.mkShell</code>).
+</p>
+
+<p>
+\[
+\texttt{derivation} :\{\texttt{d}\in \texttt{AttrSet}\ |\ \texttt{name, system, builder} \in \texttt{d}\} \rightarrow \texttt{Derivations}
+\]
+</p>
+
+<p>
+This function takes any attribute set with the <code>name</code>, <code>system</code>, and <code>builder</code>
+attributes well-defined and returns a derivation. The input can have other
+attributes as well, but the three listed ones are requirements.
+</p>
+
+<p>
+Using the <code>derivation</code> function only produces an expression which can then be
+evaluated to build the specified package. You can use it to offload a lot of the
+boilerplate that you&rsquo;d have to write otherwise. Once the derivation is defined
+(i.e., instantiated), it still needs to get built.
+</p>
+</div>
+</div>
+<div id="outline-container-orgcc95409" class="outline-2">
+<h2 id="orgcc95409"><span class="section-number-2">3.</span> Example</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+For illustrative purposes, it&rsquo;s worth running through an example. For a simple
+case, you can run `nix-build` on the example above. This produced a file at the
+new store path <code>/nix/store/yp6bfms6q369y93j622mqq6i6b02xwbq-bash52-037</code>. This
+turns out to be a patch report for bash-release 5.2.
+</p>
+
+<p>
+The output store path above turns out to be the same as <code>drv.outPath</code>. In
+particular, <code>drv.outPath</code> was already defined before we called <code>nix-build</code>. Nix
+knows how to compute the hash in the output store path(s) before anything is
+ever built!
+</p>
+</div>
+</div>
+<div id="outline-container-org1a1bda5" class="outline-2">
+<h2 id="org1a1bda5"><span class="section-number-2">4.</span> Building with <code>derivation</code></h2>
+<div class="outline-text-2" id="text-4">
+<p>
+What does <code>nix-build</code> do when it is called on an output of the <code>derivation</code>
+function? Recall that an input to <code>derivation</code> must have the form <code>a = { name =
+"x"; builder = "y"; system = "z"; ... }</code>. We can inspect the result using
+<code>builtins.attrNames</code> like before.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-nix"><code><span style="color: #8ac6f2; font-weight: bold;">let</span>
+  <span style="color: #cae682;">pkgs</span> = <span style="color: #e5786d;">import</span> <span style="color: #e5786d;">&lt;nixpkgs&gt;</span> { };
+<span style="color: #8ac6f2; font-weight: bold;">in</span>
+builtins.attrNames ( <span style="color: #e5786d;">derivation</span> {
+  <span style="color: #cae682;">name</span> = <span style="color: #95e454;">"example"</span>;
+  <span style="color: #cae682;">builder</span> = <span style="color: #95e454;">"</span><span style="color: #e5786d;">${</span>pkgs.bash<span style="color: #e5786d;">}</span><span style="color: #95e454;">/bin/bash"</span>;
+  <span style="color: #cae682;">system</span> = builtins.currentSystem;
+  <span style="color: #cae682;">src</span> = path-to-blah.tar.gz;
+  <span style="color: #cae682;">args</span> = [ <span style="color: #e5786d;">./setup.sh</span> ];
+  <span style="color: #cae682;">buildInputs</span> = [
+  inp1
+  inp2
+  ];
+  ...
+} )
+
+<span style="color: #99968b;"># </span><span style="color: #99968b;">[
+</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"all"
+</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"builder"
+</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"drvAttrs"
+</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"drvPath"
+</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"name"
+</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"out"
+</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"outPath"
+</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"outputName"
+</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"system"
+</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"type"
+</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"args"
+</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">...
+</span><span style="color: #99968b;"># </span><span style="color: #99968b;">]</span>
+</code></pre>
+</div>
+
+<p>
+I threw in some optional parameters <code>args</code>, <code>src</code>, and <code>builtInputs</code>; you can throw
+basically anything else into the derivation function. You can even include
+parameters which are themselves <a href="https://nixos.org/guides/nix-pills/14-override-design-pattern.html">functions which can be called to return other
+derivations</a>. When you call <code>nix-build</code> on this derivation, it runs <code>builder</code> using
+the arguments provided in <code>args</code> with environment variables corresponding to the
+attributes themselves.
+</p>
+
+<p>
+So in this example, <code>nix-build</code> will essentially call <code>bash setup.sh</code> and the setup
+script will be able to access variables like <code>${src}</code> and <code>${buildInputs}</code>. A couple
+things to note:
+</p>
+<ul class="org-ul">
+<li>The import call to <code>&lt;nixpkgs&gt;</code> is syntax that tells nix to load up the <code>nixpkgs</code>
+expression. It&rsquo;ll look within the environment variable <code>$NIX_PATH</code>.</li>
+<li>Whenever you refer to variables like <code>${src}</code> in <code>setup.sh</code>, it wont actually be
+the local path. Nix will copy anything it needs over to the store and use that
+instead. So <code>${src}</code> will be something like <code>/nix/store/&lt;hash&gt;-setup.sh</code></li>
+</ul>
+</div>
+</div>

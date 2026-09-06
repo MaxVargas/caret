@@ -1,0 +1,113 @@
+<p>
+I&rsquo;ve been curious to play around with some creative coding practices, for
+example <a href="https://nannou.cc/">nannou</a> The installation wasn&rsquo;t trivial, mainly because of issues with
+<code>alsa</code> and still learning about the nix ecosystem.
+</p>
+
+<p>
+Being a beginner with nix (i ought to go back and carefully read the docs now
+that I know how to get some basics set up), the setup I have is almost assuredly
+suboptimal, but if it works then it works.
+</p>
+
+<hr />
+<p>
+<code>nannou</code>
+</p>
+
+<p>
+My first N attempts all found me staring at some issue with <code>alsa</code>&hellip; I eventually
+found my way to <a href="https://www.reddit.com/r/NixOS/comments/1almuft/why_cant_nix_as_setup_by_cargo2nix_see_alsa_in_my/">Ninjaman10p&rsquo;s comment</a> to get an initial flake up and running for
+<code>nannou</code>. Unfortunately I still wasn&rsquo;t able to run any examples due to complaints
+with <code>rustPlatform.buildRustPackage</code>. Eventually the following <code>flake.nix</code> inside of
+the cloned <code>nannou</code> repo ended up working, following some tips I found <a href="https://artemis.sh/2023/07/08/nix-rust-project-with-git-dependencies.html">here</a> about
+sha256 keys:
+</p>
+<div class="org-src-container">
+<pre class="src src-nix"><code>{
+  <span style="color: #cae682;">description</span> = <span style="color: #95e454;">"A very basic nannou"</span>;
+
+  <span style="color: #cae682;">inputs</span> = {
+    <span style="color: #cae682;">nixpkgs.url</span> = <span style="color: #95e454;">"github:nixos/nixpkgs?ref=nixos-unstable"</span>;
+    <span style="color: #cae682;">flake-utils.url</span> = <span style="color: #95e454;">"github:numtide/flake-utils"</span>;
+    <span style="color: #cae682;">oxalica.url</span> = <span style="color: #95e454;">"github:oxalica/rust-overlay"</span>;
+  };
+
+  <span style="color: #cae682;">outputs</span> = { self, nixpkgs, flake-utils, oxalica }:
+    <span style="color: #8ac6f2; font-weight: bold;">with</span> flake-utils.lib;
+    eachSystem allSystems (system:
+      <span style="color: #8ac6f2; font-weight: bold;">let</span>
+        <span style="color: #cae682;">pkgs</span> = nixpkgs.legacyPackages.${system}.extend oxalica.overlays.default;
+      <span style="color: #8ac6f2; font-weight: bold;">in</span> rec {
+        <span style="color: #cae682;">packages</span> = {
+          
+          <span style="color: #cae682;">nann</span> = <span style="color: #8ac6f2; font-weight: bold;">let</span>
+            <span style="color: #cae682;">rustPlatform</span> = pkgs.makeRustPlatform {
+              <span style="color: #cae682;">cargo</span> = pkgs.rust-bin.stable.latest.minimal;
+              <span style="color: #cae682;">rustc</span> = pkgs.rust-bin.stable.latest.minimal;
+            };
+          <span style="color: #8ac6f2; font-weight: bold;">in</span> rustPlatform.buildRustPackage <span style="color: #8ac6f2; font-weight: bold;">rec</span> {
+            <span style="color: #cae682;">name</span> = <span style="color: #95e454;">"nann-demo"</span>;
+            <span style="color: #cae682;">src</span> = self;
+            <span style="color: #cae682;">nativeBuildInputs</span> = <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [ pkg-config ];
+            <span style="color: #cae682;">buildInputs</span> = <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [ alsa-lib.dev udev.dev ];
+            <span style="color: #cae682;">cargoLock</span> = { 
+              <span style="color: #cae682;">lockFile</span> = <span style="color: #e5786d;">./Cargo.lock</span>; 
+              <span style="color: #cae682;">outputHashes</span> = {
+                <span style="color: #95e454;">"hotglsl-0.1.0"</span> = <span style="color: #95e454;">"sha256-G88Sa/tgGppaxIIPXDqIazMWRBXpaSFb2mulNfCclm8="</span>;
+                <span style="color: #95e454;">"isf-0.1.0"</span> = <span style="color: #95e454;">"sha256-utexaXpZZgpRunVAQyD2JAwvabhZGzeorC4pRFIumAc="</span>;
+                <span style="color: #95e454;">"skeptic-0.13.4"</span> = <span style="color: #95e454;">"sha256-EZFtWIPfsfbpGBD8NwsVtMzRM10kVdg+djoV00dhT4Y="</span>;
+              };
+            };
+          };
+        };
+        <span style="color: #cae682;">defaultPackage</span> = packages.nann;
+        <span style="color: #cae682;">formatter</span> = pkgs.nixfmt;
+      });
+}
+</code></pre>
+</div>
+<p>
+The flake got me through my <code>alsa</code> issues and other problems with miscellaneous
+packages, but now I needed the help of this <a href="https://github.com/nannou-org/nannou/issues/618">thread</a> to take care of wayland
+issues that came up!
+</p>
+<div class="org-src-container">
+<pre class="src src-nix"><code><span style="color: #8ac6f2; font-weight: bold;">let</span>
+  <span style="color: #cae682;">pkgs</span> = <span style="color: #e5786d;">import</span> <span style="color: #e5786d;">&lt;nixpkgs&gt;</span> { };
+<span style="color: #8ac6f2; font-weight: bold;">in</span> with pkgs;
+mkShell {
+  <span style="color: #cae682;">name</span> = <span style="color: #95e454;">"nannou-sample"</span>;
+  <span style="color: #cae682;">nativeBuildInputs</span> = [
+    pkgs.pkg-config
+    pkgs.clang
+    pkgs.lld
+  ];
+  <span style="color: #cae682;">buildInputs</span> = <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [
+    wayland
+    xorg.libX11
+    xorg.libXcursor
+    xorg.libXrandr
+    xorg.libXi
+    vulkan-loader
+    udev
+    cmake
+    gcc
+    cargo
+    rustc
+  ];
+  <span style="color: #cae682;">shellHook</span> = <span style="color: #95e454;">''
+              export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:</span><span style="color: #e5786d;">${</span>
+                pkgs.lib.makeLibraryPath [
+                  udev
+                  vulkan-loader
+                ]
+              <span style="color: #e5786d;">}</span><span style="color: #95e454;">"''</span>;
+  <span style="color: #cae682;">RUST_SRC_PATH</span> = rustPlatform.rustLibSrc;
+}
+</code></pre>
+</div>
+<p>
+With the first <code>flake.nix</code> file and second <code>shell.nix</code> file inside of <code>nannou</code>&rsquo;s root
+directory, things were running smoothly.
+</p>

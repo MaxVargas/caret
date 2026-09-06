@@ -1,0 +1,50 @@
+<p>
+The point here isn&rsquo;t to get into too much detail but you can loosely think about
+&rsquo;types&rsquo; as sets<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>. A parametrized type can be thought of as a construction of
+a new type, from a given input type. In practice, this can be thought of as a
+function which takes a given type of objects and produces some new output type.
+</p>
+
+<ul class="org-ul">
+<li><code>Triple a = T a a a</code>. This definition states that I can construct a triple of
+type <code>a</code> by specifying three objects, each of which have <code>a</code> as their type.
+That is, something has the form of <code>Triple a</code> if it looks like <code>T x y z</code> where
+<code>type(x) = type(y) = type(z) = a</code>. The prefix <code>T</code> is just a label that says
+&ldquo;hey, here&rsquo;s a triple!&rdquo; To make a parallel, sometimes people write <code>(x,y,z)</code>
+for triples of numbers. In this case, the parentheses and commas aren&rsquo;t really
+necessary &ndash; they&rsquo;re just to make legibility easier for us humans. <code>Triple
+  Int</code> is just those things that look like <code>T x y z</code> where <code>x y</code> and <code>z</code> are all
+integers.</li>
+<li><code>Maybe</code>. Another common example of a parametrized type. Writing its definition
+as <code>Maybe a = Nothing | Just a</code>, this says that something has the type <code>Maybe
+  a</code> if it is either the <code>Nothing</code> object or looks like <code>Just x</code>, where
+<code>type(x)=a</code>. If we think in set theoretic terms, this is essentially like
+adding a new distinguished element called <code>Nothing</code> to the set (or type) <code>a</code>.</li>
+<li><code>Tree a = Leaf a | Node (Tree a) a (Tree a)</code>. This definition gives us a way
+to build trees out of a given type <code>a</code>. That is, such a tree is either looks
+like <code>Leaf x</code> where <code>type(x)=a</code> or <code>Node l x r</code>, where <code>type(x)=a</code> and <code>l</code> and
+<code>r</code> are themselves trees (i.e., <code>type(l)=type(r)=Tree a</code>). Note that this
+definition is <b>recursive</b>, letting you build new trees from one you know already
+exist. The following are examples of trees, as one might typically imagine
+them.</li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-haskell"><code>        <span style="color: #cae682;">|</span>            <span style="color: #cae682;">|</span>        <span style="color: #92a65e; font-weight: bold;">Node</span> 5
+        <span style="color: #cae682;">|</span>   <span style="color: #92a65e; font-weight: bold;">Node</span> 1   <span style="color: #cae682;">|</span>        <span style="color: #cae682;">/</span>    <span style="color: #cae682;">\</span>
+<span style="color: #92a65e; font-weight: bold;">Node</span> x  <span style="color: #cae682;">|</span>    <span style="color: #cae682;">/</span>  <span style="color: #cae682;">\</span>    <span style="color: #cae682;">|</span>     <span style="color: #92a65e; font-weight: bold;">Node</span> 2  <span style="color: #92a65e; font-weight: bold;">Node</span> 6
+        <span style="color: #cae682;">|</span>   l    r   <span style="color: #cae682;">|</span>     <span style="color: #cae682;">/</span>    <span style="color: #cae682;">\</span>
+        <span style="color: #cae682;">|</span>            <span style="color: #cae682;">|</span> <span style="color: #92a65e; font-weight: bold;">Node</span> 4   <span style="color: #92a65e; font-weight: bold;">Node</span> 2
+</code></pre>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+(A computer scientist might yell at me for saying so, but realistically
+you&rsquo;ll probably never need to worry about the distinction.
+</p></div></div>
+
+
+</div>
+</div>

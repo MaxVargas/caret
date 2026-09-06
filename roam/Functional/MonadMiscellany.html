@@ -1,0 +1,7 @@
+<p>
+Even though <code>(fmap return) (return x) = (return (return x))</code> for <code>x :: a</code> (this
+can be shown through the naturality property on <code>return</code> c.f. <a href="Applicatives.html#ID-Applicatives">Applicatives</a>), it
+isn&rsquo;t necessarily true that <code>fmap return = return</code>. Look at the monoid <code>[]</code>. It
+can be shown that <code>return [x1, ..., xn] = [[x1, ..., xn]]</code>, while <code>(fmap return)
+[x1, ..., xn] = [[x1], ..., [xn]]</code>.
+</p>

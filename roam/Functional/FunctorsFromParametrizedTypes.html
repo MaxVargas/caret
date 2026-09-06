@@ -1,0 +1,41 @@
+<p>
+With enough pondering, it should be reasonable to convince yourself that there&rsquo;s
+often an obvious attempt to turn a parametrized type into a functor. For
+example, the list functor <code>[]</code> that sends a type <code>a</code> to the set of lists <code>[a]</code>
+can be extended to a functor where <code>fmap f :: [a] -&gt; [b]</code> just applies <code>f</code> to
+each element of a given list <code>[a1, ..., an]</code>. There&rsquo;s a certain naturality to
+figure out these evaluations.
+</p>
+
+<p>
+It turns out that if this &ldquo;obvious&rdquo; attempt actually turns out to give a
+functor, it&rsquo;s unique! Really, what I ought to say, is that any two functors
+constructed from the same parametrized type must actually be equal.
+</p>
+
+<p>
+To prove this, let <code>T</code> be any parametrized type. To build a functor, we have to
+specify maps <code>T a -&gt; T b</code> for any types <code>a</code> and <code>b</code>. Let <code>fmap1</code> and <code>fmap2</code> be
+two such functorial maps. We need to show that for any <code>x :: T a</code> and <code>f :: a -&gt;
+b</code>, that <code>fmap1 f x = fmap2 f x</code>. This is certainly true when <code>f = id</code> since the
+two sides will evaluate identically to <code>x</code>.
+</p>
+
+<p>
+Note: The uniqueness discussed here is not a general property. If you have two
+categories \(\mathcal{C}\) and \(\mathcal{D}\), and a map between their object sets,
+then it&rsquo;s possible to extend this map to two different functors. For example,
+consider a category with two objects, \(A\) and \(B\), and only two nontrivial
+morphisms \(A\to B\). Then the identity map on the set of objects (\(A\mapsto A\),
+\(B\mapsto B\)) can be extended to four different functors given by the set of
+maps \(\textnormal{Hom}(A, B) \to \textnormal{Hom}(A,B)\).
+</p>
+
+<p>
+Now, the computer scientist won&rsquo;t really care about the above category (or else
+the claim about uniqueness of parametrized types is false), so it&rsquo;s really
+something special about parametrized types and how they&rsquo;re handled in Haskell&hellip;
+in particular, Hom-sets are objects in this category so we can make use of
+\(\mathcal{F}(\textnormal{Hom}(A,B))\) (or <code>f (a-&gt;b)</code>, whichever notation you
+prefer).
+</p>

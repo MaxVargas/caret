@@ -1,0 +1,19 @@
+<p>
+Ok I kinda got rmpc (terminal-based music player client) working with youtube
+downloads. <a href="https://ubuntuhandbook.org/index.php/2025/07/install-mpd-ubuntu/">This link</a> was quite useful in debugging my mistakes, with the full
+nix config <a href="https://github.com/MaxVargas/nixos-config">here</a>. You&rsquo;ll be able to find how I handle rmpc, mpd, and any other
+dependencies, see the <a href="https://rmpc.mierak.dev/guides/youtube/">rmpc yt docs</a> for more.
+</p>
+
+<p>
+It&rsquo;s not 100% smooth, but it works. To add a song from youtube, run the command
+</p>
+<div class="org-src-container">
+<pre class="src src-bash"><code>rpmc addyt &lt;link&gt;
+</code></pre>
+</div>
+<p>
+With my setup, it&rsquo;ll successfully download but then MPD, the music player
+daemon, will bug out and say the file doesn&rsquo;t exist. Within rmpc, you can
+<code>rescan</code> and the song should be visible and playable now.
+</p>

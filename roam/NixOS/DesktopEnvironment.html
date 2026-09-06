@@ -1,0 +1,237 @@
+<p>
+I figured to finally do some basic configuration and &ldquo;ricing&rdquo; of my
+system&hellip; for the large part it was always just good enough.
+</p>
+
+<p>
+There&rsquo;s a whole bunch of programs that let you do this and it&rsquo;s easy to get lost
+in which one might be the best. For now, I&rsquo;m sticking with
+</p>
+<ul class="org-ul">
+<li>mangowc as a tiling window manger
+<ul class="org-ul">
+<li>This option is lightweight with plenty of functionality and configuration is
+easy</li>
+<li>river seems fun to try, but I had a hard time starting out and couldn&rsquo;t find
+great resources</li>
+<li>niri and Hyprland are popular</li>
+<li>if an xmonad equivalent ever comes to wayland, I&rsquo;ll try that&hellip; for obvious
+reasons</li>
+</ul></li>
+<li>noctalia-shell for the bar and widgets
+<ul class="org-ul">
+<li>I&rsquo;m not 100% satisfied with this but there&rsquo;s a lot of things I do like</li>
+<li>It&rsquo;s based on quickshell, which seems like a good option for a more custom
+rollout, so in time I can take my favorite pieces of noctalia with me once
+the next configuration round comes.</li>
+</ul></li>
+</ul>
+<div id="outline-container-orgae53556" class="outline-2">
+<h2 id="orgae53556"><span class="section-number-2">1.</span> Window Managment</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Such programs help you organize and control the layout of various windows on
+your desktop environment. This is a short note about setting up Hyprland.
+</p>
+
+<p>
+As in other pages, I&rsquo;m starting with Vimjoyer&rsquo;s <a href="https://www.youtube.com/watch?v=61wGzIv12Ds">video</a>.
+</p>
+</div>
+<div id="outline-container-org05a029f" class="outline-3">
+<h3 id="org05a029f"><span class="section-number-3">1.1.</span> What is a workspace?</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+From the <a href="https://wayland.app/protocols/ext-workspace-v1">wayland pages</a>: workspaces, also called virtual desktops, are groups of
+surfaces. You can have multiple workspaces and the compositor (wayland) will
+display the surfaces corresponding from active workspaces. It will suppress
+surfaces from inactive ones.
+</p>
+
+<p>
+As far as setting this thing up&hellip;. it was admittedly kind of a pain to get the
+initial launch working but I&rsquo;ve made it and can write down the lessons I&rsquo;ve
+learned.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org66417ff" class="outline-2">
+<h2 id="org66417ff"><span class="section-number-2">2.</span> <code>flake.nix</code></h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Inside of <code>flake.nix</code>, you&rsquo;ll want to introduce hyprland to your inputs. Since I&rsquo;m
+using home-manager to handle configuration, you need that too.
+</p>
+<div class="org-src-container">
+<pre class="src src-nix"><code><span style="color: #cae682;">inputs</span> = {
+  <span style="color: #cae682;">nixpkgs.url</span> = <span style="color: #95e454;">"github:NixOS/nixpkgs/nixos-24.11"</span>;
+  <span style="color: #cae682;">home-manager</span> = {
+    <span style="color: #cae682;">url</span> = <span style="color: #95e454;">"github:nix-community/home-manager/release-24.11"</span>;
+    <span style="color: #cae682;">inputs.nixpkgs.follows</span> = <span style="color: #95e454;">"nixpkgs"</span>;
+  };
+  <span style="color: #cae682;">hyprland</span> = {
+    <span style="color: #cae682;">url</span> = <span style="color: #95e454;">"github:hyprwm/Hyprland"</span>;
+  };
+}
+</code></pre>
+</div>
+<p>
+Further down, you&rsquo;ll want to include these inputs into <code>specialArgs</code> for your
+host as instructed in the <a href="https://wiki.hyprland.org/Nix/Hyprland-on-NixOS/">documentation</a>:
+</p>
+<div class="org-src-container">
+<pre class="src src-nix"><code><span style="color: #cae682;">outputs</span> = {nixpkgs, ...} @ inputs: {
+<span style="color: #cae682;">nixosConfigurations.HOSTNAME</span> = nixpkgs.lib.nixosSystem {
+  <span style="color: #cae682;">specialArgs</span> = { <span style="color: #8ac6f2; font-weight: bold;">inherit</span> inputs; }; <span style="color: #99968b;"># this is the important part
+</span>  <span style="color: #cae682;">modules</span> = [
+    <span style="color: #e5786d;">./configuration.nix</span>
+  ];
+};
+</code></pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org875b342" class="outline-2">
+<h2 id="org875b342"><span class="section-number-2">3.</span> <code>configuration.nix</code></h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Include the <code>hyprland</code> cachix into you config file so that you can access
+pre-compiled binaries to save time when rebuilding your system.
+</p>
+<div class="org-src-container">
+<pre class="src src-nix"><code><span style="color: #cae682;">nix.settings.substituters</span> = [
+  ...
+  <span style="color: #95e454;">"https://hyprland.cachix.org"</span>
+];
+<span style="color: #cae682;">nix.settings.trusted-public-keys</span> = [
+  ...
+  <span style="color: #95e454;">"hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="</span>
+]
+</code></pre>
+</div>
+
+<p>
+If you&rsquo;re like me, you might be coming from some other desktop environment like
+GNOME. This was the hardest part to find information IMO. This is what I found
+works for me. That said, it&rsquo;s probably not the &ldquo;ideal&rdquo; or &ldquo;correct&rdquo; way to do it
+and there&rsquo;s probably a cleaner way.. but it&rsquo;s a learning process.
+</p>
+
+<p>
+Enable hyprland and a couple other settings:
+</p>
+<div class="org-src-container">
+<pre class="src src-nix"><code><span style="color: #cae682;">programs.hyprland</span> = {
+  <span style="color: #cae682;">enable</span> = <span style="color: #e5786d;">true</span>;
+  <span style="color: #cae682;">xwayland.enable</span> = <span style="color: #e5786d;">true</span>;
+};
+
+<span style="color: #cae682;">programs.dconf.enable</span> = <span style="color: #e5786d;">true</span>;
+<span style="color: #cae682;">security.polkit.enable</span> = <span style="color: #e5786d;">true</span>;
+
+<span style="color: #cae682;">xdg.portal.enable</span> = <span style="color: #e5786d;">true</span>;
+<span style="color: #cae682;">xdg.portal.extraPortals</span> = [ pkgs.xdg-desktop-portal-hyprland ];
+</code></pre>
+</div>
+
+<p>
+Here&rsquo;s a couple environment variables. If you&rsquo;re using an Nvidia card, you&rsquo;ll
+want those last four too.
+</p>
+<div class="org-src-container">
+<pre class="src src-nix"><code><span style="color: #cae682;">environment.sessionVariables</span> = {
+  <span style="color: #99968b;"># If your cursor becomes invisible
+</span>  <span style="color: #cae682;">WLR_NO_HARDWARE_CURSORS</span> = <span style="color: #95e454;">"1"</span>;
+  <span style="color: #99968b;"># Hint electron apps to use wayland
+</span>  <span style="color: #cae682;">NIXOS_OZONE_WL</span> = <span style="color: #95e454;">"1"</span>;
+  <span style="color: #99968b;"># Nvidia things...
+</span>  <span style="color: #cae682;">LIBVA_DRIVER_NAME</span> = <span style="color: #95e454;">"nvidia"</span>;
+  <span style="color: #cae682;">XDG_SESSION_TYPE</span> = <span style="color: #95e454;">"wayland"</span>;
+  <span style="color: #cae682;">GBM_BACKEND</span> = <span style="color: #95e454;">"nvidia-drm"</span>;
+  __<span style="color: #cae682;">GLX_VENDOR_LIBRARAY_NAME</span> = <span style="color: #95e454;">"nvidia"</span>;
+}
+</code></pre>
+</div>
+
+<p>
+The last change I had to make here was to <b>turn off GNOME or other desktop env</b>.
+Initially, I didn&rsquo;t do this, so when I tried kicking off <code>Hyprland</code>, it would
+error out because it couldn&rsquo;t get access to the appropriate resources (something
+to do with <code>systemd</code> and seat management&hellip;). This involved settings
+<code>services.xserver.enable = false;</code> and turning off any other GNOME settings.
+</p>
+</div>
+</div>
+<div id="outline-container-org010ac53" class="outline-2">
+<h2 id="org010ac53"><span class="section-number-2">4.</span> Home manager.</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+At this point, (again if you&rsquo;re like me) then you&rsquo;ll have no desktop and will be
+running directly through a <code>tty</code> session. With luck, the <code>Hyprland</code> command should
+work and boot up. Now it&rsquo;s a matter of setting things up though home-manager.
+</p>
+
+<p>
+When you ran the <code>Hyprland</code> command, a configuration file should have been made
+somewhere like <code>~./config/hypr/hyperland.conf</code>. To handle things through
+home-manager, I decided to move the configuration into my <code>/etc/nixos/</code> directory:
+</p>
+<div class="org-src-container">
+<pre class="src src-nil"><code>/etc/nixos/home-manager/
+├── core.nix
+├── programs
+│   ├── apps.nix
+│   ├── browsers.nix
+│   ├── common.nix
+│   ├── config
+│   │   ├── hyprland.conf
+│   │   └── start.sh
+│   ├── default.nix
+│   └── desktop.nix
+└── shell
+    ├── common.nix
+    ├── default.nix
+    └── terminals.nix
+</code></pre>
+</div>
+<p>
+You&rsquo;ll notice another config file <code>start.sh</code>. This is run when hyprland starts up.
+Now that your config is in place, you&rsquo;re ready to set tell home-manager to
+handle your hyprland preferences. Inside of <code>programs/desktop.nix</code> (loaded through
+<code>programs/defaults.nix</code>), set the following:
+</p>
+<div class="org-src-container">
+<pre class="src src-nix"><code>{config, pkgs, ... }:
+{
+  <span style="color: #cae682;">home.packages</span> = <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [
+    wofi
+    dolphin
+    hyprpaper
+    <span style="color: #99968b;"># any other packages you'll want here
+</span>  ];
+  
+  <span style="color: #cae682;">wayland.windowManager.hyprland</span> = {
+    <span style="color: #99968b;"># Whether to enable Hyprland wayland compositor
+</span>    <span style="color: #cae682;">enable</span> = <span style="color: #e5786d;">true</span>;
+    <span style="color: #99968b;"># Whether to enable XWayland
+</span>    <span style="color: #cae682;">xwayland.enable</span> = <span style="color: #e5786d;">true</span>;
+
+    <span style="color: #cae682;">extraConfig</span> = <span style="color: #95e454;">''
+      </span><span style="color: #e5786d;">${</span>builtins.readFile <span style="color: #e5786d;">./config/hyprland.conf</span><span style="color: #e5786d;">}</span><span style="color: #95e454;">
+    ''</span>;
+  };
+}
+</code></pre>
+</div>
+<p>
+You might notice that the <code>enable = true;</code> and <code>xwayland.enable = true;</code> settings
+seem repeated from the system configuration file. For some reason I found that I
+needed both&hellip;.
+</p>
+
+<p>
+Anyways, at this point, you should be set up with the basic wayland config.
+</p>
+</div>
+</div>

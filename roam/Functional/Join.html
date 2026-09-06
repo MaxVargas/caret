@@ -1,0 +1,155 @@
+<p>
+This note puts together the <a href="MonadsMathematics.html#ID-MonadsMathematics">mathematician&rsquo;s monad</a> and <a href="MonadsProgramming.html#ID-MonadsProgramming">programmer&rsquo;s monad</a>.
+</p>
+<hr />
+<p>
+Programming to Mathematics
+</p>
+
+<p>
+First, we&rsquo;ll outline how to construct a monad in the mathematical sense from a
+monad in the programming sense. Our starting point is that both definitions are
+built on an essentially agreeing concept of functor. If we let <code>m</code> be our
+starting monad, then we&rsquo;ve essentially got an endofunctor on the category of
+(small) types. So the task is to build the structure maps <code>Id -&gt; m</code> and <code>m . m
+-&gt; m</code>, where <code>Id</code> denotes the identity functor and <code>.</code> denotes functorial
+composition, which is the monoidal product in the category of endofunctors.
+</p>
+
+<p>
+For the easy part, note that a functorial mapping (i.e., natural transformation)
+<code>Id -&gt; m</code> amounts to a map <code>a -&gt; m a</code> for each type <code>a</code>. This is just <code>return</code>!
+</p>
+
+<p>
+For the harder part, we want to build morphisms <code>m (m a) -&gt; m a</code> for each type
+<code>a</code>. Turns out there&rsquo;s a generic map we can define as follows:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><code><span style="color: #cae682;">join</span> <span style="color: #cae682;">::</span> <span style="color: #92a65e; font-weight: bold;">Monad</span> m <span style="color: #cae682;">=&gt;</span> m (m a) <span style="color: #cae682;">-&gt;</span> m a
+<span style="color: #cae682;">join</span> mmx <span style="color: #cae682;">=</span>
+  <span style="color: #8ac6f2; font-weight: bold;">do</span> mx <span style="color: #cae682;">&lt;-</span> mmx
+     x  <span style="color: #cae682;">&lt;-</span> mx
+     return x
+</code></pre>
+</div>
+<p>
+From here, one has to prove that the <code>return</code> and <code>join</code> maps satisfy the unit and
+multiplication axioms for a monad<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>. Notice that, by the condition <code>mx &gt;&gt;=
+return = mx</code>, <code>join</code> can be re-expressed simply as <code>join mmx = mmx &gt;&gt;= id</code>, or
+<code>join = ? &gt;&gt;= id</code>.
+</p>
+
+<p>
+For the unit axiom, we need the following diagram to commute on both triangles.
+</p>
+
+<figure class="tikz-cd">  <img src="tikz/c2eea4afa4ce6737562f8f2c4d2ef6c15b5082186c8ac99dfe3f0543981e84c6.svg" alt="TikZ-CD diagram">  </figure>
+
+<p>
+I ought to clarify what I mean by <code>rtn.id</code> and its sibling. What we really want
+is the &ldquo;horizontal composition&rdquo; of natural transformations between the natural
+transformations <code>id :: m =&gt; m</code> and <code>rtn :: Id =&gt; m</code>. Concretely, the natural
+transformation is defined on each type <code>a</code> via <code>rtn.id :: m a -&gt; m (m a), mx -&gt;
+return mx</code>. Now, running this through <code>join</code> gives, by definition:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><code><span style="color: #cae682;">join</span> (return mx) <span style="color: #cae682;">=</span> (return mx) <span style="color: #cae682;">&gt;&gt;=</span> id <span style="color: #cae682;">=</span> mx
+</code></pre>
+</div>
+<p>
+The sibling case turns out to be more difficult (in my opinion). This is mainly
+due to the fact that the horizontal composition <code>id.rtn</code> can be defined by
+<code>id.rtn = fmap return</code>. Reasoning about <code>fmap return</code> and <code>join</code> requires an
+understanding between the monad structures with <code>fmap</code>, and discussion on this
+seems spread thin. For this reason, the commutativity of the associativity
+diagram is also left undone:
+</p>
+
+<figure class="tikz-cd">  <img src="tikz/be753d1e5bd0dcad4809c2240b600c868a708c425cb642162726e96d6ef2382d.svg" alt="TikZ-CD diagram">  </figure>
+
+<p>
+Here, the maps <code>join.id</code> and <code>id.join</code> are defined similarly to that found for
+<a href="MonadsMathematics.html#ID-MonadsMathematics">mathematical monads</a>:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><code>id<span style="color: #cae682;">.</span>join <span style="color: #cae682;">=</span> fmap join, join<span style="color: #cae682;">.</span>id <span style="color: #cae682;">=</span> join
+</code></pre>
+</div>
+
+<p>
+Examples: It&rsquo;s worth thinking through a few examples on what <code>join</code> explicitly
+does.
+</p>
+<ul class="org-ul">
+<li><code>Maybe</code>. This is a map <code>Maybe (Maybe a) -&gt; Maybe a</code>. By definition,
+for any <code>mx :: Maybe a</code>:</li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-haskell"><code><span style="color: #cae682;">join</span> (<span style="color: #92a65e; font-weight: bold;">Just</span> (mx)) <span style="color: #cae682;">=</span> (<span style="color: #92a65e; font-weight: bold;">Just</span> mx) <span style="color: #cae682;">&gt;&gt;=</span> id
+                 <span style="color: #cae682;">=</span> (return mx) <span style="color: #cae682;">&gt;&gt;=</span> id
+                 <span style="color: #cae682;">=</span> mx
+<span style="color: #cae682;">join</span> <span style="color: #92a65e; font-weight: bold;">Nothing</span> <span style="color: #cae682;">=</span> <span style="color: #92a65e; font-weight: bold;">Nothing</span> <span style="color: #cae682;">&gt;&gt;=</span> id
+             <span style="color: #cae682;">=</span> <span style="color: #92a65e; font-weight: bold;">Nothing</span>
+</code></pre>
+</div>
+<p>
+From this definition, it&rsquo;s easy to see that <code>join</code> has the correct conditions.
+For example, <code>fmap join :: m m m a -&gt; m m a</code> is just the map given by <code>Just mmx
+-&gt; Just (join mmx)</code> and <code>Nothing -&gt; Nothing</code>.
+</p>
+<ul class="org-ul">
+<li>Lists <code>[]</code>. If <code>xss</code> is a list of lists, then by definition</li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-haskell"><code><span style="color: #cae682;">join</span> xss <span style="color: #cae682;">=</span> xss <span style="color: #cae682;">&gt;&gt;=</span> id <span style="color: #cae682;">=</span> [x <span style="color: #cae682;">|</span> xs <span style="color: #cae682;">&lt;-</span> xss, x <span style="color: #cae682;">&lt;-</span> id xs]
+</code></pre>
+</div>
+<p>
+So <code>join</code> is just concatenating lists! With this concrete definition then it&rsquo;s
+again easy to see it satisfies the correct diagrams. For example, there&rsquo;s two
+obvious ways to turn a lists of lists of lists into a single, non-nested, list.
+Thinking about something like <code>[[xs1,...,xsn],...,[zs1,...,zsm]]</code>, you either
+start with <code>[xs1,...,xsn] \++ ... \++ [zs1,...,zsm]</code> and then <code>xs1++...++xsn \++
+... \++ zs1++...++zsm</code>. Or you could concatenate the &ldquo;interior&rdquo; lists first to
+get <code>[xs1++...+xsn, ..., zs1++zsm]</code>, but concatenating at this stage gives the
+same result as the first method.
+</p>
+
+<hr />
+<p>
+Mathematics to Programming.
+</p>
+
+<p>
+Now suppose we have a mathematical monoid \(M\) and we want to define a monoid in
+the programming sense. As above, it&rsquo;ll turn out that the unit map \(u: 1\to M\)
+coincides with the <code>return</code> function. The interesting part comes in how to
+define the bind operator.
+</p>
+
+<p>
+First of all, we learned in the last section that the <code>join</code> map should
+correspond to the multiplication \(m : M\circ M \to M\). But we want to recover the bind
+operator <code>(&gt;&gt;=) :: m a -&gt; (a -&gt; m b) -&gt; m b</code>. For this, let <code>f :: a -&gt; m a</code> and
+<code>mx :: m a</code> be two arbitrary inputs to this operator. We need to define <code>mx &gt;&gt;=
+f</code>. Using the functorial map <code>fmap</code> on morphisms, we have that <code>fmap f :: m a -&gt;
+m (m b)</code> has the appropriate type to take <code>mx</code> as an input. Further, <code>(fmap f)
+mx</code> has type <code>m (m b)</code>, so that <code>join ((fmap f) mx)</code> has type <code>m b</code>. So we can
+define
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><code>mx <span style="color: #cae682;">&gt;&gt;=</span> f <span style="color: #cae682;">=</span> (join <span style="color: #cae682;">.</span> fmap f) mx
+</code></pre>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+As well as satisfying certain naturality conditions!
+</p></div></div>
+
+
+</div>
+</div>

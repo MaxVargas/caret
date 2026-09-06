@@ -1,0 +1,180 @@
+<p>
+The programmer&rsquo;s monad is presented differently than the mathematicians. For
+the presentation here, I&rsquo;m going to follow notions as in Haskell. Fortunately,
+the Haskellian definition has some commonality to the mathematical one in that
+it builds on the definition of functors.
+</p>
+
+<hr />
+<p>
+<a href="Parametrizedtypes.html#ID-ParametrizedTypes">Parametrized Types</a>
+</p>
+
+<p>
+The programmer&rsquo;s functor needs less overhead than the mathematician&rsquo;s, but
+benefits from understanding the notion of &rsquo;parametrized types&rsquo;. Follow the link
+in the header to see some examples.
+</p>
+
+<hr />
+<p>
+<a href="Functors(Programming).html#ID-FunctorsProgramming">Functors (Programming)</a>
+</p>
+
+<p>
+Parametric types are enough to define the programmer&rsquo;s functor.
+</p>
+
+<hr />
+<p>
+<a href="Applicatives.html#ID-Applicatives">Applicatives</a>
+</p>
+
+<p>
+The third step in getting to the programmer&rsquo;s monad.
+</p>
+
+<hr />
+<p>
+Monads
+</p>
+
+<p>
+And so once again we arrive at the monad.. may as well get into it. A monad is
+the data of an applicative <code>m</code> together with the following data
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><code><span style="color: #cae682;">return</span> <span style="color: #cae682;">::</span> a <span style="color: #cae682;">-&gt;</span> m a (<span style="color: #cae682;">&gt;&gt;=</span>) <span style="color: #cae682;">::</span> m a <span style="color: #cae682;">-&gt;</span> (a <span style="color: #cae682;">-&gt;</span> m b) <span style="color: #cae682;">-&gt;</span> m b
+</code></pre>
+</div>
+<p>
+This data has to satisfy the conditions below:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><code><span style="color: #cae682;">return</span> x <span style="color: #cae682;">&gt;&gt;=</span> f <span style="color: #cae682;">=</span> f x mx <span style="color: #cae682;">&gt;&gt;=</span> return <span style="color: #cae682;">=</span> mx
+(mx <span style="color: #cae682;">&gt;&gt;=</span> f) <span style="color: #cae682;">&gt;&gt;=</span> g <span style="color: #cae682;">=</span> mx <span style="color: #cae682;">&gt;&gt;=</span> (<span style="color: #cae682;">\</span>x <span style="color: #cae682;">-&gt;</span> (f x <span style="color: #cae682;">&gt;&gt;=</span> g))
+</code></pre>
+</div>
+<p>
+<i>Note: Typically, the <code>return</code> function is equal to the <code>pure</code> function of the
+underlying applicative</i>
+</p>
+
+<p>
+The operator <code>(&gt;&gt;=)</code> is typically called <b>bind</b> and it has an interesting
+property. It&rsquo;s definition gives a way to, from a map <code>f :: a -&gt; mb</code>, construct a
+map <code>ma -&gt; mb</code>. In particular, the first rule imposes a commuting diagram:
+</p>
+
+<figure class="tikz-cd">  <img src="tikz/adef8bd425e3400212af54a52362345fec3c27b72805233e2f0e1872afbde515.svg" alt="TikZ-CD diagram">  </figure>
+
+<p>
+This gives a certain sense that <code>m a</code> reflects certain properties of <code>a</code>. That
+is, if we take <code>M</code> to be the category of types of the form <code>m z</code> for any type
+<code>z</code>, this property says that any map <code>a -&gt; m b</code> from <code>a</code> into <code>M</code> can be
+factored through <code>m a</code>. We can see this as a type of pattern matching too. If
+we&rsquo;re given (1) some object <code>mx :: m a</code> of the form <code>mx = pure x</code> for some <code>x ::
+a</code> and (2) a function <code>f :: a -&gt; m b</code>, the bind operator lets us effectively
+apply <code>f</code> to <code>x</code>. That is, it lets us &ldquo;unwrap&rdquo; the monadic application of <code>m</code>.
+This also turns out to be related to a mathematical/categorical notion of
+reflection, but let&rsquo;s continue for now.
+</p>
+
+<p>
+Heading into the second condition, notice that if we replace <code>f</code> with <code>return</code>
+in the diagram above, we get:
+</p>
+
+<figure class="tikz-cd">  <img src="tikz/2a39afd2c7b668ccc3b09dd736a6c124d7122ec278ee01faf0d5d82b3eaf784c.svg" alt="TikZ-CD diagram">  </figure>
+
+<p>
+This is just saying that the function <code>? &gt;&gt;= return :: m a -&gt; m a</code> is the
+identity <b>when restricting to the image of</b> <code>return :: a -&gt; m a</code>. The second
+condition requires that this function actually be the identity on the entirety
+of <code>m a</code>.
+</p>
+
+<p>
+The third axiom can also be expressed in terms of a commuting diagram. Below,
+the solid diagram represents the relevant condition, and the dotted lines give
+(to me) relevant context.
+</p>
+
+<figure class="tikz-cd">  <img src="tikz/975ef1ac2c18d56b858b43112a86cc8e102389ffe322f21d273840168ea57ae2.svg" alt="TikZ-CD diagram">  </figure>
+
+<p>
+Parsing out this diagram essentially says that the bind operator respects
+composition of functions. Morally, I&rsquo;d like <code>h</code> to be the composition of <code>f</code> and
+<code>g</code>, but we don&rsquo;t quite have that since we&rsquo;re not actually dealing with the
+domains of these functions but rather their <code>return</code> types.
+</p>
+
+<p>
+Taking some earlier remarks, the <code>&gt;&gt;=</code> notation can be cumbersome at times and
+Haskell introduces a notation to help out here. Firstly, given a monad <code>m</code>, I&rsquo;m
+going to refer to <code>m a</code> as &rsquo;expressions on <code>a</code>&rsquo;. This isn&rsquo;t a totally suitable
+name, but also not totally unsuitable. At the very least it captures the pattern
+matching flavor that, given an expression <code>mx :: m a</code>, then a function of the
+form <code>&gt;&gt;=</code> can handle <code>mx</code> as if we have access to some <code>x :: a</code> itself. Suppose
+we have expressions <code>m1, m2, ..., mn</code> on types <code>a1, a2, ..., an</code>, so that each
+<code>mi</code> can either be expressed as <code>mi = return xi</code> or else it is in the compliment
+of the return function. Then you can end up with an expression of the form
+below, were we may want to evaluate at some appropriate function at the very
+end:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><code>m1 <span style="color: #cae682;">&gt;&gt;=</span> <span style="color: #cae682;">\</span>x1 <span style="color: #cae682;">-&gt;</span>
+m2 <span style="color: #cae682;">&gt;&gt;=</span> <span style="color: #cae682;">\</span>x2 <span style="color: #cae682;">-&gt;</span>
+<span style="color: #cae682;">...</span>
+mn <span style="color: #cae682;">&gt;&gt;=</span> <span style="color: #cae682;">\</span>xn <span style="color: #cae682;">-&gt;</span>
+<span style="color: #cae682;">f</span> x1 x2 <span style="color: #cae682;">...</span> xn
+</code></pre>
+</div>
+<p>
+By virtue of the monad, if each <code>mi</code> is indeed of the form <code>xi :: ai</code>, then we
+can apply our function <code>f</code> as normal. <b>Otherwise</b>, the bind operator tells us
+how to <i>extend</i> <code>f</code> to a function on the <code>mi</code>\s. An alternate notation that let&rsquo;s
+us emphasize the &ldquo;extraction of <code>xi</code> from <code>mi</code>&rdquo; is the following:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><code><span style="color: #8ac6f2; font-weight: bold;">do</span>
+  x1 <span style="color: #cae682;">&lt;-</span> m1
+  x2 <span style="color: #cae682;">&lt;-</span> m2
+  <span style="color: #cae682;">...</span>
+  xn <span style="color: #cae682;">&lt;-</span> mn
+  f x1 x2 <span style="color: #cae682;">...</span> xn
+</code></pre>
+</div>
+<p>
+This notation makes it a bit clearer that at each stage, we will try to extract
+the appropriate <code>xi</code>. But if that&rsquo;s impossible, then we&rsquo;ll resort to the more
+abstract extension to the <code>mi</code> values.
+</p>
+
+<p>
+Okay, that&rsquo;s enough overarching general nonsense for now. Here are some very
+basic examples:
+</p>
+<ul class="org-ul">
+<li><code>Maybe</code> This&rsquo;ll probably be most everyone&rsquo;s first example of a monad in computer
+science. In this case, notice that any &ldquo;reasonable&rdquo; map <code>Maybe a -&gt; Maybe b</code>
+will probably want us to send <code>Nothing</code> to <code>Nothing</code>. To get the rest of the map,
+we&rsquo;d just need some <code>f :: a -&gt; Maybe b</code>. Then <code>&gt;&gt;=</code> can be defined by two cases:</li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-haskell"><code><span style="color: #92a65e; font-weight: bold;">Just</span> x  <span style="color: #cae682;">&gt;&gt;=</span> f <span style="color: #cae682;">=</span> f x
+<span style="color: #92a65e; font-weight: bold;">Nothing</span> <span style="color: #cae682;">&gt;&gt;=</span> f <span style="color: #cae682;">=</span> <span style="color: #92a65e; font-weight: bold;">Nothing</span>
+</code></pre>
+</div>
+<ul class="org-ul">
+<li>Lists <code>[]</code>. Also another easy example of a monad. To think this through, the
+bind operator <code>&gt;&gt;=</code> lets us turn a map <code>a-&gt;[b]</code> into a map <code>[a]-&gt;[b]</code>. So, if
+<code>f::a-&gt;[b]</code> lets me construct a list for each element <code>x</code> of <code>a</code>, then for some <code>[x1,
+  ..., xn] :: [a]</code>, I can apply <code>f</code> to each element to get a list of lists <code>[f x1,
+  ..., f xn]</code>. Then I can just naively concatenate these lists to get a single
+list <code>f x1 \++ ... \++ f xn</code>. Yep, that&rsquo;s bind:</li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-haskell"><code>xs <span style="color: #cae682;">&gt;&gt;=</span> f <span style="color: #cae682;">=</span> [y <span style="color: #cae682;">|</span> x <span style="color: #cae682;">&lt;-</span> xs, y <span style="color: #cae682;">&lt;-</span> f x]
+</code></pre>
+</div>

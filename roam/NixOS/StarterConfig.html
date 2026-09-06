@@ -1,0 +1,113 @@
+<p>
+An outline of the configuration structure I&rsquo;m using while learning NixOS. A lot
+of this structure is influenced by the content in the <a href="https://nixos-and-flakes.thiscute.world/">NixOS &amp; Flakes Book by
+Ryan Yin</a> and is based off of the author&rsquo;s <a href="https://github.com/ryan4yin/nix-config/tree/i3-kickstarter">i3-kickstarter</a>.
+</p>
+
+<p>
+File structure:
+</p>
+<div class="org-src-container">
+<pre class="src src-nil"><code>/etc/nixos/
+├── flake.lock
+├── flake.nix
+├── home-manager
+│   ├── core.nix
+│   ├── programs
+│   │   ├── apps.nix
+│   │   ├── browsers.nix
+│   │   ├── common.nix
+│   │   ├── config
+│   │   │   ├── hyprland.conf
+│   │   │   └── start.sh
+│   │   ├── default.nix
+│   │   └── desktop.nix
+│   └── shell
+│       ├── common.nix
+│       ├── default.nix
+│       └── terminals.nix
+├── nixos
+│   ├── configuration.nix
+│   └── hardware-configuration.nix
+└── users
+    └── max
+        ├── home.nix
+        └── nixos.nix
+</code></pre>
+</div>
+
+<p>
+<code>flake.nix</code> is the entry point for all the rest of the files. It uses
+<code>nixos/configuration.nix</code> as a module, along with <code>users/max/nixos.nix</code> for any
+user-relevant info like an SSH key. It also sets up <code>home-manager</code> so that you can
+handle user profiles more easily through something like <code>users/max/home.nix</code>.
+</p>
+<ul class="org-ul">
+<li><code>nixos/configuration.nix</code> is the system-level config. I use this mostly to
+define system-level options as well as services. It has some basic user
+definitions in there along with an import for
+<code>nixos/hardware-configuration.nix</code>, which is typically left untouched.</li>
+<li><code>users/max/home.nix</code> called through <code>home-manager</code> to configure the user
+profile(s). Mainly used to point at and load in some of the modules over in
+the <code>home-manager</code> directory.</li>
+</ul>
+<p>
+I shouldn&rsquo;t try to give a full explanation here &ndash; that&rsquo;s what those
+explanations over in the Flakes book is for. Instead, I&rsquo;ll just make note of a
+few things.
+</p>
+
+<hr />
+
+<ul class="org-ul">
+<li>To run nvidia things, you need to set <code>nixpkgs.allowUnfree = true;</code> in
+<code>nixos/configuration.nix</code>. Then you&rsquo;ll also want the following block</li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-nix"><code><span style="color: #cae682;">services.xserver.videoDrivers</span> = [ <span style="color: #95e454;">"nvidia"</span> ];
+<span style="color: #cae682;">hardware.nvidia.open</span> = <span style="color: #e5786d;">true</span>;
+<span style="color: #cae682;">hardware.graphics.enable</span> = <span style="color: #e5786d;">true</span>;
+</code></pre>
+</div>
+<ul class="org-ul">
+<li>I saw a comment somewhere that steam can be buggy if deploying with
+home-manager. So easiest to set it directly in the config, though this makes
+it a system-wide application&hellip; not a huge issue for me since I&rsquo;m running a
+single-user system:</li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-nix"><code><span style="color: #cae682;">programs.steam</span> = {
+  <span style="color: #cae682;">enable</span> = <span style="color: #e5786d;">true</span>;
+  <span style="color: #cae682;">gamescopeSession.enable</span> = <span style="color: #e5786d;">true</span>;
+  <span style="color: #cae682;">package</span> = <span style="color: #cae682;">pkgs.steam.override</span> = {
+    <span style="color: #cae682;">extraPkgs</span> = pkgs:
+      <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [
+        liberation_ttf
+      ];
+  };
+};
+<span style="color: #cae682;">hardware.steam-hardware.enable</span> = <span style="color: #e5786d;">true</span>;
+<span style="color: #cae682;">programs.gamemode.enable</span> = <span style="color: #e5786d;">true</span>;
+</code></pre>
+</div>
+
+<hr />
+<p>
+Cachix is a nice service to download package binaries. This lets you save time
+so that you don&rsquo;t have to compile large packages on your own system. Feel free
+to explore the <a href="https://app.cachix.org/">site</a>. As an example, if you want to run <a href="https://hyprland.org/">Hyprland</a> you can include
+the following in your configuration.
+</p>
+<div class="org-src-container">
+<pre class="src src-nix"><code><span style="color: #cae682;">nix.settings.substituters</span> = [
+  ...
+  <span style="color: #95e454;">"https://hyprland.cachix.org"</span>
+];
+
+<span style="color: #cae682;">nix.settings.trusted-public-keys</span> = [
+  ...
+  <span style="color: #95e454;">"hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="</span>
+];
+
+</code></pre>
+</div>

@@ -1,0 +1,123 @@
+<p>
+From the man pages: <code>nix-shell</code> starts an interactive shell based on a nix
+expression. This command will build the dependencies of the specified derivation
+(see <a href="Derivations.html#ID-Derivations">Derivations</a>).
+</p>
+
+<p>
+This is a very basic shell for ML / data science in python, setting up pytorch
+but very little else and you&rsquo;ll almost certainly want to add in extras. You can
+activate it with <code>nix-shell</code>. TODO: learn how to upgrade this the &ldquo;flake way&rdquo;?
+</p>
+<div class="org-src-container">
+<pre class="src src-nix"><code>{
+  pkgs ? <span style="color: #e5786d;">import</span> <span style="color: #e5786d;">&lt;nixpkgs&gt;</span> { <span style="color: #cae682;">config</span> = {<span style="color: #cae682;">allowUnfree</span>=true;}; }
+}:
+
+pkgs.mkShell {
+  <span style="color: #cae682;">name</span> = <span style="color: #95e454;">"pytorch-ml-env"</span>;
+
+  <span style="color: #cae682;">buildInputs</span> = <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [
+    git gitRepo gnupg autoconf curl
+    procps gnumake util-linux m4 gperf unzip
+    cudatoolkit linuxPackages.nvidia_x11
+    libGLU libGL
+    xorg.libXi xorg.libXmu freeglut
+    xorg.libXext xorg.X11 xorg.libXv xorg.libXrandr zlib
+    ncurses5 stdenv.cc binutils
+  ];
+
+  <span style="color: #cae682;">packages</span> = <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [
+    (python3.withPackages (ps: <span style="color: #8ac6f2; font-weight: bold;">with</span> ps; [
+      notebook
+      pandas
+      numpy
+      matplotlib
+      plotly
+      torch-bin
+      torchvision-bin
+      torchaudio-bin
+  ]))
+  ];
+
+  <span style="color: #cae682;">shellHook</span> = <span style="color: #95e454;">''
+    export CUDA_PATH=</span><span style="color: #e5786d;">${</span>pkgs.cudatoolkit<span style="color: #e5786d;">}</span><span style="color: #95e454;">
+    # export LD_LIBRARY_PATH=</span><span style="color: #e5786d;">${</span>pkgs.linuxPackages.nvidia_x11<span style="color: #e5786d;">}</span><span style="color: #95e454;">/lib:</span><span style="color: #e5786d;">${</span>pkgs.ncurses5<span style="color: #e5786d;">}</span><span style="color: #95e454;">/lib
+    export EXTRA_LDFLAGS="-L/lib -L</span><span style="color: #e5786d;">${</span>pkgs.linuxPackages.nvidia_x11<span style="color: #e5786d;">}</span><span style="color: #95e454;">/lib"
+    export EXTRA_CCFLAGS="-I/usr/include"
+  ''</span>;
+}
+</code></pre>
+</div>
+
+<p>
+Obviously you can include other, non-python packages inside of <code>packages</code>.
+</p>
+
+<p>
+Note: Sometimes I get a strange error that yields unavailable CUDA devices.
+<a href="https://discuss.pytorch.org/t/userwarning-cuda-initialization-cuda-unknown-error-this-may-be-due-to-an-incorrectly-set-up-environment-e-g-changing-env-variable-cuda-visible-devices-after-program-start-setting-the-available-devices-to-be-zero/129335/2">This thread</a> helps my system. In particular, once you launch <code>nix-shell</code> and if you&rsquo;re
+getting a &ldquo;CUDA unknown error&rdquo;, try:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash"><code><span style="color: #92a65e; font-weight: bold;">sudo</span> rmmod nvidia_uvm
+<span style="color: #92a65e; font-weight: bold;">sudo</span> modprobe nvidia_uvm
+</code></pre>
+</div>
+<p>
+Then cuda will hopefully be available again.
+</p>
+
+
+<hr />
+<p>
+FSH
+</p>
+
+<p>
+I&rsquo;ve been occasionally finding myself needing to start a FSH shell because some
+code bases like to use dynamically linked executables. The nix pages state <a href="https://nix.dev/guides/faq#how-to-run-non-nix-executables">this
+is a last resort</a>, but using a FSH shell seems to (me) be the quickest/easiest
+way around this. In the meantime I&rsquo;ll have to go back and pick up the
+fundamentals on how to &ldquo;properly&rdquo; resolve my issues. Anyways, here&rsquo;s a nix flake
+that you can use to load up an FSH shell. In this example, I am wanting to use
+the <code>uv</code> python package manager.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-nix"><code>{
+  <span style="color: #cae682;">description</span> = <span style="color: #95e454;">"Python 3.11 development environment"</span>;
+  <span style="color: #cae682;">outputs</span> = { self, nixpkgs }:
+  <span style="color: #8ac6f2; font-weight: bold;">let</span>
+    <span style="color: #cae682;">system</span> = <span style="color: #95e454;">"x86_64-linux"</span>;
+    <span style="color: #cae682;">pkgs</span> = <span style="color: #e5786d;">import</span> nixpkgs {
+      <span style="color: #8ac6f2; font-weight: bold;">inherit</span> system;
+      <span style="color: #cae682;">config.allowUnfree</span> = <span style="color: #e5786d;">true</span>;
+    };
+  <span style="color: #8ac6f2; font-weight: bold;">in</span> {
+    devShells.${system}.<span style="color: #cae682;">default</span> = (pkgs.buildFHSEnv {
+      <span style="color: #cae682;">name</span> = <span style="color: #95e454;">"nvidia"</span>;
+      <span style="color: #cae682;">targetPkgs</span> = pkgs: (<span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [
+        linuxPackages.nvidia_x11
+        libGLU libGL
+        xorg.libXi xorg.libXmu freeglut
+        xorg.libXext xorg.libX11 xorg.libXv xorg.libXrandr zlib 
+        ncurses5 stdenv.cc binutils
+        ffmpeg
+
+        <span style="color: #99968b;"># uv does the real legwork
+</span>        uv
+      ]);
+
+      <span style="color: #cae682;">profile</span> = <span style="color: #95e454;">''
+          export LD_LIBRARY_PATH="</span><span style="color: #e5786d;">${</span>pkgs.linuxPackages.nvidia_x11<span style="color: #e5786d;">}</span><span style="color: #95e454;">/lib"
+          export CUDA_PATH="</span><span style="color: #e5786d;">${</span>pkgs.cudatoolkit<span style="color: #e5786d;">}</span><span style="color: #95e454;">"
+          export EXTRA_LDFLAGS="-L/lib -L</span><span style="color: #e5786d;">${</span>pkgs.linuxPackages.nvidia_x11<span style="color: #e5786d;">}</span><span style="color: #95e454;">/lib"
+          export EXTRA_CCFLAGS="-I/usr/include"
+      ''</span>;
+    }).env;
+  };
+}
+</code></pre>
+</div>
