@@ -20,7 +20,7 @@
       let
         pkgs = import nixpkgs { inherit system; };
 
-        # The Hakyll site generator, built from ./ssg against the Haskell
+        # The Hakyll site generator, built from ./siteGenerator against the Haskell
         # package set that ships with the pinned nixpkgs.
         #
         # NOTE: we deliberately avoid `haskell.lib.justStaticExecutables` here.
@@ -28,7 +28,7 @@
         # trips that helper's disallowed-references check and fails the build.
         # The generated site is identical either way; this just keeps the build
         # reliable across Linux and macOS.
-        hakyll-site = pkgs.haskellPackages.callPackage ./ssg { };
+        hakyll-site = pkgs.haskellPackages.callPackage ./siteGenerator { };
 
         website = pkgs.stdenv.mkDerivation {
           name = "website";
