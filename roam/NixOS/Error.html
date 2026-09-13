@@ -1,3 +1,9 @@
+<header class="post-header">
+  <h1>Error</h1>
+  <div class="post-meta">
+    <time>03/2025</time>
+  </div>
+</header>
 <p>
 A few times when reconfiguring and rebuilding my NixOS system, I&rsquo;ve run into a
 partial log that contains the following.
@@ -20,7 +26,7 @@ You can use the following command to see the full logs:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-bash"><code><span style="color: #99968b;"># </span><span style="color: #99968b;">replace 'max' with your username
-</span>journalctl -e --unit home-manager-max.service
+<pre class="src src-bash"><code># replace 'max' with your username
+journalctl -e --unit home-manager-max.service
 </code></pre>
 </div>

@@ -1,3 +1,9 @@
+<header class="post-header">
+  <h1>Shell</h1>
+  <div class="post-meta">
+    <time>03/2025</time>
+  </div>
+</header>
 <p>
 From the man pages: <code>nix-shell</code> starts an interactive shell based on a nix
 expression. This command will build the dependencies of the specified derivation
@@ -11,13 +17,13 @@ activate it with <code>nix-shell</code>. TODO: learn how to upgrade this the &ld
 </p>
 <div class="org-src-container">
 <pre class="src src-nix"><code>{
-  pkgs ? <span style="color: #e5786d;">import</span> <span style="color: #e5786d;">&lt;nixpkgs&gt;</span> { <span style="color: #cae682;">config</span> = {<span style="color: #cae682;">allowUnfree</span>=true;}; }
+  pkgs ? import &lt;nixpkgs&gt; { config = {allowUnfree=true;}; }
 }:
 
 pkgs.mkShell {
-  <span style="color: #cae682;">name</span> = <span style="color: #95e454;">"pytorch-ml-env"</span>;
+  name = "pytorch-ml-env";
 
-  <span style="color: #cae682;">buildInputs</span> = <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [
+  buildInputs = with pkgs; [
     git gitRepo gnupg autoconf curl
     procps gnumake util-linux m4 gperf unzip
     cudatoolkit linuxPackages.nvidia_x11
@@ -27,8 +33,8 @@ pkgs.mkShell {
     ncurses5 stdenv.cc binutils
   ];
 
-  <span style="color: #cae682;">packages</span> = <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [
-    (python3.withPackages (ps: <span style="color: #8ac6f2; font-weight: bold;">with</span> ps; [
+  packages = with pkgs; [
+    (python3.withPackages (ps: with ps; [
       notebook
       pandas
       numpy
@@ -40,12 +46,12 @@ pkgs.mkShell {
   ]))
   ];
 
-  <span style="color: #cae682;">shellHook</span> = <span style="color: #95e454;">''
-    export CUDA_PATH=</span><span style="color: #e5786d;">${</span>pkgs.cudatoolkit<span style="color: #e5786d;">}</span><span style="color: #95e454;">
-    # export LD_LIBRARY_PATH=</span><span style="color: #e5786d;">${</span>pkgs.linuxPackages.nvidia_x11<span style="color: #e5786d;">}</span><span style="color: #95e454;">/lib:</span><span style="color: #e5786d;">${</span>pkgs.ncurses5<span style="color: #e5786d;">}</span><span style="color: #95e454;">/lib
-    export EXTRA_LDFLAGS="-L/lib -L</span><span style="color: #e5786d;">${</span>pkgs.linuxPackages.nvidia_x11<span style="color: #e5786d;">}</span><span style="color: #95e454;">/lib"
+  shellHook = ''
+    export CUDA_PATH=${pkgs.cudatoolkit}
+    # export LD_LIBRARY_PATH=${pkgs.linuxPackages.nvidia_x11}/lib:${pkgs.ncurses5}/lib
+    export EXTRA_LDFLAGS="-L/lib -L${pkgs.linuxPackages.nvidia_x11}/lib"
     export EXTRA_CCFLAGS="-I/usr/include"
-  ''</span>;
+  '';
 }
 </code></pre>
 </div>
@@ -61,8 +67,8 @@ getting a &ldquo;CUDA unknown error&rdquo;, try:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-bash"><code><span style="color: #92a65e; font-weight: bold;">sudo</span> rmmod nvidia_uvm
-<span style="color: #92a65e; font-weight: bold;">sudo</span> modprobe nvidia_uvm
+<pre class="src src-bash"><code>sudo rmmod nvidia_uvm
+sudo modprobe nvidia_uvm
 </code></pre>
 </div>
 <p>
@@ -87,18 +93,18 @@ the <code>uv</code> python package manager.
 
 <div class="org-src-container">
 <pre class="src src-nix"><code>{
-  <span style="color: #cae682;">description</span> = <span style="color: #95e454;">"Python 3.11 development environment"</span>;
-  <span style="color: #cae682;">outputs</span> = { self, nixpkgs }:
-  <span style="color: #8ac6f2; font-weight: bold;">let</span>
-    <span style="color: #cae682;">system</span> = <span style="color: #95e454;">"x86_64-linux"</span>;
-    <span style="color: #cae682;">pkgs</span> = <span style="color: #e5786d;">import</span> nixpkgs {
-      <span style="color: #8ac6f2; font-weight: bold;">inherit</span> system;
-      <span style="color: #cae682;">config.allowUnfree</span> = <span style="color: #e5786d;">true</span>;
+  description = "Python 3.11 development environment";
+  outputs = { self, nixpkgs }:
+  let
+    system = "x86_64-linux";
+    pkgs = import nixpkgs {
+      inherit system;
+      config.allowUnfree = true;
     };
-  <span style="color: #8ac6f2; font-weight: bold;">in</span> {
-    devShells.${system}.<span style="color: #cae682;">default</span> = (pkgs.buildFHSEnv {
-      <span style="color: #cae682;">name</span> = <span style="color: #95e454;">"nvidia"</span>;
-      <span style="color: #cae682;">targetPkgs</span> = pkgs: (<span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [
+  in {
+    devShells.${system}.default = (pkgs.buildFHSEnv {
+      name = "nvidia";
+      targetPkgs = pkgs: (with pkgs; [
         linuxPackages.nvidia_x11
         libGLU libGL
         xorg.libXi xorg.libXmu freeglut
@@ -106,16 +112,16 @@ the <code>uv</code> python package manager.
         ncurses5 stdenv.cc binutils
         ffmpeg
 
-        <span style="color: #99968b;"># uv does the real legwork
-</span>        uv
+        # uv does the real legwork
+        uv
       ]);
 
-      <span style="color: #cae682;">profile</span> = <span style="color: #95e454;">''
-          export LD_LIBRARY_PATH="</span><span style="color: #e5786d;">${</span>pkgs.linuxPackages.nvidia_x11<span style="color: #e5786d;">}</span><span style="color: #95e454;">/lib"
-          export CUDA_PATH="</span><span style="color: #e5786d;">${</span>pkgs.cudatoolkit<span style="color: #e5786d;">}</span><span style="color: #95e454;">"
-          export EXTRA_LDFLAGS="-L/lib -L</span><span style="color: #e5786d;">${</span>pkgs.linuxPackages.nvidia_x11<span style="color: #e5786d;">}</span><span style="color: #95e454;">/lib"
+      profile = ''
+          export LD_LIBRARY_PATH="${pkgs.linuxPackages.nvidia_x11}/lib"
+          export CUDA_PATH="${pkgs.cudatoolkit}"
+          export EXTRA_LDFLAGS="-L/lib -L${pkgs.linuxPackages.nvidia_x11}/lib"
           export EXTRA_CCFLAGS="-I/usr/include"
-      ''</span>;
+      '';
     }).env;
   };
 }

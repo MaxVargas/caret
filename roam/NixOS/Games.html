@@ -1,21 +1,27 @@
+<header class="post-header">
+  <h1>Games</h1>
+  <div class="post-meta">
+    <time>03/2025</time>
+  </div>
+</header>
 <p>
 This part I got from Vimjoyer&rsquo;s video on the topic. Setting up steam starts with
 the following in the configuration file:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-nix"><code><span style="color: #cae682;">programs.steam</span> = {
-  <span style="color: #cae682;">enable</span> = <span style="color: #e5786d;">true</span>;
-  <span style="color: #cae682;">gamescopeSession.enable</span> = <span style="color: #e5786d;">true</span>;
-  <span style="color: #cae682;">package</span> = <span style="color: #cae682;">pkgs.steam.override</span> = {
-    <span style="color: #cae682;">extraPkgs</span> = pkgs:
-      <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [
+<pre class="src src-nix"><code>programs.steam = {
+  enable = true;
+  gamescopeSession.enable = true;
+  package = pkgs.steam.override = {
+    extraPkgs = pkgs:
+      with pkgs; [
         liberation_ttf
       ];
   };
 };
-<span style="color: #cae682;">hardware.steam-hardware.enable</span> = <span style="color: #e5786d;">true</span>;
-<span style="color: #cae682;">programs.gamemode.enable</span> = <span style="color: #e5786d;">true</span>;
+hardware.steam-hardware.enable = true;
+programs.gamemode.enable = true;
 </code></pre>
 </div>
 
@@ -23,9 +29,9 @@ the following in the configuration file:
 You also want to install <code>protonup</code> and when using home-manager, set
 </p>
 <div class="org-src-container">
-<pre class="src src-nix"><code><span style="color: #cae682;">home.sessionvariables</span> = {
-  <span style="color: #cae682;">STEAM_EXTRA_COMPAT_TOOLS_PATHS</span> = 
-    <span style="color: #95e454;">"\${HOME}/.steam/root/compatibilitytools.d"</span>
+<pre class="src src-nix"><code>home.sessionvariables = {
+  STEAM_EXTRA_COMPAT_TOOLS_PATHS = 
+    "\${HOME}/.steam/root/compatibilitytools.d"
 }
 </code></pre>
 </div>

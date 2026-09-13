@@ -1,3 +1,9 @@
+<header class="post-header">
+  <h1>Parametrized types</h1>
+  <div class="post-meta">
+    <time>02/2025</time>
+  </div>
+</header>
 <p>
 The point here isn&rsquo;t to get into too much detail but you can loosely think about
 &rsquo;types&rsquo; as sets<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>. A parametrized type can be thought of as a construction of
@@ -29,11 +35,11 @@ exist. The following are examples of trees, as one might typically imagine
 them.</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-haskell"><code>        <span style="color: #cae682;">|</span>            <span style="color: #cae682;">|</span>        <span style="color: #92a65e; font-weight: bold;">Node</span> 5
-        <span style="color: #cae682;">|</span>   <span style="color: #92a65e; font-weight: bold;">Node</span> 1   <span style="color: #cae682;">|</span>        <span style="color: #cae682;">/</span>    <span style="color: #cae682;">\</span>
-<span style="color: #92a65e; font-weight: bold;">Node</span> x  <span style="color: #cae682;">|</span>    <span style="color: #cae682;">/</span>  <span style="color: #cae682;">\</span>    <span style="color: #cae682;">|</span>     <span style="color: #92a65e; font-weight: bold;">Node</span> 2  <span style="color: #92a65e; font-weight: bold;">Node</span> 6
-        <span style="color: #cae682;">|</span>   l    r   <span style="color: #cae682;">|</span>     <span style="color: #cae682;">/</span>    <span style="color: #cae682;">\</span>
-        <span style="color: #cae682;">|</span>            <span style="color: #cae682;">|</span> <span style="color: #92a65e; font-weight: bold;">Node</span> 4   <span style="color: #92a65e; font-weight: bold;">Node</span> 2
+<pre class="src src-haskell"><code>        |            |        Node 5
+        |   Node 1   |        /    \
+Node x  |    /  \    |     Node 2  Node 6
+        |   l    r   |     /    \
+        |            | Node 4   Node 2
 </code></pre>
 </div>
 <div id="footnotes">

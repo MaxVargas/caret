@@ -1,3 +1,9 @@
+<header class="post-header">
+  <h1>Mounting Drives</h1>
+  <div class="post-meta">
+    <time>03/2025</time>
+  </div>
+</header>
 <p>
 Simple enough, I mainly just want a quick reference so that I can transfer
 pictures from an SD card to internal storage. This is just following the
@@ -9,8 +15,8 @@ instructions over <a href="https://askubuntu.com/questions/37767/how-to-access-a
 Second, create a mount point:
 </p>
 <div class="org-src-container">
-<pre class="src src-bash"><code><span style="color: #92a65e; font-weight: bold;">sudo</span> <span style="color: #92a65e; font-weight: bold;">mkdir</span> /media/usb
-<span style="color: #92a65e; font-weight: bold;">sudo</span> mount /dev/sdxX /media/usb
+<pre class="src src-bash"><code>sudo mkdir /media/usb
+sudo mount /dev/sdxX /media/usb
 </code></pre>
 </div>
 <p>
@@ -18,7 +24,7 @@ Then you can copy files over from <code>/media/usb</code> into any more permanen
 Once copying is done, you can unmount with
 </p>
 <div class="org-src-container">
-<pre class="src src-bash"><code><span style="color: #92a65e; font-weight: bold;">sudo</span> umount /media/usb
+<pre class="src src-bash"><code>sudo umount /media/usb
 </code></pre>
 </div>
 

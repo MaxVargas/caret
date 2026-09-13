@@ -1,3 +1,9 @@
+<header class="post-header">
+  <h1>Monads (Programming)</h1>
+  <div class="post-meta">
+    <time>02/2025</time>
+  </div>
+</header>
 <p>
 The programmer&rsquo;s monad is presented differently than the mathematicians. For
 the presentation here, I&rsquo;m going to follow notions as in Haskell. Fortunately,
@@ -44,15 +50,15 @@ And so once again we arrive at the monad.. may as well get into it. A monad is
 the data of an applicative <code>m</code> together with the following data
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><code><span style="color: #cae682;">return</span> <span style="color: #cae682;">::</span> a <span style="color: #cae682;">-&gt;</span> m a (<span style="color: #cae682;">&gt;&gt;=</span>) <span style="color: #cae682;">::</span> m a <span style="color: #cae682;">-&gt;</span> (a <span style="color: #cae682;">-&gt;</span> m b) <span style="color: #cae682;">-&gt;</span> m b
+<pre class="src src-haskell"><code>return :: a -&gt; m a (&gt;&gt;=) :: m a -&gt; (a -&gt; m b) -&gt; m b
 </code></pre>
 </div>
 <p>
 This data has to satisfy the conditions below:
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><code><span style="color: #cae682;">return</span> x <span style="color: #cae682;">&gt;&gt;=</span> f <span style="color: #cae682;">=</span> f x mx <span style="color: #cae682;">&gt;&gt;=</span> return <span style="color: #cae682;">=</span> mx
-(mx <span style="color: #cae682;">&gt;&gt;=</span> f) <span style="color: #cae682;">&gt;&gt;=</span> g <span style="color: #cae682;">=</span> mx <span style="color: #cae682;">&gt;&gt;=</span> (<span style="color: #cae682;">\</span>x <span style="color: #cae682;">-&gt;</span> (f x <span style="color: #cae682;">&gt;&gt;=</span> g))
+<pre class="src src-haskell"><code>return x &gt;&gt;= f = f x mx &gt;&gt;= return = mx
+(mx &gt;&gt;= f) &gt;&gt;= g = mx &gt;&gt;= (\x -&gt; (f x &gt;&gt;= g))
 </code></pre>
 </div>
 <p>
@@ -123,26 +129,26 @@ below, were we may want to evaluate at some appropriate function at the very
 end:
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><code>m1 <span style="color: #cae682;">&gt;&gt;=</span> <span style="color: #cae682;">\</span>x1 <span style="color: #cae682;">-&gt;</span>
-m2 <span style="color: #cae682;">&gt;&gt;=</span> <span style="color: #cae682;">\</span>x2 <span style="color: #cae682;">-&gt;</span>
-<span style="color: #cae682;">...</span>
-mn <span style="color: #cae682;">&gt;&gt;=</span> <span style="color: #cae682;">\</span>xn <span style="color: #cae682;">-&gt;</span>
-<span style="color: #cae682;">f</span> x1 x2 <span style="color: #cae682;">...</span> xn
+<pre class="src src-haskell"><code>m1 &gt;&gt;= \x1 -&gt;
+m2 &gt;&gt;= \x2 -&gt;
+...
+mn &gt;&gt;= \xn -&gt;
+f x1 x2 ... xn
 </code></pre>
 </div>
 <p>
 By virtue of the monad, if each <code>mi</code> is indeed of the form <code>xi :: ai</code>, then we
 can apply our function <code>f</code> as normal. <b>Otherwise</b>, the bind operator tells us
-how to <i>extend</i> <code>f</code> to a function on the <code>mi</code>\s. An alternate notation that let&rsquo;s
+how to <i>extend</i> <code>f</code> to a function on the <code>mi</code>-s. An alternate notation that let&rsquo;s
 us emphasize the &ldquo;extraction of <code>xi</code> from <code>mi</code>&rdquo; is the following:
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><code><span style="color: #8ac6f2; font-weight: bold;">do</span>
-  x1 <span style="color: #cae682;">&lt;-</span> m1
-  x2 <span style="color: #cae682;">&lt;-</span> m2
-  <span style="color: #cae682;">...</span>
-  xn <span style="color: #cae682;">&lt;-</span> mn
-  f x1 x2 <span style="color: #cae682;">...</span> xn
+<pre class="src src-haskell"><code>do
+  x1 &lt;- m1
+  x2 &lt;- m2
+  ...
+  xn &lt;- mn
+  f x1 x2 ... xn
 </code></pre>
 </div>
 <p>
@@ -162,8 +168,8 @@ will probably want us to send <code>Nothing</code> to <code>Nothing</code>. To g
 we&rsquo;d just need some <code>f :: a -&gt; Maybe b</code>. Then <code>&gt;&gt;=</code> can be defined by two cases:</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-haskell"><code><span style="color: #92a65e; font-weight: bold;">Just</span> x  <span style="color: #cae682;">&gt;&gt;=</span> f <span style="color: #cae682;">=</span> f x
-<span style="color: #92a65e; font-weight: bold;">Nothing</span> <span style="color: #cae682;">&gt;&gt;=</span> f <span style="color: #cae682;">=</span> <span style="color: #92a65e; font-weight: bold;">Nothing</span>
+<pre class="src src-haskell"><code>Just x &gt;&gt;= f = f x
+Nothing &gt;&gt;= f = Nothing
 </code></pre>
 </div>
 <ul class="org-ul">
@@ -175,6 +181,6 @@ bind operator <code>&gt;&gt;=</code> lets us turn a map <code>a-&gt;[b]</code> i
 list <code>f x1 \++ ... \++ f xn</code>. Yep, that&rsquo;s bind:</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-haskell"><code>xs <span style="color: #cae682;">&gt;&gt;=</span> f <span style="color: #cae682;">=</span> [y <span style="color: #cae682;">|</span> x <span style="color: #cae682;">&lt;-</span> xs, y <span style="color: #cae682;">&lt;-</span> f x]
+<pre class="src src-haskell"><code>xs &gt;&gt;= f = [y | x &lt;- xs, y &lt;- f x]
 </code></pre>
 </div>

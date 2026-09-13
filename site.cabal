@@ -1,0 +1,21 @@
+cabal-version: 3.0
+name: caret
+version: 0.1.0.0
+
+executable caret
+    main-is: Main.hs
+    hs-source-dirs: site
+
+    build-depends:
+        base >= 4.17 && < 5
+      , hakyll >= 4.17 && < 5
+      , skylighting
+      , text
+      , pandoc
+      , process
+      , filepath
+
+    ghc-options:
+        -threaded
+
+    default-language: GHC2024

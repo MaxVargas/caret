@@ -1,3 +1,9 @@
+<header class="post-header">
+  <h1>Desktop Environment</h1>
+  <div class="post-meta">
+    <time>01/2026</time>
+  </div>
+</header>
 <p>
 I figured to finally do some basic configuration and &ldquo;ricing&rdquo; of my
 system&hellip; for the large part it was always just good enough.
@@ -64,14 +70,14 @@ Inside of <code>flake.nix</code>, you&rsquo;ll want to introduce hyprland to you
 using home-manager to handle configuration, you need that too.
 </p>
 <div class="org-src-container">
-<pre class="src src-nix"><code><span style="color: #cae682;">inputs</span> = {
-  <span style="color: #cae682;">nixpkgs.url</span> = <span style="color: #95e454;">"github:NixOS/nixpkgs/nixos-24.11"</span>;
-  <span style="color: #cae682;">home-manager</span> = {
-    <span style="color: #cae682;">url</span> = <span style="color: #95e454;">"github:nix-community/home-manager/release-24.11"</span>;
-    <span style="color: #cae682;">inputs.nixpkgs.follows</span> = <span style="color: #95e454;">"nixpkgs"</span>;
+<pre class="src src-nix"><code>inputs = {
+  nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+  home-manager = {
+    url = "github:nix-community/home-manager/release-24.11";
+    inputs.nixpkgs.follows = "nixpkgs";
   };
-  <span style="color: #cae682;">hyprland</span> = {
-    <span style="color: #cae682;">url</span> = <span style="color: #95e454;">"github:hyprwm/Hyprland"</span>;
+  hyprland = {
+    url = "github:hyprwm/Hyprland";
   };
 }
 </code></pre>
@@ -81,11 +87,11 @@ Further down, you&rsquo;ll want to include these inputs into <code>specialArgs</
 host as instructed in the <a href="https://wiki.hyprland.org/Nix/Hyprland-on-NixOS/">documentation</a>:
 </p>
 <div class="org-src-container">
-<pre class="src src-nix"><code><span style="color: #cae682;">outputs</span> = {nixpkgs, ...} @ inputs: {
-<span style="color: #cae682;">nixosConfigurations.HOSTNAME</span> = nixpkgs.lib.nixosSystem {
-  <span style="color: #cae682;">specialArgs</span> = { <span style="color: #8ac6f2; font-weight: bold;">inherit</span> inputs; }; <span style="color: #99968b;"># this is the important part
-</span>  <span style="color: #cae682;">modules</span> = [
-    <span style="color: #e5786d;">./configuration.nix</span>
+<pre class="src src-nix"><code>outputs = {nixpkgs, ...} @ inputs: {
+nixosConfigurations.HOSTNAME = nixpkgs.lib.nixosSystem {
+  specialArgs = { inherit inputs; }; # this is the important part
+  modules = [
+    ./configuration.nix
   ];
 };
 </code></pre>
@@ -100,13 +106,13 @@ Include the <code>hyprland</code> cachix into you config file so that you can ac
 pre-compiled binaries to save time when rebuilding your system.
 </p>
 <div class="org-src-container">
-<pre class="src src-nix"><code><span style="color: #cae682;">nix.settings.substituters</span> = [
+<pre class="src src-nix"><code>nix.settings.substituters = [
   ...
-  <span style="color: #95e454;">"https://hyprland.cachix.org"</span>
+  "https://hyprland.cachix.org"
 ];
-<span style="color: #cae682;">nix.settings.trusted-public-keys</span> = [
+nix.settings.trusted-public-keys = [
   ...
-  <span style="color: #95e454;">"hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="</span>
+  "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
 ]
 </code></pre>
 </div>
@@ -122,16 +128,16 @@ and there&rsquo;s probably a cleaner way.. but it&rsquo;s a learning process.
 Enable hyprland and a couple other settings:
 </p>
 <div class="org-src-container">
-<pre class="src src-nix"><code><span style="color: #cae682;">programs.hyprland</span> = {
-  <span style="color: #cae682;">enable</span> = <span style="color: #e5786d;">true</span>;
-  <span style="color: #cae682;">xwayland.enable</span> = <span style="color: #e5786d;">true</span>;
+<pre class="src src-nix"><code>programs.hyprland = {
+  enable = true;
+  xwayland.enable = true;
 };
 
-<span style="color: #cae682;">programs.dconf.enable</span> = <span style="color: #e5786d;">true</span>;
-<span style="color: #cae682;">security.polkit.enable</span> = <span style="color: #e5786d;">true</span>;
+programs.dconf.enable = true;
+security.polkit.enable = true;
 
-<span style="color: #cae682;">xdg.portal.enable</span> = <span style="color: #e5786d;">true</span>;
-<span style="color: #cae682;">xdg.portal.extraPortals</span> = [ pkgs.xdg-desktop-portal-hyprland ];
+xdg.portal.enable = true;
+xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
 </code></pre>
 </div>
 
@@ -140,16 +146,16 @@ Here&rsquo;s a couple environment variables. If you&rsquo;re using an Nvidia car
 want those last four too.
 </p>
 <div class="org-src-container">
-<pre class="src src-nix"><code><span style="color: #cae682;">environment.sessionVariables</span> = {
-  <span style="color: #99968b;"># If your cursor becomes invisible
-</span>  <span style="color: #cae682;">WLR_NO_HARDWARE_CURSORS</span> = <span style="color: #95e454;">"1"</span>;
-  <span style="color: #99968b;"># Hint electron apps to use wayland
-</span>  <span style="color: #cae682;">NIXOS_OZONE_WL</span> = <span style="color: #95e454;">"1"</span>;
-  <span style="color: #99968b;"># Nvidia things...
-</span>  <span style="color: #cae682;">LIBVA_DRIVER_NAME</span> = <span style="color: #95e454;">"nvidia"</span>;
-  <span style="color: #cae682;">XDG_SESSION_TYPE</span> = <span style="color: #95e454;">"wayland"</span>;
-  <span style="color: #cae682;">GBM_BACKEND</span> = <span style="color: #95e454;">"nvidia-drm"</span>;
-  __<span style="color: #cae682;">GLX_VENDOR_LIBRARAY_NAME</span> = <span style="color: #95e454;">"nvidia"</span>;
+<pre class="src src-nix"><code>environment.sessionVariables = {
+  # If your cursor becomes invisible
+  WLR_NO_HARDWARE_CURSORS = "1";
+  # Hint electron apps to use wayland
+  NIXOS_OZONE_WL = "1";
+  # Nvidia things...
+  LIBVA_DRIVER_NAME = "nvidia";
+  XDG_SESSION_TYPE = "wayland";
+  GBM_BACKEND = "nvidia-drm";
+  __GLX_VENDOR_LIBRARAY_NAME = "nvidia";
 }
 </code></pre>
 </div>
@@ -204,22 +210,22 @@ handle your hyprland preferences. Inside of <code>programs/desktop.nix</code> (l
 <div class="org-src-container">
 <pre class="src src-nix"><code>{config, pkgs, ... }:
 {
-  <span style="color: #cae682;">home.packages</span> = <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [
+  home.packages = with pkgs; [
     wofi
     dolphin
     hyprpaper
-    <span style="color: #99968b;"># any other packages you'll want here
-</span>  ];
+    # any other packages you'll want here
+  ];
   
-  <span style="color: #cae682;">wayland.windowManager.hyprland</span> = {
-    <span style="color: #99968b;"># Whether to enable Hyprland wayland compositor
-</span>    <span style="color: #cae682;">enable</span> = <span style="color: #e5786d;">true</span>;
-    <span style="color: #99968b;"># Whether to enable XWayland
-</span>    <span style="color: #cae682;">xwayland.enable</span> = <span style="color: #e5786d;">true</span>;
+  wayland.windowManager.hyprland = {
+    # Whether to enable Hyprland wayland compositor
+    enable = true;
+    # Whether to enable XWayland
+    xwayland.enable = true;
 
-    <span style="color: #cae682;">extraConfig</span> = <span style="color: #95e454;">''
-      </span><span style="color: #e5786d;">${</span>builtins.readFile <span style="color: #e5786d;">./config/hyprland.conf</span><span style="color: #e5786d;">}</span><span style="color: #95e454;">
-    ''</span>;
+    extraConfig = ''
+      ${builtins.readFile ./config/hyprland.conf}
+    '';
   };
 }
 </code></pre>

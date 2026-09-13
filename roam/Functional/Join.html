@@ -1,3 +1,9 @@
+<header class="post-header">
+  <h1>Join</h1>
+  <div class="post-meta">
+    <time>02/2025</time>
+  </div>
+</header>
 <p>
 This note puts together the <a href="MonadsMathematics.html#ID-MonadsMathematics">mathematician&rsquo;s monad</a> and <a href="MonadsProgramming.html#ID-MonadsProgramming">programmer&rsquo;s monad</a>.
 </p>
@@ -26,10 +32,10 @@ For the harder part, we want to build morphisms <code>m (m a) -&gt; m a</code> f
 <code>a</code>. Turns out there&rsquo;s a generic map we can define as follows:
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><code><span style="color: #cae682;">join</span> <span style="color: #cae682;">::</span> <span style="color: #92a65e; font-weight: bold;">Monad</span> m <span style="color: #cae682;">=&gt;</span> m (m a) <span style="color: #cae682;">-&gt;</span> m a
-<span style="color: #cae682;">join</span> mmx <span style="color: #cae682;">=</span>
-  <span style="color: #8ac6f2; font-weight: bold;">do</span> mx <span style="color: #cae682;">&lt;-</span> mmx
-     x  <span style="color: #cae682;">&lt;-</span> mx
+<pre class="src src-haskell"><code>join :: Monad m =&gt; m (m a) -&gt; m a
+join mmx =
+  do mx &lt;- mmx
+     x  &lt;- mx
      return x
 </code></pre>
 </div>
@@ -54,7 +60,7 @@ transformation is defined on each type <code>a</code> via <code>rtn.id :: m a -&
 return mx</code>. Now, running this through <code>join</code> gives, by definition:
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><code><span style="color: #cae682;">join</span> (return mx) <span style="color: #cae682;">=</span> (return mx) <span style="color: #cae682;">&gt;&gt;=</span> id <span style="color: #cae682;">=</span> mx
+<pre class="src src-haskell"><code>join (return mx) = (return mx) &gt;&gt;= id = mx
 </code></pre>
 </div>
 <p>
@@ -73,7 +79,7 @@ Here, the maps <code>join.id</code> and <code>id.join</code> are defined similar
 <a href="MonadsMathematics.html#ID-MonadsMathematics">mathematical monads</a>:
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><code>id<span style="color: #cae682;">.</span>join <span style="color: #cae682;">=</span> fmap join, join<span style="color: #cae682;">.</span>id <span style="color: #cae682;">=</span> join
+<pre class="src src-haskell"><code>id.join = fmap join, join.id = join
 </code></pre>
 </div>
 
@@ -86,11 +92,11 @@ does.
 for any <code>mx :: Maybe a</code>:</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-haskell"><code><span style="color: #cae682;">join</span> (<span style="color: #92a65e; font-weight: bold;">Just</span> (mx)) <span style="color: #cae682;">=</span> (<span style="color: #92a65e; font-weight: bold;">Just</span> mx) <span style="color: #cae682;">&gt;&gt;=</span> id
-                 <span style="color: #cae682;">=</span> (return mx) <span style="color: #cae682;">&gt;&gt;=</span> id
-                 <span style="color: #cae682;">=</span> mx
-<span style="color: #cae682;">join</span> <span style="color: #92a65e; font-weight: bold;">Nothing</span> <span style="color: #cae682;">=</span> <span style="color: #92a65e; font-weight: bold;">Nothing</span> <span style="color: #cae682;">&gt;&gt;=</span> id
-             <span style="color: #cae682;">=</span> <span style="color: #92a65e; font-weight: bold;">Nothing</span>
+<pre class="src src-haskell"><code>join (Just (mx)) = (Just mx) &gt;&gt;= id
+                 = (return mx) &gt;&gt;= id
+                 = mx
+join Nothing = Nothing &gt;&gt;= id
+             = Nothing
 </code></pre>
 </div>
 <p>
@@ -102,7 +108,7 @@ For example, <code>fmap join :: m m m a -&gt; m m a</code> is just the map given
 <li>Lists <code>[]</code>. If <code>xss</code> is a list of lists, then by definition</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-haskell"><code><span style="color: #cae682;">join</span> xss <span style="color: #cae682;">=</span> xss <span style="color: #cae682;">&gt;&gt;=</span> id <span style="color: #cae682;">=</span> [x <span style="color: #cae682;">|</span> xs <span style="color: #cae682;">&lt;-</span> xss, x <span style="color: #cae682;">&lt;-</span> id xs]
+<pre class="src src-haskell"><code>join xss = xss &gt;&gt;= id = [x | xs &lt;- xss, x &lt;- id xs]
 </code></pre>
 </div>
 <p>
@@ -122,15 +128,21 @@ Mathematics to Programming.
 </p>
 
 <p>
-Now suppose we have a mathematical monoid \(M\) and we want to define a monoid in
-the programming sense. As above, it&rsquo;ll turn out that the unit map \(u: 1\to M\)
+Now suppose we have a mathematical monoid <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span></span></span></span>
+
+ and we want to define a monoid in
+the programming sense. As above, it&rsquo;ll turn out that the unit map <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">u</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span></span></span></span>
+
+
 coincides with the <code>return</code> function. The interesting part comes in how to
 define the bind operator.
 </p>
 
 <p>
 First of all, we learned in the last section that the <code>join</code> map should
-correspond to the multiplication \(m : M\circ M \to M\). But we want to recover the bind
+correspond to the multiplication <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">m</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∘</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span></span></span></span>
+
+. But we want to recover the bind
 operator <code>(&gt;&gt;=) :: m a -&gt; (a -&gt; m b) -&gt; m b</code>. For this, let <code>f :: a -&gt; m a</code> and
 <code>mx :: m a</code> be two arbitrary inputs to this operator. We need to define <code>mx &gt;&gt;=
 f</code>. Using the functorial map <code>fmap</code> on morphisms, we have that <code>fmap f :: m a -&gt;
@@ -139,7 +151,7 @@ mx</code> has type <code>m (m b)</code>, so that <code>join ((fmap f) mx)</code>
 define
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><code>mx <span style="color: #cae682;">&gt;&gt;=</span> f <span style="color: #cae682;">=</span> (join <span style="color: #cae682;">.</span> fmap f) mx
+<pre class="src src-haskell"><code>mx &gt;&gt;= f = (join . fmap f) mx
 </code></pre>
 </div>
 <div id="footnotes">

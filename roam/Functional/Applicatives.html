@@ -1,21 +1,27 @@
+<header class="post-header">
+  <h1>Applicatives</h1>
+  <div class="post-meta">
+    <time>02/2025</time>
+  </div>
+</header>
 <p>
 The notion of applicative is meant to encapsulate functions that can have
 many inputs. To put shortly, an applicative is the data of a functor <code>f</code> with
 the following extra data:
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><code><span style="color: #cae682;">pure</span>  <span style="color: #cae682;">::</span> a <span style="color: #cae682;">-&gt;</span> f a
-(<span style="color: #cae682;">&lt;*&gt;</span>) <span style="color: #cae682;">::</span> f (a <span style="color: #cae682;">-&gt;</span> b) <span style="color: #cae682;">-&gt;</span> f a <span style="color: #cae682;">-&gt;</span> f b
+<pre class="src src-haskell"><code>pure  :: a -&gt; f a
+(&lt;*&gt;) :: f (a -&gt; b) -&gt; f a -&gt; f b
 </code></pre>
 </div>
 <p>
 This data has to satisfy the following conditions:
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><code><span style="color: #cae682;">pure</span> id <span style="color: #cae682;">&lt;*&gt;</span> x   <span style="color: #cae682;">=</span> x
-<span style="color: #cae682;">pure</span> (g x)      <span style="color: #cae682;">=</span> pure g <span style="color: #cae682;">&lt;*&gt;</span> pure x
-x <span style="color: #cae682;">&lt;*&gt;</span> pure y    <span style="color: #cae682;">=</span> pure (<span style="color: #cae682;">\</span>g <span style="color: #cae682;">-&gt;</span> g y) <span style="color: #cae682;">&lt;*&gt;</span> x
-x <span style="color: #cae682;">&lt;*&gt;</span> (y <span style="color: #cae682;">&lt;*&gt;</span> z) <span style="color: #cae682;">=</span> (pure (<span style="color: #cae682;">.</span>) <span style="color: #cae682;">&lt;*&gt;</span> x <span style="color: #cae682;">&lt;*&gt;</span> y) <span style="color: #cae682;">&lt;*&gt;</span> z
+<pre class="src src-haskell"><code>pure id &lt;*&gt; x   = x
+pure (g x)      = pure g &lt;*&gt; pure x
+x &lt;*&gt; pure y    = pure (\g -&gt; g y) &lt;*&gt; x
+x &lt;*&gt; (y &lt;*&gt; z) = (pure (.) &lt;*&gt; x &lt;*&gt; y) &lt;*&gt; z
 </code></pre>
 </div>
 
@@ -36,16 +42,24 @@ function <code>f a -&gt; f b</code>.<sup><a id="fnr.1" class="footref" href="#fn
 <figure class="tikz-cd">  <img src="tikz/7c99810d770515c419767dbd39ef33d64a153961847f66ee6c747ccc6ae02456.svg" alt="TikZ-CD diagram">  </figure>
 
 <p>
-In this notation it might look a bit silly but \(\mathcal{F}(\lambda)\langle*\rangle ?\) is just a
-function that you can apply on elements of \(\mathcal{F}A\). I guess <code>pure</code> is
+In this notation it might look a bit silly but <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathcal" style="margin-right:0.09931em;">F</span><span class="mopen">(</span><span class="mord mathnormal">λ</span><span class="mclose">)</span><span class="mopen">⟨</span><span class="mord">∗</span><span class="mclose">⟩?</span></span></span></span>
+
+ is just a
+function that you can apply on elements of <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathcal" style="margin-right:0.09931em;">F</span><span class="mord mathnormal">A</span></span></span></span>
+
+. I guess <code>pure</code> is
 easier to think about&hellip; it sends types through to their image via the functor.
 </p>
 
 <p>
 Notationally, it&rsquo;s annoying to write down <code>pure</code> so many times, so I&rsquo;m going to
-write \(\iota = \tt{pure}\) whenever convenient. It&rsquo;s also annoying to constantly
+write <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">ι</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6528em;vertical-align:-0.2222em;"></span><span class="mord"><span class="mord"><span class="mord mathtt">pure</span></span></span></span></span></span>
+
+ whenever convenient. It&rsquo;s also annoying to constantly
 write <code>(\g -&gt; g y)</code>, so I&rsquo;m going to call it &rsquo;evaluation at <code>y</code>&rsquo; whenever
-convenient and write \(\textnormal{ev}_y := (\\g \mapsto g y)\).
+convenient and write <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord text"><span class="mord textrm">ev</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.7054em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">↦</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mclose">)</span></span></span></span>
+
+.
 </p>
 
 <p>
@@ -66,8 +80,12 @@ input, and then evaluate.</li>
 
 <ul class="org-ul">
 <li><code>x &lt;*&gt; pure y = pure (\g -&gt; g y) &lt;*&gt; x</code> The moral here is that
-\(\textnormal{ev}_{\iota y} = \iota \textnormal{ev}_y\) where the left hand side needs
-\(\langle*\rangle\) to make sense. So, an applicative must &rsquo;behave expectedly&rsquo; with respect
+<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord text"><span class="mord textrm">ev</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">ιy</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord mathnormal">ι</span><span class="mord"><span class="mord text"><span class="mord textrm">ev</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span>
+
+ where the left hand side needs
+<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">⟨</span><span class="mord">∗</span><span class="mclose">⟩</span></span></span></span>
+
+ to make sense. So, an applicative must &rsquo;behave expectedly&rsquo; with respect
 to function evaluation.</li>
 </ul>
 
@@ -81,13 +99,22 @@ be done by using the reflection of the composition operator.</li>
 </ul>
 
 <p>
-Some closing remark: there&rsquo;s two maps \(\textnormal{Hom}(A,B) \to
-\textnormal{Hom}(\mathcal{F}A, \mathcal{F}B)\), namely the functorial one given
-by \(\mathcal{F}\) itself, and also \(\iota g \langle \ast \rangle\) . It turns out that these maps
+Some closing remark: there&rsquo;s two maps <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord textrm">Hom</span></span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord textrm">Hom</span></span><span class="mopen">(</span><span class="mord mathcal" style="margin-right:0.09931em;">F</span><span class="mord mathnormal">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathcal" style="margin-right:0.09931em;">F</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span></span></span></span>
+
+, namely the functorial one given
+by <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathcal" style="margin-right:0.09931em;">F</span></span></span></span>
+
+ itself, and also <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">ι</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mopen">⟨</span><span class="mord">∗</span><span class="mclose">⟩</span></span></span></span>
+
+ . It turns out that these maps
 actually agree with each other! This is due to the fact that there is, at most,
 one unique way to turn a <i>parametrized type</i> into a functor (see <a href="FunctorsFromParametrizedTypes.html#ID-FunctorsFromParametrizedTypes">functors from
-parametrized types</a>). In particular, this entails that <code>pure</code> (or \(\iota\)) is actually
-a natural transformation between the identity functor and \(\mathcal{F}\).
+parametrized types</a>). In particular, this entails that <code>pure</code> (or <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">ι</span></span></span></span>
+
+) is actually
+a natural transformation between the identity functor and <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathcal" style="margin-right:0.09931em;">F</span></span></span></span>
+
+.
 </p>
 <div id="footnotes">
 <h2 class="footnotes">Footnotes: </h2>

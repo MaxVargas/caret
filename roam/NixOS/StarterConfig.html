@@ -1,3 +1,9 @@
+<header class="post-header">
+  <h1>Starter Config</h1>
+  <div class="post-meta">
+    <time>03/2025</time>
+  </div>
+</header>
 <p>
 An outline of the configuration structure I&rsquo;m using while learning NixOS. A lot
 of this structure is influenced by the content in the <a href="https://nixos-and-flakes.thiscute.world/">NixOS &amp; Flakes Book by
@@ -64,9 +70,9 @@ few things.
 <code>nixos/configuration.nix</code>. Then you&rsquo;ll also want the following block</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-nix"><code><span style="color: #cae682;">services.xserver.videoDrivers</span> = [ <span style="color: #95e454;">"nvidia"</span> ];
-<span style="color: #cae682;">hardware.nvidia.open</span> = <span style="color: #e5786d;">true</span>;
-<span style="color: #cae682;">hardware.graphics.enable</span> = <span style="color: #e5786d;">true</span>;
+<pre class="src src-nix"><code>services.xserver.videoDrivers = [ "nvidia" ];
+hardware.nvidia.open = true;
+hardware.graphics.enable = true;
 </code></pre>
 </div>
 <ul class="org-ul">
@@ -76,18 +82,18 @@ it a system-wide application&hellip; not a huge issue for me since I&rsquo;m run
 single-user system:</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-nix"><code><span style="color: #cae682;">programs.steam</span> = {
-  <span style="color: #cae682;">enable</span> = <span style="color: #e5786d;">true</span>;
-  <span style="color: #cae682;">gamescopeSession.enable</span> = <span style="color: #e5786d;">true</span>;
-  <span style="color: #cae682;">package</span> = <span style="color: #cae682;">pkgs.steam.override</span> = {
-    <span style="color: #cae682;">extraPkgs</span> = pkgs:
-      <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [
+<pre class="src src-nix"><code>programs.steam = {
+  enable = true;
+  gamescopeSession.enable = true;
+  package = pkgs.steam.override = {
+    extraPkgs = pkgs:
+      with pkgs; [
         liberation_ttf
       ];
   };
 };
-<span style="color: #cae682;">hardware.steam-hardware.enable</span> = <span style="color: #e5786d;">true</span>;
-<span style="color: #cae682;">programs.gamemode.enable</span> = <span style="color: #e5786d;">true</span>;
+hardware.steam-hardware.enable = true;
+programs.gamemode.enable = true;
 </code></pre>
 </div>
 
@@ -99,14 +105,14 @@ to explore the <a href="https://app.cachix.org/">site</a>. As an example, if you
 the following in your configuration.
 </p>
 <div class="org-src-container">
-<pre class="src src-nix"><code><span style="color: #cae682;">nix.settings.substituters</span> = [
+<pre class="src src-nix"><code>nix.settings.substituters = [
   ...
-  <span style="color: #95e454;">"https://hyprland.cachix.org"</span>
+  "https://hyprland.cachix.org"
 ];
 
-<span style="color: #cae682;">nix.settings.trusted-public-keys</span> = [
+nix.settings.trusted-public-keys = [
   ...
-  <span style="color: #95e454;">"hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="</span>
+  "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
 ];
 
 </code></pre>

@@ -1,3 +1,9 @@
+<header class="post-header">
+  <h1>Derivations</h1>
+  <div class="post-meta">
+    <time>01/2026</time>
+  </div>
+</header>
 <p>
 I&rsquo;m finally coming around to learning more about nix and how to package programs
 for my own personal use. Reading the nix pills is good! Some of the specifics
@@ -23,12 +29,12 @@ derivation specs for the item below. Within an interactive environment using
 <code>nix repl</code>, we can verify that the drv file contains an attribute set:
 </p>
 <div class="org-src-container">
-<pre class="src src-nix"><code><span style="color: #cae682;">drv</span> = <span style="color: #e5786d;">import</span> <span style="color: #e5786d;">/nix/store/xsqhh6s0c3fa9va5gnk6mdifm7zqwvmh-bash52-037.drv</span>
-builtins.isAttrs drv <span style="color: #99968b;">#true
-</span>builtins.attrNames drv <span style="color: #99968b;"># [ "all" "drvPath" "name" "out" "outPath" "outputName" "type" ]
-</span>
-drv.name <span style="color: #99968b;"># "bash52-037"
-</span>drv.type <span style="color: #99968b;"># "derivation"</span>
+<pre class="src src-nix"><code>drv = import /nix/store/xsqhh6s0c3fa9va5gnk6mdifm7zqwvmh-bash52-037.drv
+builtins.isAttrs drv #true
+builtins.attrNames drv # [ "all" "drvPath" "name" "out" "outPath" "outputName" "type" ]
+
+drv.name # "bash52-037"
+drv.type # "derivation"
 </code></pre>
 </div>
 
@@ -56,9 +62,9 @@ The <a href="https://nix.dev/manual/nix/2.28/language/derivations">derivation</a
 </p>
 
 <p>
-\[
-\texttt{derivation} :\{\texttt{d}\in \texttt{AttrSet}\ |\ \texttt{name, system, builder} \in \texttt{d}\} \rightarrow \texttt{Derivations}
-\]
+<span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6111em;"></span><span class="mord text"><span class="mord texttt">derivation</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mord text"><span class="mord texttt">d</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord texttt">AttrSet</span></span><span class="mspace"> </span><span class="mord">∣</span><span class="mspace"> </span><span class="mord text"><span class="mord texttt">name, system, builder</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord texttt">d</span></span><span class="mclose">}</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6111em;"></span><span class="mord text"><span class="mord texttt">Derivations</span></span></span></span></span></span>
+
+
 </p>
 
 <p>
@@ -104,36 +110,36 @@ function? Recall that an input to <code>derivation</code> must have the form <co
 </p>
 
 <div class="org-src-container">
-<pre class="src src-nix"><code><span style="color: #8ac6f2; font-weight: bold;">let</span>
-  <span style="color: #cae682;">pkgs</span> = <span style="color: #e5786d;">import</span> <span style="color: #e5786d;">&lt;nixpkgs&gt;</span> { };
-<span style="color: #8ac6f2; font-weight: bold;">in</span>
-builtins.attrNames ( <span style="color: #e5786d;">derivation</span> {
-  <span style="color: #cae682;">name</span> = <span style="color: #95e454;">"example"</span>;
-  <span style="color: #cae682;">builder</span> = <span style="color: #95e454;">"</span><span style="color: #e5786d;">${</span>pkgs.bash<span style="color: #e5786d;">}</span><span style="color: #95e454;">/bin/bash"</span>;
-  <span style="color: #cae682;">system</span> = builtins.currentSystem;
-  <span style="color: #cae682;">src</span> = path-to-blah.tar.gz;
-  <span style="color: #cae682;">args</span> = [ <span style="color: #e5786d;">./setup.sh</span> ];
-  <span style="color: #cae682;">buildInputs</span> = [
+<pre class="src src-nix"><code>let
+  pkgs = import &lt;nixpkgs&gt; { };
+in
+builtins.attrNames ( derivation {
+  name = "example";
+  builder = "${pkgs.bash}/bin/bash";
+  system = builtins.currentSystem;
+  src = path-to-blah.tar.gz;
+  args = [ ./setup.sh ];
+  buildInputs = [
   inp1
   inp2
   ];
   ...
 } )
 
-<span style="color: #99968b;"># </span><span style="color: #99968b;">[
-</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"all"
-</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"builder"
-</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"drvAttrs"
-</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"drvPath"
-</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"name"
-</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"out"
-</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"outPath"
-</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"outputName"
-</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"system"
-</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"type"
-</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">"args"
-</span><span style="color: #99968b;">#   </span><span style="color: #99968b;">...
-</span><span style="color: #99968b;"># </span><span style="color: #99968b;">]</span>
+# [
+#   "all"
+#   "builder"
+#   "drvAttrs"
+#   "drvPath"
+#   "name"
+#   "out"
+#   "outPath"
+#   "outputName"
+#   "system"
+#   "type"
+#   "args"
+#   ...
+# ]
 </code></pre>
 </div>
 

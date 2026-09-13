@@ -1,0 +1,235 @@
+@use "sass:map";
+
+@font-face {
+    font-family: "EulerMath";
+    src: url("/fonts/Euler-Math.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Fantasque";
+    src: url("/fonts/Fantasque.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family:KaTeX_AMS;
+    font-style:normal;
+    font-weight:400;
+    src:url(/fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(/fonts/KaTeX_AMS-Regular.woff) format("woff"),url(/fonts/KaTeX_AMS-Regular.ttf) format("truetype");
+}
+
+:root {
+    --color-bg: #fafafa;
+    --color-text: #292929;
+    --color-muted: #666;
+    --color-accent: #356ae6;
+
+    --code-border: #69aaff;
+    --code-background: #cfcfcf;
+
+    --font-body: "PT Serif", serif;
+    --font-heading: "EulerMath", sans-serif;
+    --font-code: "Fantasque", monospace;
+
+    --content-width: 760px;
+    --sidebar-width: 220px;
+    --spacing: 2rem;
+}
+
+header {
+    color: var(--color-text);
+    font-family: var(--font-heading);
+}
+
+body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+}
+
+pre,
+code {
+    font-family: var(--font-code);
+}
+pre {
+    border: 2px solid var(--code-border);
+    border-radius: 0px;
+    padding: 1rem;
+    background: var(--code-background);
+    overflow-x: auto;
+}
+
+a {
+    color: (var(--color-accent));
+}
+
+.site-layout {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) minmax(0, var(--content-width));
+    gap: var(--spacing);
+
+    max-width: calc(
+        var(--sidebar-width) + var(--gap) + var(--content-width)
+    );
+
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+main {
+    min-width: 0;
+}
+
+.sidebar {
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+}
+
+////////// KATEX
+.katex .mathcal,
+.katex .mord {
+    font-family: "Fantasque";
+}
+
+.katex .mathbb {
+    font-family: "KaTeX_AMS";
+}
+
+.katex,
+.katex .mathnormal,
+.katex .mop,
+.katex .msupsub {
+    font-family: "EulerMath";
+}
+
+.katex .msupsub .mtight {
+    position: relative;
+    top: 0.08em;
+}
+//
+// .katex {
+//     text-rendering: auto;
+// }
+// .katex .vlist {
+//     display: table-cell;
+//     vertical-align: bottom;
+//     position: relative;
+// }
+// .katex .vlist > span {
+//     display: relative;
+//     height: 0;
+//     position: relative;
+// }
+// .katex .msupsub {
+//     text-align: left;
+// }
+// .katex .mtight {
+//     font-size: 0.8em;
+// }
+
+
+// box model -- margin, padding, border
+// typography -- font-family, font-size, line-height
+// flexbox -- arranging things horizontally/ vertically
+// css grid -- complicated layouts
+// reponsive deisng --media queries
+// positioning -- relative, absolute, fixed
+// psuedo-classes -- hover, focus, etc.
+//
+
+// Footnotes
+#footnotes {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--text-color, #333);
+    font-size: 0.85rem;
+    color: #666;
+}
+
+#footnotes h2 {
+    display: none;
+}
+
+#text-footnotes {
+    margin-top: 1rem;
+}
+
+.footdef {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    column-gap: 0.5rem;
+    margin: 0.75rem 0;
+}
+
+.footdef > sup {
+    grid-column: 1;
+    text-align: right;
+    font-size: 0.8em;
+}
+
+.footpara {
+    grid-column: 2;
+}
+
+.footpara p {
+    margin: 0;
+}
+
+//////////////////////
+// DEVICE VARIABLES //
+//////////////////////
+$breakpoints: (
+  mobile: 800px,
+  desktop: 1200px,
+);
+
+$mobile: "(max-width: #{map.get($breakpoints, mobile)})";
+$tablet: "(min-width: #{map.get($breakpoints, mobile)}) and (max-width: #{map.get($breakpoints, desktop)})";
+$desktop: "(min-width: #{map.get($breakpoints, desktop)})";
+
+$pageWidth: #{map.get($breakpoints, mobile)};
+$sidePanelWidth: 320px; //380px;
+$topSpacing: 6rem;
+$boldWeight: 700;
+$semiBoldWeight: 600;
+$normalWeight: 400;
+
+$mobileGrid: (
+  templateRows: "auto auto auto auto auto",
+  templateColumns: "auto",
+  rowGap: "5px",
+  columnGap: "5px",
+  templateAreas:
+    '"grid-sidebar-left"\
+      "grid-header"\
+      "grid-center"\
+      "grid-sidebar-right"\
+      "grid-footer"',
+);
+$tabletGrid: (
+  templateRows: "auto auto auto auto",
+  templateColumns: "#{$sidePanelWidth} auto",
+  rowGap: "5px",
+  columnGap: "5px",
+  templateAreas:
+    '"grid-sidebar-left grid-header"\
+      "grid-sidebar-left grid-center"\
+      "grid-sidebar-left grid-sidebar-right"\
+      "grid-sidebar-left grid-footer"',
+);
+$desktopGrid: (
+  templateRows: "auto auto auto",
+  templateColumns: "#{$sidePanelWidth} auto #{$sidePanelWidth}",
+  rowGap: "5px",
+  columnGap: "5px",
+  templateAreas:
+    '"grid-sidebar-left grid-header grid-sidebar-right"\
+      "grid-sidebar-left grid-center grid-sidebar-right"\
+      "grid-sidebar-left grid-footer grid-sidebar-right"',
+);

@@ -5,32 +5,45 @@ module Main where
 import Hakyll
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
+import System.FilePath (takeBaseName)
 import System.Process
+import System.Exit
 import System.IO
 
 main :: IO ()
 main = hakyll $ do
 
-  match "templates/*" $ compile templateBodyCompiler
-
   -- Everything in roam/ is copied into _site/
-  match "roam/**/*.html" $ do
+  -- Start with .html files
+  match "roam/**.html" $ do
     route $ gsubRoute "^roam/" (const "")
     compile $ do
       body <- getResourceBody
       rendered <- unsafeCompiler $
-        replaceMath (itemBody body)
-      makeItem rendered
+        replaceMath (T.pack (itemBody body))
+      makeItem (T.unpack rendered)
         >>= loadAndApplyTemplate "templates/default.html" defaultContext
+
+  -- Copy all other files
+  match "templates/*" $ compile templateBodyCompiler
 
   match "roam/**" $ do
     route $ gsubRoute "^roam/" (const "")
     compile $ copyFileCompiler
 
-  -- match "css/**" $ do
+  match "fonts/**" $ do
+    route $ idRoute
+    compile $ copyFileCompiler
 
+  match "scss/style.scss" $ do
+    route $ constRoute "css/style.css"
+    compile compileSass
 
-renderKatex :: Bool -> String -> IO String
+  match "scss/katex.min.css" $ do
+    route $ constRoute "css/katex.min.css"
+    compile copyFileCompiler
+
+renderKatex :: Bool -> T.Text -> IO T.Text
 renderKatex display math = do
   let args =
         if display
@@ -44,15 +57,15 @@ renderKatex display math = do
         , std_out = CreatePipe
         }
 
-  TIO.hPutStr hin (T.pack math)
+  TIO.hPutStr hin math
   hClose hin
 
   result <- TIO.hGetContents hout
   _ <- waitForProcess ph
 
-  pure (T.unpack result)
+  pure result
 
-replaceMath :: String -> IO String
+replaceMath :: T.Text -> IO T.Text
 replaceMath = go
   where
     go text =
@@ -61,59 +74,71 @@ replaceMath = go
         Just (before, display, math, after) -> do
           rendered <- renderKatex display math
           rest <- go after
-          pure $ before ++ rendered ++ rest
+          pure $ before <> rendered <> rest
 
     findNext text =
-      case (breakOn "\\(" text, breakOn "\\[" text) of
+      case (T.breakOn "\\(" text, T.breakOn "\\[" text) of
         ((beforeInline, inlineRest),
          (beforeDisplay, displayRest))
-          | null inlineRest && null displayRest ->
+          | T.null inlineRest && T.null displayRest ->
             Nothing
-          | null inlineRest ->
+          | T.null inlineRest ->
             findDisplay beforeDisplay displayRest
-          | null displayRest ->
+          | T.null displayRest ->
             findInline beforeDisplay displayRest
-          | length beforeInline <= length beforeDisplay ->
+          | T.length beforeInline <= T.length beforeDisplay ->
             findInline beforeInline inlineRest
           | otherwise ->
             findDisplay beforeDisplay displayRest
 
     findInline before rest =
-      let content = drop 2 rest
-          (math, closing) = breakOn "\\)" content
+      let content = T.drop 2 rest
+          (math, closing) = T.breakOn "\\)" content
       in
-        if null closing
+        if T.null closing
         then Nothing
         else
           Just
             ( before
             , False
             , math
-            , drop 2 closing
+            , T.drop 2 closing
             )
 
     findDisplay before rest =
-      let content = drop 2 rest
-          (math, closing) = breakOn "\\]" content
+      let content = T.drop 2 rest
+          (math, closing) = T.breakOn "\\]" content
       in
-        if null closing
+        if T.null closing
         then Nothing
         else
           Just
             ( before
             , True
             , math
-            , drop 2 closing
+            , T.drop 2 closing
             )
 
-    breakOn needle haystack =
-      let (a, b) = goBreak haystack
-      in  (a, b)
-      where
-        goBreak [] = ([], [])
-        goBreak xs
-          | take (length needle) xs == needle =
-            ([], xs)
-          | otherwise =
-            let (a, b) = goBreak (tail xs)
-            in (head xs : a, b)
+compileSass :: Compiler (Item String)
+compileSass = do
+  css <- unsafeCompiler $ do
+    (exitCode, stdout, stderr) <-
+      readProcessWithExitCode
+        "sass"
+        [ "--no-source-map"
+        , "--style=expanded"
+        , "scss/style.scss"
+        ]
+        ""
+
+    case exitCode of
+      ExitSuccess ->
+        pure stdout
+      ExitFailure n ->
+        error $
+          "sass failed with exit code "
+          ++ show n
+          ++ ":\n"
+          ++ stderr
+
+  makeItem css

@@ -1,3 +1,9 @@
+<header class="post-header">
+  <h1>Flakes (Example)</h1>
+  <div class="post-meta">
+    <time>03/2025</time>
+  </div>
+</header>
 <p>
 I&rsquo;ve been curious to play around with some creative coding practices, for
 example <a href="https://nannou.cc/">nannou</a> The installation wasn&rsquo;t trivial, mainly because of issues with
@@ -25,44 +31,44 @@ sha256 keys:
 </p>
 <div class="org-src-container">
 <pre class="src src-nix"><code>{
-  <span style="color: #cae682;">description</span> = <span style="color: #95e454;">"A very basic nannou"</span>;
+  description = "A very basic nannou";
 
-  <span style="color: #cae682;">inputs</span> = {
-    <span style="color: #cae682;">nixpkgs.url</span> = <span style="color: #95e454;">"github:nixos/nixpkgs?ref=nixos-unstable"</span>;
-    <span style="color: #cae682;">flake-utils.url</span> = <span style="color: #95e454;">"github:numtide/flake-utils"</span>;
-    <span style="color: #cae682;">oxalica.url</span> = <span style="color: #95e454;">"github:oxalica/rust-overlay"</span>;
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    oxalica.url = "github:oxalica/rust-overlay";
   };
 
-  <span style="color: #cae682;">outputs</span> = { self, nixpkgs, flake-utils, oxalica }:
-    <span style="color: #8ac6f2; font-weight: bold;">with</span> flake-utils.lib;
+  outputs = { self, nixpkgs, flake-utils, oxalica }:
+    with flake-utils.lib;
     eachSystem allSystems (system:
-      <span style="color: #8ac6f2; font-weight: bold;">let</span>
-        <span style="color: #cae682;">pkgs</span> = nixpkgs.legacyPackages.${system}.extend oxalica.overlays.default;
-      <span style="color: #8ac6f2; font-weight: bold;">in</span> rec {
-        <span style="color: #cae682;">packages</span> = {
+      let
+        pkgs = nixpkgs.legacyPackages.${system}.extend oxalica.overlays.default;
+      in rec {
+        packages = {
           
-          <span style="color: #cae682;">nann</span> = <span style="color: #8ac6f2; font-weight: bold;">let</span>
-            <span style="color: #cae682;">rustPlatform</span> = pkgs.makeRustPlatform {
-              <span style="color: #cae682;">cargo</span> = pkgs.rust-bin.stable.latest.minimal;
-              <span style="color: #cae682;">rustc</span> = pkgs.rust-bin.stable.latest.minimal;
+          nann = let
+            rustPlatform = pkgs.makeRustPlatform {
+              cargo = pkgs.rust-bin.stable.latest.minimal;
+              rustc = pkgs.rust-bin.stable.latest.minimal;
             };
-          <span style="color: #8ac6f2; font-weight: bold;">in</span> rustPlatform.buildRustPackage <span style="color: #8ac6f2; font-weight: bold;">rec</span> {
-            <span style="color: #cae682;">name</span> = <span style="color: #95e454;">"nann-demo"</span>;
-            <span style="color: #cae682;">src</span> = self;
-            <span style="color: #cae682;">nativeBuildInputs</span> = <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [ pkg-config ];
-            <span style="color: #cae682;">buildInputs</span> = <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [ alsa-lib.dev udev.dev ];
-            <span style="color: #cae682;">cargoLock</span> = { 
-              <span style="color: #cae682;">lockFile</span> = <span style="color: #e5786d;">./Cargo.lock</span>; 
-              <span style="color: #cae682;">outputHashes</span> = {
-                <span style="color: #95e454;">"hotglsl-0.1.0"</span> = <span style="color: #95e454;">"sha256-G88Sa/tgGppaxIIPXDqIazMWRBXpaSFb2mulNfCclm8="</span>;
-                <span style="color: #95e454;">"isf-0.1.0"</span> = <span style="color: #95e454;">"sha256-utexaXpZZgpRunVAQyD2JAwvabhZGzeorC4pRFIumAc="</span>;
-                <span style="color: #95e454;">"skeptic-0.13.4"</span> = <span style="color: #95e454;">"sha256-EZFtWIPfsfbpGBD8NwsVtMzRM10kVdg+djoV00dhT4Y="</span>;
+          in rustPlatform.buildRustPackage rec {
+            name = "nann-demo";
+            src = self;
+            nativeBuildInputs = with pkgs; [ pkg-config ];
+            buildInputs = with pkgs; [ alsa-lib.dev udev.dev ];
+            cargoLock = { 
+              lockFile = ./Cargo.lock; 
+              outputHashes = {
+                "hotglsl-0.1.0" = "sha256-G88Sa/tgGppaxIIPXDqIazMWRBXpaSFb2mulNfCclm8=";
+                "isf-0.1.0" = "sha256-utexaXpZZgpRunVAQyD2JAwvabhZGzeorC4pRFIumAc=";
+                "skeptic-0.13.4" = "sha256-EZFtWIPfsfbpGBD8NwsVtMzRM10kVdg+djoV00dhT4Y=";
               };
             };
           };
         };
-        <span style="color: #cae682;">defaultPackage</span> = packages.nann;
-        <span style="color: #cae682;">formatter</span> = pkgs.nixfmt;
+        defaultPackage = packages.nann;
+        formatter = pkgs.nixfmt;
       });
 }
 </code></pre>
@@ -73,17 +79,17 @@ packages, but now I needed the help of this <a href="https://github.com/nannou-o
 issues that came up!
 </p>
 <div class="org-src-container">
-<pre class="src src-nix"><code><span style="color: #8ac6f2; font-weight: bold;">let</span>
-  <span style="color: #cae682;">pkgs</span> = <span style="color: #e5786d;">import</span> <span style="color: #e5786d;">&lt;nixpkgs&gt;</span> { };
-<span style="color: #8ac6f2; font-weight: bold;">in</span> with pkgs;
+<pre class="src src-nix"><code>let
+  pkgs = import &lt;nixpkgs&gt; { };
+in with pkgs;
 mkShell {
-  <span style="color: #cae682;">name</span> = <span style="color: #95e454;">"nannou-sample"</span>;
-  <span style="color: #cae682;">nativeBuildInputs</span> = [
+  name = "nannou-sample";
+  nativeBuildInputs = [
     pkgs.pkg-config
     pkgs.clang
     pkgs.lld
   ];
-  <span style="color: #cae682;">buildInputs</span> = <span style="color: #8ac6f2; font-weight: bold;">with</span> pkgs; [
+  buildInputs = with pkgs; [
     wayland
     xorg.libX11
     xorg.libXcursor
@@ -96,14 +102,14 @@ mkShell {
     cargo
     rustc
   ];
-  <span style="color: #cae682;">shellHook</span> = <span style="color: #95e454;">''
-              export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:</span><span style="color: #e5786d;">${</span>
+  shellHook = ''
+              export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${
                 pkgs.lib.makeLibraryPath [
                   udev
                   vulkan-loader
                 ]
-              <span style="color: #e5786d;">}</span><span style="color: #95e454;">"''</span>;
-  <span style="color: #cae682;">RUST_SRC_PATH</span> = rustPlatform.rustLibSrc;
+              }"'';
+  RUST_SRC_PATH = rustPlatform.rustLibSrc;
 }
 </code></pre>
 </div>

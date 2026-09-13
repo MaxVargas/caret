@@ -1,8 +1,14 @@
+<header class="post-header">
+  <h1>Functors (Programming)</h1>
+  <div class="post-meta">
+    <time>02/2025</time>
+  </div>
+</header>
 <p>
 A functor is the data of a parametric type <code>f</code>, along with a function
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><code><span style="color: #cae682;">fmap</span> <span style="color: #cae682;">::</span> (a <span style="color: #cae682;">-&gt;</span> b) <span style="color: #cae682;">-&gt;</span> f a <span style="color: #cae682;">-&gt;</span> f b
+<pre class="src src-haskell"><code>fmap :: (a -&gt; b) -&gt; f a -&gt; f b
 </code></pre>
 </div>
 <p>
@@ -10,7 +16,7 @@ for all types <code>a</code> and <code>b</code> for which <code>f a</code> and <
 to satisfy the following conditions:
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><code><span style="color: #cae682;">fmap</span> id_a <span style="color: #cae682;">=</span> id_a fmap (g <span style="color: #cae682;">.</span> h) <span style="color: #cae682;">=</span> (fmap g) <span style="color: #cae682;">.</span> (fmap h)
+<pre class="src src-haskell"><code>fmap id_a = id_a fmap (g . h) = (fmap g) . (fmap h)
 </code></pre>
 </div>
 <p>
@@ -55,11 +61,11 @@ by just applying <code>lambda</code> to each node in a given tree. Formally, <co
   Int</code>, then</li>
 </ul>
 <div class="org-src-container">
-<pre class="src src-haskell"><code>                    <span style="color: #92a65e; font-weight: bold;">Node</span> 5                  <span style="color: #92a65e; font-weight: bold;">Node</span> 25
-                    <span style="color: #cae682;">/</span>    <span style="color: #cae682;">\</span>                  <span style="color: #cae682;">/</span>     <span style="color: #cae682;">\</span>
-(fmap lambda)    <span style="color: #92a65e; font-weight: bold;">Node</span> 2  <span style="color: #92a65e; font-weight: bold;">Node</span> 6   <span style="color: #cae682;">=</span>      <span style="color: #92a65e; font-weight: bold;">Node</span> 4  <span style="color: #92a65e; font-weight: bold;">Node</span> 36
-                  <span style="color: #cae682;">/</span>    <span style="color: #cae682;">\</span>                <span style="color: #cae682;">/</span>      <span style="color: #cae682;">\</span>
-               <span style="color: #92a65e; font-weight: bold;">Node</span> 4  <span style="color: #92a65e; font-weight: bold;">Node</span> 2        <span style="color: #92a65e; font-weight: bold;">Node</span> 16  <span style="color: #92a65e; font-weight: bold;">Node</span> 4
+<pre class="src src-haskell"><code>                    Node 5                  Node 25
+                    /    \                  /     \
+(fmap lambda)    Node 2  Node 6   =      Node 4  Node 36
+                  /    \                /      \
+               Node 4  Node 2        Node 16  Node 4
 </code></pre>
 </div>
 
