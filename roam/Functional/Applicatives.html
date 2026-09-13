@@ -56,8 +56,8 @@ Notationally, it&rsquo;s annoying to write down <code>pure</code> so many times,
 write <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">ι</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6528em;vertical-align:-0.2222em;"></span><span class="mord"><span class="mord"><span class="mord mathtt">pure</span></span></span></span></span></span>
 
  whenever convenient. It&rsquo;s also annoying to constantly
-write <code>(\g -&gt; g y)</code>, so I&rsquo;m going to call it &rsquo;evaluation at <code>y</code>&rsquo; whenever
-convenient and write <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord text"><span class="mord textrm">ev</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.7054em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">↦</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mclose">)</span></span></span></span>
+write <code>(\g -&gt; g y)</code>, so I&rsquo;m going to call it &rsquo;evaluation at <code>y</code>&rsquo; whenever convenient
+and write <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7361em;vertical-align:-0.3056em;"></span><span class="mord"><span class="mord text"><span class="mord textrm">ev</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord text mtight"><span class="mord texttt mtight">y</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3056em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord text"><span class="mord texttt">\g</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">↦</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord texttt">g y</span></span><span class="mclose">)</span></span></span></span>
 
 .
 </p>
@@ -66,11 +66,13 @@ convenient and write <span class="katex"><span class="katex-html" aria-hidden="t
 Now to begin on the four conditions.
 </p>
 <ul class="org-ul">
-<li><code>pure id &lt;*&gt; x = x</code> In short, this says that the applicative respects
+<li><code>pure id &lt;*&gt; x = x</code>
+In short, this says that the applicative respects
 identities. Note that <code>pure id</code> has type <code>f (a -&gt; a)</code>, and using <code>&lt;*&gt;</code>, we can
 evaluate on any element <code>f a</code> as the identity. That is to say, <code>f &lt;*&gt; ?</code> is
 the identity on <code>f a</code>.</li>
-<li><code>pure (g x) = pure g &lt;*&gt; pure x</code> This says that the applicative preserves
+<li><code>pure (g x) = pure g &lt;*&gt; pure x</code>
+This says that the applicative preserves
 function application in the category. We can either apply <code>pure</code> after
 evaluating a function, or we can apply <code>pure</code> to each of the function and
 input, and then evaluate.</li>
@@ -79,7 +81,8 @@ input, and then evaluate.</li>
 <figure class="tikz-cd">  <img src="tikz/9126f80f5f8e1e409764557894a08148c340e6c7602d8524ee591c888de21c96.svg" alt="TikZ-CD diagram">  </figure>
 
 <ul class="org-ul">
-<li><code>x &lt;*&gt; pure y = pure (\g -&gt; g y) &lt;*&gt; x</code> The moral here is that
+<li><code>x &lt;*&gt; pure y = pure (\g -&gt; g y) &lt;*&gt; x</code>
+The moral here is that
 <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord text"><span class="mord textrm">ev</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">ιy</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord mathnormal">ι</span><span class="mord"><span class="mord text"><span class="mord textrm">ev</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span>
 
  where the left hand side needs
@@ -92,7 +95,8 @@ to function evaluation.</li>
 <figure class="tikz-cd">  <img src="tikz/e0adc8a1453dd196a1318831b44138b75be631305d44bd021106f680fe2b6219.svg" alt="TikZ-CD diagram">  </figure>
 
 <ul class="org-ul">
-<li><code>x &lt;*&gt; (y &lt;*&gt; z) = (pure (.) &lt;*&gt; x &lt;*&gt; y) &lt;*&gt; z</code> Applicatives respect function
+<li><code>x &lt;*&gt; (y &lt;*&gt; z) = (pure (.) &lt;*&gt; x &lt;*&gt; y) &lt;*&gt; z</code>
+Applicatives respect function
 application. This one is tedious to write out in full, but note that <code>y &lt;*&gt; ?
   :: f Z -&gt; f Y</code> and <code>x &lt;*&gt; ? :: f Y -&gt; f X</code> can be composed together, and can
 be done by using the reflection of the composition operator.</li>

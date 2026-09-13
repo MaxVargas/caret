@@ -15,21 +15,24 @@ main = hakyll $ do
 
   -- Everything in roam/ is copied into _site/
   -- Start with .html files
-  match "roam/**.html" $ do
+
+  match "roam/index.html" $ do
     route $ gsubRoute "^roam/" (const "")
     compile $ do
       body <- getResourceBody
-      rendered <- unsafeCompiler $
+      rendered <- recompilingUnsafeCompiler $
         replaceMath (T.pack (itemBody body))
-      makeItem (T.unpack rendered)
+      subbed <- recompilingUnsafeCompiler $
+        substituteHrefs (rendered)
+      makeItem (T.unpack subbed)
         >>= loadAndApplyTemplate "templates/default.html" defaultContext
+
+  mvDir "NixOS" "notes/"
+  mvDir "Functional" "notes/"
+  mvDir "" ""
 
   -- Copy all other files
   match "templates/*" $ compile templateBodyCompiler
-
-  match "roam/**" $ do
-    route $ gsubRoute "^roam/" (const "")
-    compile $ copyFileCompiler
 
   match "fonts/**" $ do
     route $ idRoute
@@ -42,6 +45,29 @@ main = hakyll $ do
   match "scss/katex.min.css" $ do
     route $ constRoute "css/katex.min.css"
     compile copyFileCompiler
+
+-- This isn't actually correct. But morally... needs fixing
+mvDirs :: [String] -> String -> [Rules ()]
+mvDirs subdirs dirname = map (\s -> mvDir s dirname) subdirs
+
+mvDir :: String -> String -> Rules ()
+mvDir subdir dirname = do
+  match (fromGlob ("roam/" <> subdir <> "/**.html")) $ do
+    route $ composeRoutes
+      (gsubRoute "^roam/" (const dirname))
+      (gsubRoute ".html$" (const "/index.html"))
+    compile $ do
+      body <- getResourceBody
+      rendered <- recompilingUnsafeCompiler $
+        replaceMath (T.pack (itemBody body))
+      subbed <- recompilingUnsafeCompiler $
+        substituteHrefs (rendered)
+      makeItem (T.unpack subbed)
+        >>= loadAndApplyTemplate "templates/default.html" defaultContext
+
+  match (fromGlob ("roam/" <> subdir <> "/**")) $ do
+    route $ gsubRoute "^roam/" (const dirname)
+    compile $ copyFileCompiler
 
 renderKatex :: Bool -> T.Text -> IO T.Text
 renderKatex display math = do
@@ -121,7 +147,7 @@ replaceMath = go
 
 compileSass :: Compiler (Item String)
 compileSass = do
-  css <- unsafeCompiler $ do
+  css <- recompilingUnsafeCompiler $ do
     (exitCode, stdout, stderr) <-
       readProcessWithExitCode
         "sass"
@@ -142,3 +168,54 @@ compileSass = do
           ++ stderr
 
   makeItem css
+
+substituteHrefs :: T.Text -> IO T.Text
+substituteHrefs = go
+  where
+    go text =
+      case findNext text of
+        Nothing -> pure text
+        -- ref is like href="blah"
+        Just (before, ref, after) -> do
+          subbed <- substituteHref ref
+          rest <- go after
+          pure $ before <> subbed <> rest
+
+    findNext text =
+      case (T.breakOn "href=\"" text) of
+        (beforeHref, hrefOn)
+          | T.null hrefOn ->
+            Nothing
+          | otherwise ->
+            findEndQuote beforeHref hrefOn
+
+    findEndQuote before onwards =
+      let (href, content) = T.splitAt 6 onwards
+          (ref, closing) = T.breakOn "\"" content
+      in
+        if T.null closing
+        then Nothing
+        else
+          Just
+            ( before <> href
+            , ref
+            , closing
+            )
+
+substituteHref :: T.Text -> IO T.Text
+substituteHref ref = do
+  subbed <- maybeSubbed ref
+  pure subbed
+
+  where
+    maybeSubbed text =
+      case (T.breakOn "http" text) of
+        (before, after)
+          | T.null after && T.count "Functional" before > 0
+            -> pure $ ("notes/" <> fst (T.breakOn ".html" before))
+          | T.null after && T.count "NixOS" before > 0
+            -> pure $ ("notes/" <> fst (T.breakOn ".html" before))
+          | T.null after
+            -> pure $ fst (T.breakOn ".html" before)
+          | otherwise
+            -> pure text
