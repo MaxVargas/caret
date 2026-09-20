@@ -3,8 +3,14 @@
 module Main where
 
 import Hakyll
+import Data.List (sortBy, isPrefixOf)
+import Data.Ord (comparing, Down(..))
+import qualified Data.Map as M
+import qualified Data.Map.Strict as MS
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
+import Text.Regex.TDFA ((=~))
+import System.Directory (listDirectory)
 import System.FilePath (takeBaseName)
 import System.Process
 import System.Exit
@@ -32,7 +38,9 @@ main = hakyll $ do
   mvDir "" ""
 
   -- Copy all other files
-  match "templates/*" $ compile templateBodyCompiler
+  match "templates/default.html" $ compile templateBodyCompiler
+
+  miscellany
 
   match "fonts/**" $ do
     route $ idRoute
@@ -46,9 +54,23 @@ main = hakyll $ do
     route $ constRoute "css/katex.min.css"
     compile copyFileCompiler
 
+miscellany :: Rules ()
+miscellany = match "templates/directory.html" $ do
+  route $ constRoute "Miscellany/index.html"
+  compile $ do
+    posts <- recentPosts <$> loadPosts "roam/Miscellany/**.html"
+    let ctx =
+          listField "posts"
+            postCtx
+            (return (map (\post -> Item (postIdentifier post) post) posts))
+          <> defaultContext
+    getResourceBody
+        >>= applyAsTemplate ctx
+        >>= loadAndApplyTemplate "templates/default.html" ctx
+
 -- This isn't actually correct. But morally... needs fixing
-mvDirs :: [String] -> String -> [Rules ()]
-mvDirs subdirs dirname = map (\s -> mvDir s dirname) subdirs
+-- mvDirs :: [String] -> String -> [Rules ()]
+-- mvDirs subdirs dirname = map (\s -> mvDir s dirname) subdirs
 
 mvDir :: String -> String -> Rules ()
 mvDir subdir dirname = do
@@ -219,3 +241,61 @@ substituteHref ref = do
             -> pure $ fst (T.breakOn ".html" before)
           | otherwise
             -> pure text
+
+extractDate :: String -> Maybe String
+extractDate html =
+  case (html =~ ("<time>(.*)</time>" :: String)) :: (String, String, String, [String]) of
+    (_, _, _, [date]) -> Just date
+    _ -> Nothing
+
+extractTitle :: String -> Maybe String
+extractTitle html =
+  case (html =~ ("<h1>(.*)</h1>" :: String)) :: (String, String, String, [String]) of
+    (_, _, _, [date]) -> Just date
+    _ -> Nothing
+
+filePathToIndex :: String -> String
+filePathToIndex = (replace "roam/" "") . (replace ".html" "")
+
+replace :: String -> String -> String -> String
+replace x y = T.unpack . (T.replace (T.pack x) (T.pack y)) . T.pack
+
+-- This breaks a more common pattern to use `Item`s
+-- However, that case needed metadata to be formatted in a particular way,
+-- compatible with .md, but not so much .html
+-- I'd rather stick with .html, in case I ever dislike hakyll...
+data Post = Post
+  { postIdentifier :: Identifier
+  , postBody       :: String
+  , postDate       :: Maybe String
+  , postTitle      :: Maybe String
+  }
+
+recentPosts :: [Post] -> [Post]
+recentPosts =
+  sortBy $ comparing (Down . postDate)
+
+loadPosts :: Pattern -> Compiler [Post]
+loadPosts pattern = do
+  identifiers <- getMatches pattern
+  mapM loadPost identifiers
+
+loadPost :: Identifier -> Compiler Post
+loadPost identifier = do
+  body <- unsafeCompiler $ readFile (toFilePath identifier)
+
+  pure Post
+    { postIdentifier = identifier
+    , postBody       = body
+    , postDate       = extractDate body
+    , postTitle      = extractTitle body
+    }
+
+postCtx :: Context Post
+postCtx =
+  field "date" (\item ->
+    pure $ maybe "" id (postDate (itemBody item)))
+  <> field "title" (\item ->
+    pure $ maybe "" id (postTitle (itemBody item)))
+  <> field "url" (\item ->
+    pure $ toUrl (filePathToIndex (toFilePath (postIdentifier (itemBody item)))))

@@ -1,7 +1,7 @@
 <header class="post-header">
   <h1>Desktop Environment</h1>
   <div class="post-meta">
-    <time>01/2026</time>
+    <time>15-01-2026</time>
   </div>
 </header>
 <p>
@@ -32,8 +32,8 @@ rollout, so in time I can take my favorite pieces of noctalia with me once
 the next configuration round comes.</li>
 </ul></li>
 </ul>
-<div id="outline-container-orgae53556" class="outline-2">
-<h2 id="orgae53556"><span class="section-number-2">1.</span> Window Managment</h2>
+<div id="outline-container-orgc180836" class="outline-2">
+<h2 id="orgc180836"><span class="section-number-2">1.</span> Window Managment</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 Such programs help you organize and control the layout of various windows on
@@ -44,8 +44,8 @@ your desktop environment. This is a short note about setting up Hyprland.
 As in other pages, I&rsquo;m starting with Vimjoyer&rsquo;s <a href="https://www.youtube.com/watch?v=61wGzIv12Ds">video</a>.
 </p>
 </div>
-<div id="outline-container-org05a029f" class="outline-3">
-<h3 id="org05a029f"><span class="section-number-3">1.1.</span> What is a workspace?</h3>
+<div id="outline-container-orgd207511" class="outline-3">
+<h3 id="orgd207511"><span class="section-number-3">1.1.</span> What is a workspace?</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
 From the <a href="https://wayland.app/protocols/ext-workspace-v1">wayland pages</a>: workspaces, also called virtual desktops, are groups of
@@ -62,8 +62,8 @@ learned.
 </div>
 </div>
 </div>
-<div id="outline-container-org66417ff" class="outline-2">
-<h2 id="org66417ff"><span class="section-number-2">2.</span> <code>flake.nix</code></h2>
+<div id="outline-container-orgbeffaf8" class="outline-2">
+<h2 id="orgbeffaf8"><span class="section-number-2">2.</span> <code>flake.nix</code></h2>
 <div class="outline-text-2" id="text-2">
 <p>
 Inside of <code>flake.nix</code>, you&rsquo;ll want to introduce hyprland to your inputs. Since I&rsquo;m
@@ -98,8 +98,8 @@ nixosConfigurations.HOSTNAME = nixpkgs.lib.nixosSystem {
 </div>
 </div>
 </div>
-<div id="outline-container-org875b342" class="outline-2">
-<h2 id="org875b342"><span class="section-number-2">3.</span> <code>configuration.nix</code></h2>
+<div id="outline-container-org55f815f" class="outline-2">
+<h2 id="org55f815f"><span class="section-number-2">3.</span> <code>configuration.nix</code></h2>
 <div class="outline-text-2" id="text-3">
 <p>
 Include the <code>hyprland</code> cachix into you config file so that you can access
@@ -169,8 +169,8 @@ to do with <code>systemd</code> and seat management&hellip;). This involved sett
 </p>
 </div>
 </div>
-<div id="outline-container-org010ac53" class="outline-2">
-<h2 id="org010ac53"><span class="section-number-2">4.</span> Home manager.</h2>
+<div id="outline-container-org9b0c21c" class="outline-2">
+<h2 id="org9b0c21c"><span class="section-number-2">4.</span> Home manager.</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 At this point, (again if you&rsquo;re like me) then you&rsquo;ll have no desktop and will be

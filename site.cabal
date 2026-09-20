@@ -14,6 +14,9 @@ executable caret
       , pandoc
       , process
       , filepath
+      , directory
+      , regex-tdfa
+      , containers
 
     ghc-options:
         -threaded
