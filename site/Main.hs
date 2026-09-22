@@ -15,9 +15,29 @@ import System.FilePath (takeBaseName)
 import System.Process
 import System.Exit
 import System.IO
+import GHC.Exts (fromString)
 
 main :: IO ()
 main = hakyll $ do
+
+  -- NOTE: Maybe the top bar can have HOME ; ABOUT ; SERIAL ; BUNDLES
+
+  -- Copy non-content files
+  match "templates/default.html" $ compile templateBodyCompiler
+  match "templates/directory.html" $ compile templateBodyCompiler
+  match "templates/branchdir.html" $ compile templateBodyCompiler
+
+  match "fonts/**" $ do
+    route $ idRoute
+    compile $ copyFileCompiler
+
+  match "scss/style.scss" $ do
+    route $ constRoute "css/style.css"
+    compile compileSass
+
+  match "scss/katex.min.css" $ do
+    route $ constRoute "css/katex.min.css"
+    compile copyFileCompiler
 
   -- Everything in roam/ is copied into _site/
   -- Start with .html files
@@ -33,40 +53,58 @@ main = hakyll $ do
       makeItem (T.unpack subbed)
         >>= loadAndApplyTemplate "templates/default.html" defaultContext
 
+  notes ["Functional", "NixOS"]
   mvDir "NixOS" "notes/"
+  nixos
   mvDir "Functional" "notes/"
+  functional
+
   mvDir "" ""
-
-  -- Copy all other files
-  match "templates/default.html" $ compile templateBodyCompiler
-
   miscellany
 
-  match "fonts/**" $ do
-    route $ idRoute
-    compile $ copyFileCompiler
-
-  match "scss/style.scss" $ do
-    route $ constRoute "css/style.css"
-    compile compileSass
-
-  match "scss/katex.min.css" $ do
-    route $ constRoute "css/katex.min.css"
-    compile copyFileCompiler
-
 miscellany :: Rules ()
-miscellany = match "templates/directory.html" $ do
-  route $ constRoute "Miscellany/index.html"
-  compile $ do
-    posts <- recentPosts <$> loadPosts "roam/Miscellany/**.html"
-    let ctx =
-          listField "posts"
-            postCtx
-            (return (map (\post -> Item (postIdentifier post) post) posts))
-          <> defaultContext
-    getResourceBody
-        >>= applyAsTemplate ctx
-        >>= loadAndApplyTemplate "templates/default.html" ctx
+miscellany = dirIndex "Miscellany" ""
+
+functional :: Rules ()
+functional = dirIndex "Functional" "notes/"
+
+nixos :: Rules ()
+nixos = dirIndex "NixOS" "notes/"
+
+dirIndex :: String -> String -> Rules ()
+dirIndex dirname prefix = do
+  match (fromGlob ("directories/" <> dirname <> "/index.html")) $ do
+    route $ constRoute (prefix <> dirname <> "/index.html")
+    compile $ do
+      posts <- recentPosts <$> loadPosts (fromGlob ("roam/" <> dirname <> "/*.html"))
+      content <- getResourceBody
+      let ctx =
+            constField "content" (itemBody content)
+            <> listField "posts"
+              (postCtx prefix)
+              (return (map (\post -> Item (postIdentifier post) post) posts))
+            <> defaultContext
+      getResourceBody
+          >>= applyAsTemplate ctx
+          >>= loadAndApplyTemplate "templates/directory.html" ctx
+          >>= loadAndApplyTemplate "templates/default.html" ctx
+
+notes :: [String] -> Rules ()
+notes subdirs = do
+  match (fromGlob ("directories/notes/index.html")) $ do
+    route $ constRoute ("notes/index.html")
+    compile $ do
+      content <- getResourceBody
+      let ctx =
+            constField "content" (itemBody content)
+            <> listField "directories"
+              directoryCtx
+              (return (map (\subdir -> Item (fromString subdir) subdir) subdirs))
+            <> defaultContext
+      getResourceBody
+          >>= applyAsTemplate ctx
+          >>= loadAndApplyTemplate "templates/branchdir.html" ctx
+          >>= loadAndApplyTemplate "templates/default.html" ctx
 
 -- This isn't actually correct. But morally... needs fixing
 -- mvDirs :: [String] -> String -> [Rules ()]
@@ -254,8 +292,8 @@ extractTitle html =
     (_, _, _, [date]) -> Just date
     _ -> Nothing
 
-filePathToIndex :: String -> String
-filePathToIndex = (replace "roam/" "") . (replace ".html" "")
+filePathToIndex :: String -> String -> String
+filePathToIndex prefix = (replace "roam/" prefix) . (replace ".html" "")
 
 replace :: String -> String -> String -> String
 replace x y = T.unpack . (T.replace (T.pack x) (T.pack y)) . T.pack
@@ -291,11 +329,18 @@ loadPost identifier = do
     , postTitle      = extractTitle body
     }
 
-postCtx :: Context Post
-postCtx =
+directoryCtx :: Context String
+directoryCtx =
+  field "title" (\item ->
+    pure $ maybe "" id (Just $ itemBody item))
+  <> field "url" (\item ->
+    pure $ toUrl ("notes/" <> (toFilePath (itemIdentifier item))))
+
+postCtx :: String -> Context Post
+postCtx prefix =
   field "date" (\item ->
     pure $ maybe "" id (postDate (itemBody item)))
   <> field "title" (\item ->
     pure $ maybe "" id (postTitle (itemBody item)))
   <> field "url" (\item ->
-    pure $ toUrl (filePathToIndex (toFilePath (postIdentifier (itemBody item)))))
+    pure $ toUrl (filePathToIndex prefix (toFilePath (postIdentifier (itemBody item)))))

@@ -116,8 +116,8 @@ So <code>join</code> is just concatenating lists! With this concrete definition 
 again easy to see it satisfies the correct diagrams. For example, there&rsquo;s two
 obvious ways to turn a lists of lists of lists into a single, non-nested, list.
 Thinking about something like <code>[[xs1,...,xsn],...,[zs1,...,zsm]]</code>, you either
-start with <code>[xs1,...,xsn] \++ ... \++ [zs1,...,zsm]</code> and then <code>xs1++...++xsn \++
-... \++ zs1++...++zsm</code>. Or you could concatenate the &ldquo;interior&rdquo; lists first to
+start with <code>[xs1,...,xsn] ++ ... ++ [zs1,...,zsm]</code> and then <code>xs1++...++xsn ++
+... ++ zs1++...++zsm</code>. Or you could concatenate the &ldquo;interior&rdquo; lists first to
 get <code>[xs1++...+xsn, ..., zs1++zsm]</code>, but concatenating at this stage gives the
 same result as the first method.
 </p>
