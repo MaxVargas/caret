@@ -1,4 +1,244 @@
-@use "_variables";
-// @use "layout";
-// @use "fonts";
-// @use "images";
+@font-face {
+  font-family: "mathfont";
+  src: url("/fonts/Euler-Math.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fantasque";
+  src: url("/fonts/Fantasque.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "maintext";
+  src: url("/fonts/Sanchez-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: KaTeX_AMS;
+  font-style: normal;
+  font-weight: 400;
+  src: url(/fonts/KaTeX_AMS-Regular.woff2) format("woff2"), url(/fonts/KaTeX_AMS-Regular.woff) format("woff"), url(/fonts/KaTeX_AMS-Regular.ttf) format("truetype");
+}
+:root {
+  --color-bg: #ddccbb;
+  --color-bg2: #b2b1b0;
+  --color-bg3: #789e95;
+  --color-bg4: #705341;
+  --color-text: #975310;
+  --color-text2: #456700;
+  --color-text3: #123456;
+  --color-muted: #666;
+  --text-accent: #4c602c;
+  --accent: #4c602c;
+  --main-border: #696969;
+  --code-border: #69aaff;
+  --code-background: #cfcfcf;
+  --font-body: "maintext", serif;
+  --font-heading: "mathfont", sans-serif;
+  --font-code: "Fantasque", monospace;
+  --content-width: 760px;
+  --spacing: 2rem;
+}
+
+header {
+  color: var(--color-text);
+  font-family: var(--font-heading);
+}
+
+h1 {
+  color: var(--color-text);
+  font-family: var(--font-heading);
+}
+
+h2 {
+  color: var(--color-text);
+  font-family: var(--font-heading);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+pre,
+code {
+  font-family: var(--font-code);
+}
+
+pre {
+  border: 2px solid var(--code-border);
+  border-radius: 0px;
+  padding: 1rem;
+  background: var(--code-background);
+  overflow-x: auto;
+}
+
+a {
+  color: var(--accent);
+}
+
+.post-listing {
+  display: flex;
+  align-items: baseline;
+  margin: 0.5em 0;
+}
+
+.post-listing .dots {
+  flex: 1;
+  border-bottom: 1px dotted currentColor;
+  margin: 0 0.75em;
+}
+
+.post-listing time {
+  white-space: nowrap;
+}
+
+#nav {
+  width: var(--content-width);
+  margin: 0 auto;
+  background: #dfd;
+  padding: 0rem 1.5rem;
+  border: 2px solid var(--main-border);
+}
+
+.nav-inner {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0.9rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.site-title {
+  font-weight: 600;
+  text-decoration: none;
+  color: inherit;
+}
+
+#nav ul {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#nav li {
+  flex: 1;
+  text-align: center;
+}
+
+#nav a {
+  display: block;
+  font-size: 2rem;
+  font-weight: 600;
+  padding: 0.25rem 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+#nav a:hover {
+  text-decoration: underline;
+}
+
+main {
+  min-width: 0;
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0rem 1.5rem;
+  border: 2px solid var(--main-border);
+}
+
+main :not(pre) > code {
+  padding: 0.15em 0.35em;
+  border: 1px solid var(--code-border);
+  border-radius: 4px;
+  background: var(--code-background);
+  font-size: 0.9em;
+}
+
+figure.tikz-cd {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+figure.tikz-cd img {
+  max-width: 80%;
+  transform: scale(1.4);
+  height: auto;
+}
+
+img {
+  text-align: center;
+}
+
+.katex .mathcal,
+.katex .mord {
+  font-family: "Fantasque";
+}
+
+.katex .mathbb {
+  font-family: "mathfont";
+}
+
+.katex,
+.katex .mathnormal,
+.katex .mop,
+.katex .msupsub {
+  font-family: "mathfont";
+}
+
+.katex .msupsub .mtight {
+  position: relative;
+  top: 0.08em;
+}
+
+#footnotes {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--accent);
+  font-size: 0.85rem;
+  color: var(--color-text3);
+}
+
+#footnotes h2 {
+  display: none;
+}
+
+#text-footnotes {
+  margin-top: 1rem;
+}
+
+.footdef {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  column-gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.footdef > sup {
+  grid-column: 1;
+  text-align: right;
+  font-size: 0.8em;
+}
+
+.footpara {
+  grid-column: 2;
+}
+
+.footpara p {
+  margin: 0;
+}

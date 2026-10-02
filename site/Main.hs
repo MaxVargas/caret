@@ -89,9 +89,9 @@ main = hakyllWith hakyllConfiguration $ do
     route $ idRoute
     compile $ copyFileCompiler
 
-  match "css/style.css" $ do
+  match "css/style.scss" $ do
     route $ constRoute "css/style.css"
-    compile copyFileCompiler
+    compile $ compileSass
 
   match "css/katex.min.css" $ do
     route $ constRoute "css/katex.min.css"
@@ -299,7 +299,7 @@ compileSass = do
         "sass"
         [ "--no-source-map"
         , "--style=expanded"
-        , "css/style.css"
+        , "css/style.scss"
         ]
         ""
 
