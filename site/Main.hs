@@ -7,9 +7,9 @@ import Hakyll.Images ( loadImage
                      , compressJpgCompiler
                      , scaleImageCompiler
                      )
-import Data.Default (def)
-import Data.List (sortBy, isPrefixOf, stripPrefix)
-import Data.Ord (comparing, Down(..))
+import Data.Default ( def )
+import Data.List ( sortBy, isSuffixOf, isPrefixOf, stripPrefix )
+import Data.Ord ( comparing, Down(..) )
 import qualified Data.Map as M
 import qualified Data.Map.Strict as MS
 import qualified Data.Text as T
@@ -23,15 +23,61 @@ import Text.Pandoc.Options      ( ReaderOptions (..)
                                 , WriterOptions (..)
                                 , HighlightMethod (..) )
 import Text.Pandoc.Walk         ( walk )
-import System.Directory         ( listDirectory)
-import System.FilePath          ( takeBaseName)
+import System.Directory         ( listDirectory )
+import System.FilePath          ( takeBaseName, takeFileName )
 import System.Process
 import System.Exit
 import System.IO
-import GHC.Exts (fromString)
+import GHC.Exts ( fromString )
+
+-- configuration
+
+data SiteConfiguration = SiteConfiguration
+  { siteName :: String
+  , siteRoot :: String
+  } deriving (Show)
+
+siteConfiguration :: SiteConfiguration
+siteConfiguration =
+  SiteConfiguration
+  { siteName = "caret"
+  , siteRoot = "https://maxvargas.github.io/caret"
+  }
+
+feedConfiguration :: FeedConfiguration
+feedConfiguration =
+  FeedConfiguration
+  { feedTitle = "wow"
+  , feedDescription = "huh"
+  , feedAuthorName = "max"
+  , feedAuthorEmail = "blackhole@email.com"
+  , feedRoot = "https://maxvargas.github.io/caret/Miscellany"
+  }
+
+hakyllConfiguration :: Configuration
+hakyllConfiguration =
+  defaultConfiguration
+    { destinationDirectory = "plop"
+    , ignoreFile = ignoreFile'
+    , previewHost = "127.0.0.1"
+    , previewPort = 8000
+    , providerDirectory = "./"
+    , storeDirectory = "_cache"
+    , tmpDirectory = "_tmp"
+    }
+  where
+    ignoreFile' path
+      | ".DS_Store" == fileName           = True
+      | "."    `isSuffixOf` fileName = False
+      | "#"    `isSuffixOf` fileName = True
+      | "~"    `isSuffixOf` fileName = True
+      | ".swp" `isSuffixOf` fileName = True
+      | otherwise = False
+      where
+        fileName = takeFileName path
 
 main :: IO ()
-main = hakyll $ do
+main = hakyllWith hakyllConfiguration $ do
 
   -- NOTE: Maybe the top bar can have ABOUT ; SERIAL ; BUNDLES ; PICS (Note, no HOME)
 
