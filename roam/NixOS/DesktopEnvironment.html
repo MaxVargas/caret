@@ -33,8 +33,8 @@ the next configuration round comes.</li>
 </ul></li>
 </ul>
 <div id="outline-container-orgc180836" class="outline-2">
-<h2 id="orgc180836"><span class="section-number-2">1.</span> Window Managment</h2>
-<div class="outline-text-2" id="text-1">
+<h2 id="orgc180836">Window Managment</h2>
+<div class="outline-text-2" id="text-orgc180836">
 <p>
 Such programs help you organize and control the layout of various windows on
 your desktop environment. This is a short note about setting up Hyprland.
@@ -45,8 +45,8 @@ As in other pages, I&rsquo;m starting with Vimjoyer&rsquo;s <a href="https://www
 </p>
 </div>
 <div id="outline-container-orgd207511" class="outline-3">
-<h3 id="orgd207511"><span class="section-number-3">1.1.</span> What is a workspace?</h3>
-<div class="outline-text-3" id="text-1-1">
+<h3 id="orgd207511">What is a workspace?</h3>
+<div class="outline-text-3" id="text-orgd207511">
 <p>
 From the <a href="https://wayland.app/protocols/ext-workspace-v1">wayland pages</a>: workspaces, also called virtual desktops, are groups of
 surfaces. You can have multiple workspaces and the compositor (wayland) will
@@ -63,8 +63,8 @@ learned.
 </div>
 </div>
 <div id="outline-container-orgbeffaf8" class="outline-2">
-<h2 id="orgbeffaf8"><span class="section-number-2">2.</span> <code>flake.nix</code></h2>
-<div class="outline-text-2" id="text-2">
+<h2 id="orgbeffaf8"><code>flake.nix</code></h2>
+<div class="outline-text-2" id="text-orgbeffaf8">
 <p>
 Inside of <code>flake.nix</code>, you&rsquo;ll want to introduce hyprland to your inputs. Since I&rsquo;m
 using home-manager to handle configuration, you need that too.
@@ -99,8 +99,8 @@ nixosConfigurations.HOSTNAME = nixpkgs.lib.nixosSystem {
 </div>
 </div>
 <div id="outline-container-org55f815f" class="outline-2">
-<h2 id="org55f815f"><span class="section-number-2">3.</span> <code>configuration.nix</code></h2>
-<div class="outline-text-2" id="text-3">
+<h2 id="org55f815f"><code>configuration.nix</code></h2>
+<div class="outline-text-2" id="text-org55f815f">
 <p>
 Include the <code>hyprland</code> cachix into you config file so that you can access
 pre-compiled binaries to save time when rebuilding your system.
@@ -170,8 +170,8 @@ to do with <code>systemd</code> and seat management&hellip;). This involved sett
 </div>
 </div>
 <div id="outline-container-org9b0c21c" class="outline-2">
-<h2 id="org9b0c21c"><span class="section-number-2">4.</span> Home manager.</h2>
-<div class="outline-text-2" id="text-4">
+<h2 id="org9b0c21c">Home manager.</h2>
+<div class="outline-text-2" id="text-org9b0c21c">
 <p>
 At this point, (again if you&rsquo;re like me) then you&rsquo;ll have no desktop and will be
 running directly through a <code>tty</code> session. With luck, the <code>Hyprland</code> command should

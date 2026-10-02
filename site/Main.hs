@@ -3,15 +3,28 @@
 module Main where
 
 import Hakyll
-import Data.List (sortBy, isPrefixOf)
+import Hakyll.Images ( loadImage
+                     , compressJpgCompiler
+                     , scaleImageCompiler
+                     )
+import Data.Default (def)
+import Data.List (sortBy, isPrefixOf, stripPrefix)
 import Data.Ord (comparing, Down(..))
 import qualified Data.Map as M
 import qualified Data.Map.Strict as MS
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import Text.Regex.TDFA ((=~))
-import System.Directory (listDirectory)
-import System.FilePath (takeBaseName)
+import Text.Regex.TDFA          ( (=~) )
+import Text.Pandoc
+import Text.Pandoc.Options
+import Text.Pandoc.Definition   ( Block(..), Pandoc )
+import Text.Pandoc.Highlighting ( Style, kate, styleToCss )
+import Text.Pandoc.Options      ( ReaderOptions (..)
+                                , WriterOptions (..)
+                                , HighlightMethod (..) )
+import Text.Pandoc.Walk         ( walk )
+import System.Directory         ( listDirectory)
+import System.FilePath          ( takeBaseName)
 import System.Process
 import System.Exit
 import System.IO
@@ -20,7 +33,7 @@ import GHC.Exts (fromString)
 main :: IO ()
 main = hakyll $ do
 
-  -- NOTE: Maybe the top bar can have HOME ; ABOUT ; SERIAL ; BUNDLES
+  -- NOTE: Maybe the top bar can have ABOUT ; SERIAL ; BUNDLES ; PICS (Note, no HOME)
 
   -- Copy non-content files
   match "templates/default.html" $ compile templateBodyCompiler
@@ -39,6 +52,14 @@ main = hakyll $ do
     route $ constRoute "css/katex.min.css"
     compile copyFileCompiler
 
+  match "favicon/favicon-32x32.png" $ do
+    route $ gsubRoute "^favicon/" (const "")
+    compile $ copyFileCompiler
+
+  create ["css/syntax.css"] $ do
+    route idRoute
+    compile $ makeItem (styleToCss pandocCodeStyle)
+
   -- Everything in roam/ is copied into _site/
   -- Start with .html files
 
@@ -52,6 +73,13 @@ main = hakyll $ do
         substituteHrefs (rendered)
       makeItem (T.unpack subbed)
         >>= loadAndApplyTemplate "templates/default.html" defaultContext
+        >>= relativizeUrls
+
+  match "roam/**.jpg" $ do
+    route $ gsubRoute "^roam/" (const "")
+    compile $ loadImage
+      >>= scaleImageCompiler 450 225
+      >>= compressJpgCompiler 80
 
   notes ["Functional", "NixOS"]
   mvDir "NixOS" "notes/"
@@ -59,7 +87,7 @@ main = hakyll $ do
   mvDir "Functional" "notes/"
   functional
 
-  mvDir "" ""
+  mvRoot
   miscellany
 
 miscellany :: Rules ()
@@ -88,6 +116,7 @@ dirIndex dirname prefix = do
           >>= applyAsTemplate ctx
           >>= loadAndApplyTemplate "templates/directory.html" ctx
           >>= loadAndApplyTemplate "templates/default.html" ctx
+          >>= relativizeUrls
 
 notes :: [String] -> Rules ()
 notes subdirs = do
@@ -105,10 +134,29 @@ notes subdirs = do
           >>= applyAsTemplate ctx
           >>= loadAndApplyTemplate "templates/branchdir.html" ctx
           >>= loadAndApplyTemplate "templates/default.html" ctx
+          >>= relativizeUrls
 
 -- This isn't actually correct. But morally... needs fixing
 -- mvDirs :: [String] -> String -> [Rules ()]
 -- mvDirs subdirs dirname = map (\s -> mvDir s dirname) subdirs
+
+-- freaking relativizeUrls with images... >:(
+mvRoot :: Rules ()
+mvRoot = do
+  match (fromGlob ("roam/**.html")) $ do
+    route $ composeRoutes
+      (gsubRoute "^roam/" (const ""))
+      (gsubRoute ".html$" (const "/index.html"))
+    compile $ do
+      body <- getResourceBody
+      rendered <- recompilingUnsafeCompiler $
+        replaceMath (T.pack (itemBody body))
+      subbed <- recompilingUnsafeCompiler $
+        substituteHrefs (rendered)
+      highlighted <- recompilingUnsafeCompiler $
+        replaceCode (subbed)
+      makeItem (T.unpack $ transformAttachmentLink highlighted)
+        >>= loadAndApplyTemplate "templates/default.html" defaultContext
 
 mvDir :: String -> String -> Rules ()
 mvDir subdir dirname = do
@@ -122,8 +170,17 @@ mvDir subdir dirname = do
         replaceMath (T.pack (itemBody body))
       subbed <- recompilingUnsafeCompiler $
         substituteHrefs (rendered)
-      makeItem (T.unpack subbed)
+      highlighted <- recompilingUnsafeCompiler $
+        replaceCode (subbed)
+      makeItem (T.unpack highlighted)
         >>= loadAndApplyTemplate "templates/default.html" defaultContext
+        >>= relativizeUrls
+
+  match (fromGlob ("roam/" <> subdir <> "/**/*.svg")) $ do
+    route $ gsubRoute "^roam/" (const dirname)
+    compile $ do
+      body <- getResourceBody
+      makeItem $ T.unpack $ transformTikZ (T.pack (itemBody body))
 
   match (fromGlob ("roam/" <> subdir <> "/**")) $ do
     route $ gsubRoute "^roam/" (const dirname)
@@ -151,59 +208,43 @@ renderKatex display math = do
 
   pure result
 
-replaceMath :: T.Text -> IO T.Text
-replaceMath = go
+replaceBetween :: (T.Text -> IO T.Text) -> T.Text -> T.Text -> T.Text -> IO T.Text
+replaceBetween transformFn begin end = go
   where
     go text =
       case findNext text of
         Nothing -> pure text
-        Just (before, display, math, after) -> do
-          rendered <- renderKatex display math
+        Just (before, inner, after) -> do
+          subbed <- transformFn inner
           rest <- go after
-          pure $ before <> rendered <> rest
+          pure $ before <> subbed <> rest
 
     findNext text =
-      case (T.breakOn "\\(" text, T.breakOn "\\[" text) of
-        ((beforeInline, inlineRest),
-         (beforeDisplay, displayRest))
-          | T.null inlineRest && T.null displayRest ->
+      case (T.breakOn begin text) of
+        (before, onwards)
+          | T.null onwards ->
             Nothing
-          | T.null inlineRest ->
-            findDisplay beforeDisplay displayRest
-          | T.null displayRest ->
-            findInline beforeDisplay displayRest
-          | T.length beforeInline <= T.length beforeDisplay ->
-            findInline beforeInline inlineRest
           | otherwise ->
-            findDisplay beforeDisplay displayRest
+            findEnd before onwards
 
-    findInline before rest =
-      let content = T.drop 2 rest
-          (math, closing) = T.breakOn "\\)" content
+    findEnd before onwards =
+      let (bgn, content) = T.splitAt (T.length begin) onwards
+          (inn, closing) = T.breakOn end content
       in
         if T.null closing
         then Nothing
         else
           Just
-            ( before
-            , False
-            , math
-            , T.drop 2 closing
+            ( before <> bgn
+            , inn
+            , closing
             )
 
-    findDisplay before rest =
-      let content = T.drop 2 rest
-          (math, closing) = T.breakOn "\\]" content
-      in
-        if T.null closing
-        then Nothing
-        else
-          Just
-            ( before
-            , True
-            , math
-            , T.drop 2 closing
-            )
+replaceMath :: T.Text -> IO T.Text
+replaceMath = do
+  subbedInline <- replaceBetween (renderKatex False) "\\(" "\\)"
+  subbedDisplay <- replaceBetween (renderKatex True) "\\[" "\\]"
+  return subbedDisplay
 
 compileSass :: Compiler (Item String)
 compileSass = do
@@ -230,37 +271,7 @@ compileSass = do
   makeItem css
 
 substituteHrefs :: T.Text -> IO T.Text
-substituteHrefs = go
-  where
-    go text =
-      case findNext text of
-        Nothing -> pure text
-        -- ref is like href="blah"
-        Just (before, ref, after) -> do
-          subbed <- substituteHref ref
-          rest <- go after
-          pure $ before <> subbed <> rest
-
-    findNext text =
-      case (T.breakOn "href=\"" text) of
-        (beforeHref, hrefOn)
-          | T.null hrefOn ->
-            Nothing
-          | otherwise ->
-            findEndQuote beforeHref hrefOn
-
-    findEndQuote before onwards =
-      let (href, content) = T.splitAt 6 onwards
-          (ref, closing) = T.breakOn "\"" content
-      in
-        if T.null closing
-        then Nothing
-        else
-          Just
-            ( before <> href
-            , ref
-            , closing
-            )
+substituteHrefs = replaceBetween substituteHref "href=\"" "\""
 
 substituteHref :: T.Text -> IO T.Text
 substituteHref ref = do
@@ -344,3 +355,68 @@ postCtx prefix =
     pure $ maybe "" id (postTitle (itemBody item)))
   <> field "url" (\item ->
     pure $ toUrl (filePathToIndex prefix (toFilePath (postIdentifier (itemBody item)))))
+
+replaceCode :: T.Text -> IO T.Text
+replaceCode = go
+  where
+    go text =
+      case T.breakOn "<pre class=\"src " text of
+        (_, "") ->
+          pure text
+        (before, rest) -> do
+          let (block, after) = T.breakOn "</pre>" rest
+
+          if T.null after
+            then pure text
+            else do
+              highlighted <- highlightCode block
+              rest' <- go (T.drop (T.length "</pre>") after)
+              pure $ before <> highlighted <> rest'
+
+pandocCodeStyle :: Style
+pandocCodeStyle = kate
+
+highlightCode :: T.Text -> IO T.Text
+highlightCode block = do
+  let prefix = "<pre class=\"src "
+      fragment = T.drop (T.length prefix) block
+      (className, rest) = T.breakOn "\"><code>" fragment
+      language = T.drop (T.length "src-") className
+      codeStart = T.drop (T.length "\"><code>") rest
+      codeHtml = fst (T.breakOn "</code>" codeStart)
+
+  result <- runIO $ do
+    decoded <- readHtml def ("<pre><code>" <> codeHtml <> "</code></pre>")
+    let code = extractCode decoded
+    writeHtml5String
+      def
+        { writerHighlightMethod = Skylighting pandocCodeStyle
+        }
+      (Pandoc nullMeta [CodeBlock ("", [language], []) code])
+
+  case result of
+    Left _ ->
+      pure $ block
+    Right output -> do
+      pure output
+
+extractCode :: Pandoc -> T.Text
+extractCode (Pandoc _ blocks) =
+  case blocks of
+    [CodeBlock _ text] -> text
+    _                    -> ""
+
+-- TikZ coloring
+tikzColor :: T.Text
+tikzColor = "#97522c"
+
+transformTikZ :: T.Text -> T.Text
+transformTikZ svg =
+  T.replace "<g id='page1'>"
+    ("<g id='page1' fill='" <> tikzColor <> "'>")
+  $ T.replace "#000" tikzColor svg
+
+-- Hacky photo url fix
+transformAttachmentLink :: T.Text -> T.Text
+transformAttachmentLink =
+  T.replace "src=\"attachments" "src=\"/attachments"

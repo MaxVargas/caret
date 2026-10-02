@@ -1,7 +1,9 @@
 @use "sass:map";
 
 @font-face {
-    font-family: "EulerMath";
+    font-family: "mathfont";
+
+    //src: url("/fonts/PL46-Math.otf") format("opentype");
     src: url("/fonts/Euler-Math.otf") format("opentype");
     font-weight: normal;
     font-style: normal;
@@ -17,6 +19,15 @@
 }
 
 @font-face {
+    font-family: "maintext";
+    //src: url("/fonts/IBMPlexSans-VariableFont_wdth,wght.ttf") format("truetype");
+    src: url("/fonts/Sanchez-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
     font-family:KaTeX_AMS;
     font-style:normal;
     font-weight:400;
@@ -24,24 +35,40 @@
 }
 
 :root {
-    --color-bg: #fafafa;
-    --color-text: #292929;
+    --color-bg: #ddccbb;
+    --color-bg2: #b2b1b0;
+    --color-bg3: #789e95;
+    --color-bg4: #705341;
+    --color-text: #975310;
+    --color-text2: #456700;
+    --color-text3: #123456;
     --color-muted: #666;
-    --color-accent: #356ae6;
+    --text-accent: #4c602c;
+    --accent: #4c602c;
 
+    --main-border: #696969;
     --code-border: #69aaff;
     --code-background: #cfcfcf;
 
-    --font-body: "PT Serif", serif;
-    --font-heading: "EulerMath", sans-serif;
+    --font-body: "maintext", serif;
+    --font-heading: "mathfont", sans-serif;
     --font-code: "Fantasque", monospace;
 
     --content-width: 760px;
-    --sidebar-width: 220px;
     --spacing: 2rem;
 }
 
 header {
+    color: var(--color-text);
+    font-family: var(--font-heading);
+}
+
+h1 {
+    color: var(--color-text);
+    font-family: var(--font-heading);
+}
+
+h2 {
     color: var(--color-text);
     font-family: var(--font-heading);
 }
@@ -65,31 +92,99 @@ pre {
 }
 
 a {
-    color: (var(--color-accent));
+    color: (var(--accent));
 }
 
-.site-layout {
-    display: grid;
-    grid-template-columns: var(--sidebar-width) minmax(0, var(--content-width));
-    gap: var(--spacing);
+.post-listing {
+    display: flex;
+    align-items: baseline;
+    margin: 0.5em 0;
+}
+.post-listing .dots {
+    flex: 1;
+    border-bottom: 1px dotted currentColor;;
+    margin: 0 0.75em;
+}
+.post-listing time {
+    white-space: nowrap;
+}
 
-    max-width: calc(
-        var(--sidebar-width) + var(--gap) + var(--content-width)
-    );
-
+#nav {
+    width: var(--content-width);
     margin: 0 auto;
-    padding: 2rem;
+    background: #dfd;
+    padding: 0rem 1.5rem;
+    border: 2px solid var(--main-border);
 }
-
+.nav-inner {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+.site-title {
+    font-weight: 600;
+    text-decoration: none;
+    color: inherit;
+}
+#nav ul {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+#nav li {
+    flex: 1;
+    text-align: center;
+}
+#nav a {
+    display: block;
+    font-size: 2rem;
+    font-weight: 600;
+    padding: 0.25rem 0;
+    color: inherit;
+    text-decoration: none;
+}
+#nav a:hover {
+    text-decoration: underline;
+}
 main {
     min-width: 0;
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: 0rem 1.5rem;
+    border: 2px solid var(--main-border);
+}
+main :not(pre) > code {
+    padding: 0.15em 0.35em;
+    border: 1px solid var(--code-border);
+    border-radius: 4px;
+    background: var(--code-background);
+    font-size: 0.9em;
 }
 
-.sidebar {
-    position: sticky;
-    top: 2rem;
-    align-self: start;
+figure.tikz-cd {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin: 2rem 0;
 }
+figure.tikz-cd img {
+    max-width: 80%;
+    transform: scale(1.4);
+    height: auto;
+}
+
+img {
+    text-align: center;
+}
+
 
 ////////// KATEX
 .katex .mathcal,
@@ -98,41 +193,20 @@ main {
 }
 
 .katex .mathbb {
-    font-family: "KaTeX_AMS";
+    font-family: "mathfont";
 }
 
 .katex,
 .katex .mathnormal,
 .katex .mop,
 .katex .msupsub {
-    font-family: "EulerMath";
+    font-family: "mathfont";
 }
 
 .katex .msupsub .mtight {
     position: relative;
     top: 0.08em;
 }
-//
-// .katex {
-//     text-rendering: auto;
-// }
-// .katex .vlist {
-//     display: table-cell;
-//     vertical-align: bottom;
-//     position: relative;
-// }
-// .katex .vlist > span {
-//     display: relative;
-//     height: 0;
-//     position: relative;
-// }
-// .katex .msupsub {
-//     text-align: left;
-// }
-// .katex .mtight {
-//     font-size: 0.8em;
-// }
-
 
 // box model -- margin, padding, border
 // typography -- font-family, font-size, line-height
@@ -147,9 +221,9 @@ main {
 #footnotes {
     margin-top: 4rem;
     padding-top: 1.5rem;
-    border-top: 2px solid var(--text-color, #333);
+    border-top: 2px solid var(--accent);
     font-size: 0.85rem;
-    color: #666;
+    color: var(--color-text3);
 }
 
 #footnotes h2 {
@@ -180,56 +254,3 @@ main {
 .footpara p {
     margin: 0;
 }
-
-//////////////////////
-// DEVICE VARIABLES //
-//////////////////////
-$breakpoints: (
-  mobile: 800px,
-  desktop: 1200px,
-);
-
-$mobile: "(max-width: #{map.get($breakpoints, mobile)})";
-$tablet: "(min-width: #{map.get($breakpoints, mobile)}) and (max-width: #{map.get($breakpoints, desktop)})";
-$desktop: "(min-width: #{map.get($breakpoints, desktop)})";
-
-$pageWidth: #{map.get($breakpoints, mobile)};
-$sidePanelWidth: 320px; //380px;
-$topSpacing: 6rem;
-$boldWeight: 700;
-$semiBoldWeight: 600;
-$normalWeight: 400;
-
-$mobileGrid: (
-  templateRows: "auto auto auto auto auto",
-  templateColumns: "auto",
-  rowGap: "5px",
-  columnGap: "5px",
-  templateAreas:
-    '"grid-sidebar-left"\
-      "grid-header"\
-      "grid-center"\
-      "grid-sidebar-right"\
-      "grid-footer"',
-);
-$tabletGrid: (
-  templateRows: "auto auto auto auto",
-  templateColumns: "#{$sidePanelWidth} auto",
-  rowGap: "5px",
-  columnGap: "5px",
-  templateAreas:
-    '"grid-sidebar-left grid-header"\
-      "grid-sidebar-left grid-center"\
-      "grid-sidebar-left grid-sidebar-right"\
-      "grid-sidebar-left grid-footer"',
-);
-$desktopGrid: (
-  templateRows: "auto auto auto",
-  templateColumns: "#{$sidePanelWidth} auto #{$sidePanelWidth}",
-  rowGap: "5px",
-  columnGap: "5px",
-  templateAreas:
-    '"grid-sidebar-left grid-header grid-sidebar-right"\
-      "grid-sidebar-left grid-center grid-sidebar-right"\
-      "grid-sidebar-left grid-footer grid-sidebar-right"',
-);

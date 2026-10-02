@@ -21,8 +21,8 @@ writing derivations yourself, but rather use builtin utilities to create
 derivations.
 </p>
 <div id="outline-container-orgd829e98" class="outline-2">
-<h2 id="orgd829e98"><span class="section-number-2">1.</span> What is a derivation? It&rsquo;s a special kind of attribute set that</h2>
-<div class="outline-text-2" id="text-1">
+<h2 id="orgd829e98">What is a derivation? It&rsquo;s a special kind of attribute set that</h2>
+<div class="outline-text-2" id="text-orgd829e98">
 <p>
 needs particular elements in its definition. As an example, we can inspect the
 derivation specs for the item below. Within an interactive environment using
@@ -48,8 +48,8 @@ derivation that &ldquo;works&rdquo;.
 </div>
 </div>
 <div id="outline-container-orgddba706" class="outline-2">
-<h2 id="orgddba706"><span class="section-number-2">2.</span> Creating a derivation. Nix has builtin utilities</h2>
-<div class="outline-text-2" id="text-2">
+<h2 id="orgddba706">Creating a derivation. Nix has builtin utilities</h2>
+<div class="outline-text-2" id="text-orgddba706">
 <p>
 for creating functioning derivations that will compile and package software. The
 fact that <code>drv.type = "derivation"</code> only means that nix will treat the attribute
@@ -82,8 +82,8 @@ boilerplate that you&rsquo;d have to write otherwise. Once the derivation is def
 </div>
 </div>
 <div id="outline-container-org6347bf2" class="outline-2">
-<h2 id="org6347bf2"><span class="section-number-2">3.</span> Example</h2>
-<div class="outline-text-2" id="text-3">
+<h2 id="org6347bf2">Example</h2>
+<div class="outline-text-2" id="text-org6347bf2">
 <p>
 For illustrative purposes, it&rsquo;s worth running through an example. For a simple
 case, you can run `nix-build` on the example above. This produced a file at the
@@ -100,8 +100,8 @@ ever built!
 </div>
 </div>
 <div id="outline-container-orge5c18ee" class="outline-2">
-<h2 id="orge5c18ee"><span class="section-number-2">4.</span> Building with <code>derivation</code></h2>
-<div class="outline-text-2" id="text-4">
+<h2 id="orge5c18ee">Building with <code>derivation</code></h2>
+<div class="outline-text-2" id="text-orge5c18ee">
 <p>
 What does <code>nix-build</code> do when it is called on an output of the <code>derivation</code>
 function? Recall that an input to <code>derivation</code> must have the form <code>a = { name =

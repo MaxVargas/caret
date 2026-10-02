@@ -9,14 +9,17 @@ executable caret
     build-depends:
         base >= 4.17 && < 5
       , hakyll >= 4.17 && < 5
+      , hakyll-images
       , skylighting
       , text
       , pandoc
+      , pandoc-types
       , process
       , filepath
       , directory
       , regex-tdfa
       , containers
+      , data-default
 
     ghc-options:
         -threaded

@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: IBM Plex Sans Thai Looped
+- Font Author: undefined
+- Font Source: https://fonts.gstatic.com/s/ibmplexsansthailooped/v12/tss_AoJJRAhL3BTrK3r2xxbFhvKfyBB6l7hHT30LxBKAoFGoBCQ.ttf
+- Font License: undefined)
