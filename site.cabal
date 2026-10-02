@@ -12,7 +12,7 @@ executable caret
       , hakyll-images
       , skylighting
       , text
-      , pandoc
+      , pandoc >= 3.7 && < 3.8
       , pandoc-types
       , process
       , filepath
