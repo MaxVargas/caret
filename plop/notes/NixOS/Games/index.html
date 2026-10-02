@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../favicon-32x32.png">
+  <link rel="stylesheet" href="../../../css/katex.min.css">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <link rel="stylesheet" href="../../../css/syntax.css">
+</head>
+
+<body>
+  <div class="site-layout">
+    <nav id="nav">
+      <div class="nav-inner">
+        <ul>
+          <li><a href="../../../">HOME</a></li>
+          <li><a href="../../../notes">BUNDLES</a></li>
+          <li><a href="../../../Miscellany">SERIAL</a></li>
+          <li><a href="../../../Photos">PHOTOS</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main>
+      <header class="post-header">
+  <h1>Games</h1>
+  <div class="post-meta">
+    <time>14-03-2025</time>
+  </div>
+</header>
+<p>
+This part I got from Vimjoyer&rsquo;s video on the topic. Setting up steam starts with
+the following in the configuration file:
+</p>
+
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode nix"><code class="sourceCode nix"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>programs<span class="op">.</span>steam = <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="va">enable</span> <span class="op">=</span> <span class="cn">true</span><span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="va">gamescopeSession</span>.<span class="va">enable</span> <span class="op">=</span> <span class="cn">true</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="va">package</span> <span class="op">=</span> pkgs<span class="op">.</span>steam<span class="op">.</span>override = <span class="op">{</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">extraPkgs</span> <span class="op">=</span> <span class="va">pkgs</span><span class="op">:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>      <span class="kw">with</span> pkgs<span class="op">;</span> <span class="op">[</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        liberation_ttf</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>      <span class="op">];</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">};</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span>;</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>hardware<span class="op">.</span>steam<span class="op">-</span>hardware<span class="op">.</span>enable = <span class="cn">true</span>;</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>programs<span class="op">.</span>gamemode<span class="op">.</span>enable = <span class="cn">true</span>;</span></code></pre></div>
+</div>
+
+<p>
+You also want to install <code>protonup</code> and when using home-manager, set
+</p>
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode nix"><code class="sourceCode nix"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>home<span class="op">.</span>sessionvariables = <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="va">STEAM_EXTRA_COMPAT_TOOLS_PATHS</span> <span class="op">=</span> </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;</span><span class="sc">\$</span><span class="st">{HOME}/.steam/root/compatibilitytools.d&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+</div>
+<p>
+Then you should be set up to run games on steam.
+</p>
+
+    </main>
+  </div>
+</body>
+<img src="https://caret.goatcounter.com/count?p=/notes/NixOS/Games/index.html">
+</html>

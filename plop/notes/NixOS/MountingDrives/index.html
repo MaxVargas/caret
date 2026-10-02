@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../favicon-32x32.png">
+  <link rel="stylesheet" href="../../../css/katex.min.css">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <link rel="stylesheet" href="../../../css/syntax.css">
+</head>
+
+<body>
+  <div class="site-layout">
+    <nav id="nav">
+      <div class="nav-inner">
+        <ul>
+          <li><a href="../../../">HOME</a></li>
+          <li><a href="../../../notes">BUNDLES</a></li>
+          <li><a href="../../../Miscellany">SERIAL</a></li>
+          <li><a href="../../../Photos">PHOTOS</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main>
+      <header class="post-header">
+  <h1>Mounting Drives</h1>
+  <div class="post-meta">
+    <time>15-03-2025</time>
+  </div>
+</header>
+<p>
+Simple enough, I mainly just want a quick reference so that I can transfer
+pictures from an SD card to internal storage. This is just following the
+instructions over <a href="https://askubuntu.com/questions/37767/how-to-access-a-usb-flash-drive-from-the-terminal">here</a>. First, find the drive you want to pull data from using
+<code>lsblk</code>.
+</p>
+
+<p>
+Second, create a mount point:
+</p>
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mkdir /media/usb</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mount /dev/sdxX /media/usb</span></code></pre></div>
+</div>
+<p>
+Then you can copy files over from <code>/media/usb</code> into any more permanent location.
+Once copying is done, you can unmount with
+</p>
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> umount /media/usb</span></code></pre></div>
+</div>
+
+<p>
+Follow the leads here if you run into a read-only file system error: <a href="https://nixos.wiki/wiki/NTFS">link</a>.
+</p>
+
+    </main>
+  </div>
+</body>
+<img src="https://caret.goatcounter.com/count?p=/notes/NixOS/MountingDrives/index.html">
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../favicon-32x32.png">
+  <link rel="stylesheet" href="../../../css/katex.min.css">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <link rel="stylesheet" href="../../../css/syntax.css">
+</head>
+
+<body>
+  <div class="site-layout">
+    <nav id="nav">
+      <div class="nav-inner">
+        <ul>
+          <li><a href="../../../">HOME</a></li>
+          <li><a href="../../../notes">BUNDLES</a></li>
+          <li><a href="../../../Miscellany">SERIAL</a></li>
+          <li><a href="../../../Photos">PHOTOS</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main>
+      <header class="post-header">
+  <h1>Derivations</h1>
+  <div class="post-meta">
+    <time>17-01-2026</time>
+  </div>
+</header>
+<p>
+I&rsquo;m finally coming around to learning more about nix and how to package programs
+for my own personal use. Reading the nix pills is good! Some of the specifics
+are a bit outdated and don&rsquo;t touch on some &ldquo;modern&rdquo; features like flakes, but it
+covers fundamental concepts that are worth understanding.
+</p>
+
+<p>
+One of the main purposes of the nix language is in the packaging process, and
+derivations are the building blocks to do so. Whenever you package something
+using nix, these derivations are used as a specification for the package and the
+contents are built on such specifications. The derivations and output content
+can be found in the nix store (usually <code>/nix/store</code>). You generally won&rsquo;t be
+writing derivations yourself, but rather use builtin utilities to create
+derivations.
+</p>
+<div id="outline-container-orgd829e98" class="outline-2">
+<h2 id="orgd829e98">What is a derivation? It&rsquo;s a special kind of attribute set that</h2>
+<div class="outline-text-2" id="text-orgd829e98">
+<p>
+needs particular elements in its definition. As an example, we can inspect the
+derivation specs for the item below. Within an interactive environment using
+<code>nix repl</code>, we can verify that the drv file contains an attribute set:
+</p>
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode nix"><code class="sourceCode nix"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>drv = <span class="bu">import</span> <span class="ss">/nix/store/xsqhh6s0c3fa9va5gnk6mdifm7zqwvmh-bash52-037.drv</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">builtins</span><span class="op">.</span>isAttrs drv <span class="co">#true</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">builtins</span><span class="op">.</span>attrNames drv <span class="co"># [ &quot;all&quot; &quot;drvPath&quot; &quot;name&quot; &quot;out&quot; &quot;outPath&quot; &quot;outputName&quot; &quot;type&quot; ]</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>drv<span class="op">.</span>name <span class="co"># &quot;bash52-037&quot;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>drv<span class="op">.</span>type <span class="co"># &quot;derivation&quot;</span></span></code></pre></div>
+</div>
+
+<p>
+I&rsquo;ll note that nix knows to distinguish derivations from other, more generic,
+attribute sets by catching that <code>drv.type = "derivation"</code>. So in a very
+simplistic case, a derivation is just an attribute set with an attribute <code>type</code>
+that is set to <code>"derivation"</code>. The interesting bits come from creating a
+derivation that &ldquo;works&rdquo;.
+</p>
+</div>
+</div>
+<div id="outline-container-orgddba706" class="outline-2">
+<h2 id="orgddba706">Creating a derivation. Nix has builtin utilities</h2>
+<div class="outline-text-2" id="text-orgddba706">
+<p>
+for creating functioning derivations that will compile and package software. The
+fact that <code>drv.type = "derivation"</code> only means that nix will treat the attribute
+set like a derivation.
+</p>
+
+<p>
+The <a href="https://nix.dev/manual/nix/2.28/language/derivations">derivation</a> builtin function is one such utility, but there are others as well (e.g.
+<code>pkgs.mkShell</code>).
+</p>
+
+<p>
+<span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6111em;"></span><span class="mord text"><span class="mord texttt">derivation</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mord text"><span class="mord texttt">d</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord texttt">AttrSet</span></span><span class="mspace"> </span><span class="mord">∣</span><span class="mspace"> </span><span class="mord text"><span class="mord texttt">name, system, builder</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord texttt">d</span></span><span class="mclose">}</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6111em;"></span><span class="mord text"><span class="mord texttt">Derivations</span></span></span></span></span></span>
+
+
+</p>
+
+<p>
+This function takes any attribute set with the <code>name</code>, <code>system</code>, and <code>builder</code>
+attributes well-defined and returns a derivation. The input can have other
+attributes as well, but the three listed ones are requirements.
+</p>
+
+<p>
+Using the <code>derivation</code> function only produces an expression which can then be
+evaluated to build the specified package. You can use it to offload a lot of the
+boilerplate that you&rsquo;d have to write otherwise. Once the derivation is defined
+(i.e., instantiated), it still needs to get built.
+</p>
+</div>
+</div>
+<div id="outline-container-org6347bf2" class="outline-2">
+<h2 id="org6347bf2">Example</h2>
+<div class="outline-text-2" id="text-org6347bf2">
+<p>
+For illustrative purposes, it&rsquo;s worth running through an example. For a simple
+case, you can run `nix-build` on the example above. This produced a file at the
+new store path <code>/nix/store/yp6bfms6q369y93j622mqq6i6b02xwbq-bash52-037</code>. This
+turns out to be a patch report for bash-release 5.2.
+</p>
+
+<p>
+The output store path above turns out to be the same as <code>drv.outPath</code>. In
+particular, <code>drv.outPath</code> was already defined before we called <code>nix-build</code>. Nix
+knows how to compute the hash in the output store path(s) before anything is
+ever built!
+</p>
+</div>
+</div>
+<div id="outline-container-orge5c18ee" class="outline-2">
+<h2 id="orge5c18ee">Building with <code>derivation</code></h2>
+<div class="outline-text-2" id="text-orge5c18ee">
+<p>
+What does <code>nix-build</code> do when it is called on an output of the <code>derivation</code>
+function? Recall that an input to <code>derivation</code> must have the form <code>a = { name =
+"x"; builder = "y"; system = "z"; ... }</code>. We can inspect the result using
+<code>builtins.attrNames</code> like before.
+</p>
+
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode nix"><code class="sourceCode nix"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="va">pkgs</span> <span class="op">=</span> <span class="bu">import</span> &lt;nixpkgs&gt; <span class="op">{</span> <span class="op">};</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">in</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">builtins</span><span class="op">.</span>attrNames <span class="op">(</span> <span class="bu">derivation</span> <span class="op">{</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="va">name</span> <span class="op">=</span> <span class="st">&quot;example&quot;</span><span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="va">builder</span> <span class="op">=</span> <span class="st">&quot;</span><span class="sc">${</span>pkgs<span class="op">.</span>bash<span class="sc">}</span><span class="st">/bin/bash&quot;</span><span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="va">system</span> <span class="op">=</span> <span class="bu">builtins</span><span class="op">.</span>currentSystem<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="va">src</span> <span class="op">=</span> path<span class="op">-</span>to<span class="op">-</span>blah<span class="op">.</span>tar<span class="op">.</span>gz<span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="va">args</span> <span class="op">=</span> <span class="op">[</span> <span class="ss">./setup.sh</span> <span class="op">];</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="va">buildInputs</span> <span class="op">=</span> <span class="op">[</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  inp1</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  inp2</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="op">];</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  ...</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="op">)</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># [</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">#   &quot;all&quot;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">#   &quot;builder&quot;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">#   &quot;drvAttrs&quot;</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">#   &quot;drvPath&quot;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">#   &quot;name&quot;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">#   &quot;out&quot;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">#   &quot;outPath&quot;</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">#   &quot;outputName&quot;</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">#   &quot;system&quot;</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">#   &quot;type&quot;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co">#   &quot;args&quot;</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co">#   ...</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># ]</span></span></code></pre></div>
+</div>
+
+<p>
+I threw in some optional parameters <code>args</code>, <code>src</code>, and <code>builtInputs</code>; you can throw
+basically anything else into the derivation function. You can even include
+parameters which are themselves <a href="https://nixos.org/guides/nix-pills/14-override-design-pattern.html">functions which can be called to return other
+derivations</a>. When you call <code>nix-build</code> on this derivation, it runs <code>builder</code> using
+the arguments provided in <code>args</code> with environment variables corresponding to the
+attributes themselves.
+</p>
+
+<p>
+So in this example, <code>nix-build</code> will essentially call <code>bash setup.sh</code> and the setup
+script will be able to access variables like <code>${src}</code> and <code>${buildInputs}</code>. A couple
+things to note:
+</p>
+<ul class="org-ul">
+<li>The import call to <code>&lt;nixpkgs&gt;</code> is syntax that tells nix to load up the <code>nixpkgs</code>
+expression. It&rsquo;ll look within the environment variable <code>$NIX_PATH</code>.</li>
+<li>Whenever you refer to variables like <code>${src}</code> in <code>setup.sh</code>, it wont actually be
+the local path. Nix will copy anything it needs over to the store and use that
+instead. So <code>${src}</code> will be something like <code>/nix/store/&lt;hash&gt;-setup.sh</code></li>
+</ul>
+</div>
+</div>
+
+    </main>
+  </div>
+</body>
+<img src="https://caret.goatcounter.com/count?p=/notes/NixOS/Derivations/index.html">
+</html>

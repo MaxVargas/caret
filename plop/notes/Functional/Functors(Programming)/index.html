@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../favicon-32x32.png">
+  <link rel="stylesheet" href="../../../css/katex.min.css">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <link rel="stylesheet" href="../../../css/syntax.css">
+</head>
+
+<body>
+  <div class="site-layout">
+    <nav id="nav">
+      <div class="nav-inner">
+        <ul>
+          <li><a href="../../../">HOME</a></li>
+          <li><a href="../../../notes">BUNDLES</a></li>
+          <li><a href="../../../Miscellany">SERIAL</a></li>
+          <li><a href="../../../Photos">PHOTOS</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main>
+      <header class="post-header">
+  <h1>Functors (Programming)</h1>
+  <div class="post-meta">
+    <time>23-02-2025</time>
+  </div>
+</header>
+<p>
+A functor is the data of a parametric type <code>f</code>, along with a function
+</p>
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</span></code></pre></div>
+</div>
+<p>
+for all types <code>a</code> and <code>b</code> for which <code>f a</code> and <code>f b</code> is defined. Further, this data has
+to satisfy the following conditions:
+</p>
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fmap</span> id_a <span class="ot">=</span> id_a <span class="fu">fmap</span> (g <span class="op">.</span> h) <span class="ot">=</span> (<span class="fu">fmap</span> g) <span class="op">.</span> (<span class="fu">fmap</span> h)</span></code></pre></div>
+</div>
+<p>
+That is, for any function <code>lambda :: a -&gt; b</code>, we have that <code>fmap lambda</code> is a
+function <code>f a -&gt; f b</code>. The criteria in the second box asserts that <code>fmap</code> must send
+identity maps to identity maps and also respect compositions of functions
+(denoted with the dot <code>.</code>).
+</p>
+
+<p>
+The above definition is essentially the same as the <a href="Functors(Mathematics)">mathematical one</a>! One
+interesting note, however, is that the programmer didn&rsquo;t need the use of
+categories. This is no big concern &ndash; the category is implicitly assumed as
+(often) consisting of &rsquo;those types <code>a</code> where <code>f a</code> is defined&rsquo;. A lot of the time,
+it&rsquo;s a lot of bookkeeping to track this implicit category and we can work as if
+we deal with the &rsquo;category of all types (or sets)&rsquo;. The parametric types listed
+in the above examples are well-defined on all types. With this mindset, we can
+(in a somewhat cavalier mindset) regard these functors as <i>endofunctors</i> of this
+ambient category.
+</p>
+
+<p>
+All of the examples of parametrized types can easily be extended to give
+examples of functors. The check of the functor axioms are straightforward.
+</p>
+<ul class="org-ul">
+<li><code>Triple a</code>. To define the function <code>fmap</code>, note that by definition, for any <code>lambda
+  :: a -&gt; b</code> we have <code>fmap lambda :: Triple a -&gt; Triple b</code>. That is <code>fmap lambda</code> is
+a function which takes triples of type <code>a</code> as input, and returns triples of type
+<code>b</code>. Taking any triple <code>T x y z :: Triple a</code>, we can just define <code>(fmap lambda) (T
+  x y z) = T (lambda x) (lambda y) (lambda z)</code>.</li>
+<li><code>Maybe a</code>. Following as the previous example, we must have that <code>fmap lambda</code> be a
+function <code>Maybe a -&gt; Maybe b</code> for any function <code>lambda :: a -&gt; b</code>. Defining <code>(fmap
+  lambda) Nothing = Nothing</code> and <code>(fmap lambda) Just x = Just (lambda x)</code> does the
+job.</li>
+<li><code>Tree a</code>. The definition of <code>fmap</code> can succinctly be defined recursively, just as
+<code>Tree a</code> itself was too. While this is formally convenient, the map here is
+again the obvious one. That is, <code>fmap lambda :: Tree a -&gt; Tree b</code> is evaluated
+by just applying <code>lambda</code> to each node in a given tree. Formally, <code>(fmap lambda)
+  (Node x) = Node (lambda x)</code> and <code>(fmap lambda) (l x r) = (fmap lambda l)
+  (lambda x) (fmap lambda r)</code>. As an example, for <code>lamdba = (\x -&gt; x^2) :: Int -&gt;
+  Int</code>, then</li>
+</ul>
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">Node</span> <span class="dv">5</span>                  <span class="dt">Node</span> <span class="dv">25</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>                    <span class="op">/</span>    \                  <span class="op">/</span>     \</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>(<span class="fu">fmap</span> lambda)    <span class="dt">Node</span> <span class="dv">2</span>  <span class="dt">Node</span> <span class="dv">6</span>   <span class="ot">=</span>      <span class="dt">Node</span> <span class="dv">4</span>  <span class="dt">Node</span> <span class="dv">36</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                  <span class="op">/</span>    \                <span class="op">/</span>      \</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>               <span class="dt">Node</span> <span class="dv">4</span>  <span class="dt">Node</span> <span class="dv">2</span>        <span class="dt">Node</span> <span class="dv">16</span>  <span class="dt">Node</span> <span class="dv">4</span></span></code></pre></div>
+</div>
+
+<p>
+There turns out to be a nice uniqueness property about functors and parametrized
+types. <a href="FunctorsFromParametrizedTypes">See functors from parametrized types.</a>
+</p>
+
+    </main>
+  </div>
+</body>
+<img src="https://caret.goatcounter.com/count?p=/notes/Functional/Functors%28Programming%29/index.html">
+</html>
