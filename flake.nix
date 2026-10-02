@@ -21,16 +21,9 @@
              );
       };
       system = "x86_64-linux";
-      pkgs   = nixpkgs.legacyPackages.${system};
+      pkgs   = import nixpkgs { inherit system; };
       hPkgs  = pkgs.haskellPackages.extend (self: super: {
         site            = self.callCabal2nix "site" (haskellSourceFilter ./.) { };
-        pandoc-sidenote = self.callCabal2nixWithOptions "pandoc-sidenote"
-          (builtins.fetchGit {
-            url = "https://github.com/jez/pandoc-sidenote";
-            rev = "3658e7da9453fb6ab817d8eef5d1928cbcd3afbf";
-          })
-          "-f html-sidenotes"
-          { };
         hakyll = self.callCabal2nix "hakyll" (builtins.fetchGit {
           url = "https://github.com/jaspervdj/hakyll";
           rev = "92a5f884cbcfd9f2cd89d3e96f6c3f6ae3da7cec";
@@ -50,18 +43,12 @@
           html-tidy
           linkchecker
           # KaTeX rendering of maths, see scripts/maths.js
-          nodejs
           katex
-          # Directly rendering TikZ pictures into SVGs
-          rubber
-          (texlive.combine {
-            inherit (texlive) scheme-basic amsmath preview pgf pgfplots tikz-cd amsfonts metafont rsfs jknapltx mathtools;
-          })
-          poppler-utils
+          dart-sass
         ];
         shellHook = ''
           export PROJECT_ROOT="$(pwd)"
-          export NODE_PATH="${pkgs.katex}/lib/node_modules:$NODE_PATH"
+          cabal run caret -- clean && cabal run caret -- build
         '';
       };
     };

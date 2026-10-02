@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../favicon-32x32.png">
+  <link rel="stylesheet" href="../../../css/katex.min.css">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <link rel="stylesheet" href="../../../css/syntax.css">
+</head>
+
+<body>
+  <div class="site-layout">
+    <nav id="nav">
+      <div class="nav-inner">
+        <ul>
+          <li><a href="../../../">HOME</a></li>
+          <li><a href="../../../notes">BUNDLES</a></li>
+          <li><a href="../../../Miscellany">SERIAL</a></li>
+          <li><a href="../../../Photos">PHOTOS</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main>
+      <header class="post-header">
+  <h1>Flakes (Example)</h1>
+  <div class="post-meta">
+    <time>25-03-2025</time>
+  </div>
+</header>
+<p>
+I&rsquo;ve been curious to play around with some creative coding practices, for
+example <a href="https://nannou.cc/">nannou</a> The installation wasn&rsquo;t trivial, mainly because of issues with
+<code>alsa</code> and still learning about the nix ecosystem.
+</p>
+
+<p>
+Being a beginner with nix (i ought to go back and carefully read the docs now
+that I know how to get some basics set up), the setup I have is almost assuredly
+suboptimal, but if it works then it works.
+</p>
+
+<hr />
+<p>
+<code>nannou</code>
+</p>
+
+<p>
+My first N attempts all found me staring at some issue with <code>alsa</code>&hellip; I eventually
+found my way to <a href="https://www.reddit.com/r/NixOS/comments/1almuft/why_cant_nix_as_setup_by_cargo2nix_see_alsa_in_my/">Ninjaman10p&rsquo;s comment</a> to get an initial flake up and running for
+<code>nannou</code>. Unfortunately I still wasn&rsquo;t able to run any examples due to complaints
+with <code>rustPlatform.buildRustPackage</code>. Eventually the following <code>flake.nix</code> inside of
+the cloned <code>nannou</code> repo ended up working, following some tips I found <a href="https://artemis.sh/2023/07/08/nix-rust-project-with-git-dependencies.html">here</a> about
+sha256 keys:
+</p>
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode nix"><code class="sourceCode nix"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="va">description</span> <span class="op">=</span> <span class="st">&quot;A very basic nannou&quot;</span><span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="va">inputs</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">nixpkgs</span>.<span class="va">url</span> <span class="op">=</span> <span class="st">&quot;github:nixos/nixpkgs?ref=nixos-unstable&quot;</span><span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">flake-utils</span>.<span class="va">url</span> <span class="op">=</span> <span class="st">&quot;github:numtide/flake-utils&quot;</span><span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="va">oxalica</span>.<span class="va">url</span> <span class="op">=</span> <span class="st">&quot;github:oxalica/rust-overlay&quot;</span><span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">};</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="va">outputs</span> <span class="op">=</span> <span class="op">{</span> <span class="va">self</span><span class="op">,</span> <span class="va">nixpkgs</span><span class="op">,</span> <span class="va">flake-utils</span><span class="op">,</span> <span class="va">oxalica</span> <span class="op">}</span>:</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">with</span> flake<span class="op">-</span>utils<span class="op">.</span>lib<span class="op">;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    eachSystem allSystems <span class="op">(</span><span class="va">system</span><span class="op">:</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>      <span class="kw">let</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="va">pkgs</span> <span class="op">=</span> nixpkgs<span class="op">.</span>legacyPackages<span class="op">.</span><span class="sc">${</span>system<span class="sc">}</span><span class="op">.</span>extend oxalica<span class="op">.</span>overlays<span class="op">.</span>default<span class="op">;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>      <span class="kw">in</span> <span class="kw">rec</span> <span class="op">{</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="va">packages</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>          </span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>          <span class="va">nann</span> <span class="op">=</span> <span class="kw">let</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>            <span class="va">rustPlatform</span> <span class="op">=</span> pkgs<span class="op">.</span>makeRustPlatform <span class="op">{</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>              <span class="va">cargo</span> <span class="op">=</span> pkgs<span class="op">.</span>rust<span class="op">-</span>bin<span class="op">.</span>stable<span class="op">.</span>latest<span class="op">.</span>minimal<span class="op">;</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>              <span class="va">rustc</span> <span class="op">=</span> pkgs<span class="op">.</span>rust<span class="op">-</span>bin<span class="op">.</span>stable<span class="op">.</span>latest<span class="op">.</span>minimal<span class="op">;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>            <span class="op">};</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>          <span class="kw">in</span> rustPlatform<span class="op">.</span>buildRustPackage <span class="kw">rec</span> <span class="op">{</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>            <span class="va">name</span> <span class="op">=</span> <span class="st">&quot;nann-demo&quot;</span><span class="op">;</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>            <span class="va">src</span> <span class="op">=</span> self<span class="op">;</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>            <span class="va">nativeBuildInputs</span> <span class="op">=</span> <span class="kw">with</span> pkgs<span class="op">;</span> <span class="op">[</span> pkg-config <span class="op">];</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>            <span class="va">buildInputs</span> <span class="op">=</span> <span class="kw">with</span> pkgs<span class="op">;</span> <span class="op">[</span> alsa-lib<span class="op">.</span>dev udev<span class="op">.</span>dev <span class="op">];</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>            <span class="va">cargoLock</span> <span class="op">=</span> <span class="op">{</span> </span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>              <span class="va">lockFile</span> <span class="op">=</span> <span class="ss">./Cargo.lock</span><span class="op">;</span> </span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>              <span class="va">outputHashes</span> <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;hotglsl-0.1.0&quot;</span> <span class="op">=</span> <span class="st">&quot;sha256-G88Sa/tgGppaxIIPXDqIazMWRBXpaSFb2mulNfCclm8=&quot;</span><span class="op">;</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;isf-0.1.0&quot;</span> <span class="op">=</span> <span class="st">&quot;sha256-utexaXpZZgpRunVAQyD2JAwvabhZGzeorC4pRFIumAc=&quot;</span><span class="op">;</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;skeptic-0.13.4&quot;</span> <span class="op">=</span> <span class="st">&quot;sha256-EZFtWIPfsfbpGBD8NwsVtMzRM10kVdg+djoV00dhT4Y=&quot;</span><span class="op">;</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>              <span class="op">};</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>            <span class="op">};</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>          <span class="op">};</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        <span class="op">};</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>        <span class="va">defaultPackage</span> <span class="op">=</span> packages<span class="op">.</span>nann<span class="op">;</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>        <span class="va">formatter</span> <span class="op">=</span> pkgs<span class="op">.</span>nixfmt<span class="op">;</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>      <span class="op">});</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
+<p>
+The flake got me through my <code>alsa</code> issues and other problems with miscellaneous
+packages, but now I needed the help of this <a href="https://github.com/nannou-org/nannou/issues/618">thread</a> to take care of wayland
+issues that came up!
+</p>
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode nix"><code class="sourceCode nix"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="va">pkgs</span> <span class="op">=</span> <span class="bu">import</span> &lt;nixpkgs&gt; <span class="op">{</span> <span class="op">};</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">in</span> <span class="kw">with</span> pkgs<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>mkShell <span class="op">{</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="va">name</span> <span class="op">=</span> <span class="st">&quot;nannou-sample&quot;</span><span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="va">nativeBuildInputs</span> <span class="op">=</span> <span class="op">[</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    pkgs<span class="op">.</span>pkg-config</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    pkgs<span class="op">.</span>clang</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    pkgs<span class="op">.</span>lld</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="op">];</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="va">buildInputs</span> <span class="op">=</span> <span class="kw">with</span> pkgs<span class="op">;</span> <span class="op">[</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    wayland</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    xorg<span class="op">.</span>libX11</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    xorg<span class="op">.</span>libXcursor</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    xorg<span class="op">.</span>libXrandr</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    xorg<span class="op">.</span>libXi</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    vulkan-loader</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    udev</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    cmake</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    gcc</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    cargo</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    rustc</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="op">];</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="va">shellHook</span> <span class="op">=</span> <span class="st">''</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="st">              export LD_LIBRARY_PATH=&quot;$LD_LIBRARY_PATH:</span><span class="sc">${</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>                pkgs<span class="op">.</span>lib<span class="op">.</span>makeLibraryPath <span class="op">[</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>                  udev</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>                  vulkan-loader</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>                <span class="op">]</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>              <span class="sc">}</span><span class="st">&quot;''</span><span class="op">;</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="va">RUST_SRC_PATH</span> <span class="op">=</span> rustPlatform<span class="op">.</span>rustLibSrc<span class="op">;</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</div>
+<p>
+With the first <code>flake.nix</code> file and second <code>shell.nix</code> file inside of <code>nannou</code>&rsquo;s root
+directory, things were running smoothly.
+</p>
+
+    </main>
+  </div>
+</body>
+<img src="https://caret.goatcounter.com/count?p=/notes/NixOS/Flakes%28Example%29/index.html">
+</html>

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../favicon-32x32.png">
+  <link rel="stylesheet" href="../../../css/katex.min.css">
+  <link rel="stylesheet" href="../../../css/style.css">
+  <link rel="stylesheet" href="../../../css/syntax.css">
+</head>
+
+<body>
+  <div class="site-layout">
+    <nav id="nav">
+      <div class="nav-inner">
+        <ul>
+          <li><a href="../../../">HOME</a></li>
+          <li><a href="../../../notes">BUNDLES</a></li>
+          <li><a href="../../../Miscellany">SERIAL</a></li>
+          <li><a href="../../../Photos">PHOTOS</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main>
+      <header class="post-header">
+  <h1>Starter Config</h1>
+  <div class="post-meta">
+    <time>18-03-2025</time>
+  </div>
+</header>
+<p>
+An outline of the configuration structure I&rsquo;m using while learning NixOS. A lot
+of this structure is influenced by the content in the <a href="https://nixos-and-flakes.thiscute.world/">NixOS &amp; Flakes Book by
+Ryan Yin</a> and is based off of the author&rsquo;s <a href="https://github.com/ryan4yin/nix-config/tree/i3-kickstarter">i3-kickstarter</a>.
+</p>
+
+<p>
+File structure:
+</p>
+<div class="org-src-container">
+<pre class="nil"><code>/etc/nixos/
+├── flake.lock
+├── flake.nix
+├── home-manager
+│   ├── core.nix
+│   ├── programs
+│   │   ├── apps.nix
+│   │   ├── browsers.nix
+│   │   ├── common.nix
+│   │   ├── config
+│   │   │   ├── hyprland.conf
+│   │   │   └── start.sh
+│   │   ├── default.nix
+│   │   └── desktop.nix
+│   └── shell
+│       ├── common.nix
+│       ├── default.nix
+│       └── terminals.nix
+├── nixos
+│   ├── configuration.nix
+│   └── hardware-configuration.nix
+└── users
+    └── max
+        ├── home.nix
+        └── nixos.nix</code></pre>
+</div>
+
+<p>
+<code>flake.nix</code> is the entry point for all the rest of the files. It uses
+<code>nixos/configuration.nix</code> as a module, along with <code>users/max/nixos.nix</code> for any
+user-relevant info like an SSH key. It also sets up <code>home-manager</code> so that you can
+handle user profiles more easily through something like <code>users/max/home.nix</code>.
+</p>
+<ul class="org-ul">
+<li><code>nixos/configuration.nix</code> is the system-level config. I use this mostly to
+define system-level options as well as services. It has some basic user
+definitions in there along with an import for
+<code>nixos/hardware-configuration.nix</code>, which is typically left untouched.</li>
+<li><code>users/max/home.nix</code> called through <code>home-manager</code> to configure the user
+profile(s). Mainly used to point at and load in some of the modules over in
+the <code>home-manager</code> directory.</li>
+</ul>
+<p>
+I shouldn&rsquo;t try to give a full explanation here &ndash; that&rsquo;s what those
+explanations over in the Flakes book is for. Instead, I&rsquo;ll just make note of a
+few things.
+</p>
+
+<hr />
+
+<ul class="org-ul">
+<li>To run nvidia things, you need to set <code>nixpkgs.allowUnfree = true;</code> in
+<code>nixos/configuration.nix</code>. Then you&rsquo;ll also want the following block</li>
+</ul>
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode nix"><code class="sourceCode nix"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>services<span class="op">.</span>xserver<span class="op">.</span>videoDrivers = <span class="op">[</span> <span class="st">&quot;nvidia&quot;</span> <span class="op">]</span>;</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>hardware<span class="op">.</span>nvidia<span class="op">.</span>open = <span class="cn">true</span>;</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>hardware<span class="op">.</span>graphics<span class="op">.</span>enable = <span class="cn">true</span>;</span></code></pre></div>
+</div>
+<ul class="org-ul">
+<li>I saw a comment somewhere that steam can be buggy if deploying with
+home-manager. So easiest to set it directly in the config, though this makes
+it a system-wide application&hellip; not a huge issue for me since I&rsquo;m running a
+single-user system:</li>
+</ul>
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode nix"><code class="sourceCode nix"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>programs<span class="op">.</span>steam = <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="va">enable</span> <span class="op">=</span> <span class="cn">true</span><span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="va">gamescopeSession</span>.<span class="va">enable</span> <span class="op">=</span> <span class="cn">true</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="va">package</span> <span class="op">=</span> pkgs<span class="op">.</span>steam<span class="op">.</span>override = <span class="op">{</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">extraPkgs</span> <span class="op">=</span> <span class="va">pkgs</span><span class="op">:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>      <span class="kw">with</span> pkgs<span class="op">;</span> <span class="op">[</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        liberation_ttf</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>      <span class="op">];</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">};</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span>;</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>hardware<span class="op">.</span>steam<span class="op">-</span>hardware<span class="op">.</span>enable = <span class="cn">true</span>;</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>programs<span class="op">.</span>gamemode<span class="op">.</span>enable = <span class="cn">true</span>;</span></code></pre></div>
+</div>
+
+<hr />
+<p>
+Cachix is a nice service to download package binaries. This lets you save time
+so that you don&rsquo;t have to compile large packages on your own system. Feel free
+to explore the <a href="https://app.cachix.org/">site</a>. As an example, if you want to run <a href="https://hyprland.org/">Hyprland</a> you can include
+the following in your configuration.
+</p>
+<div class="org-src-container">
+<div class="sourceCode" id="cb1"><pre class="sourceCode nix"><code class="sourceCode nix"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>nix<span class="op">.</span>settings<span class="op">.</span>substituters = <span class="op">[</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span>..</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;https://hyprland.cachix.org&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">]</span>;</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>nix<span class="op">.</span>settings<span class="op">.</span>trusted<span class="op">-</span>public<span class="op">-</span>keys = <span class="op">[</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">.</span>..</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=&quot;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="op">]</span>;</span></code></pre></div>
+</div>
+
+    </main>
+  </div>
+</body>
+<img src="https://caret.goatcounter.com/count?p=/notes/NixOS/StarterConfig/index.html">
+</html>
