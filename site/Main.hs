@@ -435,7 +435,7 @@ highlightCode block = do
     let code = extractCode decoded
     writeHtml5String
       def
-        { writerHighlightStyle = styleToCss pandocCodeStyle
+        { writerHighlightStyle = Just pandocCodeStyle
         }
       (Pandoc nullMeta [CodeBlock ("", [language], []) code])
 
