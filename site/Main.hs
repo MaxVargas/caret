@@ -134,7 +134,6 @@ main = hakyllWith hakyllConfiguration $ do
       makeItem (T.unpack $ transformAttachmentLink $ T.pack (itemBody body) )
         >>= loadAndApplyTemplate "templates/default.html" defaultContext
         >>= relativizeUrls
-        -- >>= specializeJpgs
 
   notes ["Functional", "NixOS"]
   mvDir "NixOS" "notes/"
@@ -227,7 +226,9 @@ mvDir subdir dirname = do
         substituteHrefs (rendered)
       highlighted <- recompilingUnsafeCompiler $
         replaceCode (subbed)
-      makeItem (T.unpack highlighted)
+      localHreffed <- recompilingUnsafeCompiler $
+        transformInternalHref (highlighted)
+      makeItem (T.unpack localHreffed)
         >>= loadAndApplyTemplate "templates/default.html" defaultContext
         >>= relativizeUrls
 
@@ -474,4 +475,43 @@ transformTikZ svg =
 -- Hacky photo url fix
 transformAttachmentLink :: T.Text -> T.Text
 transformAttachmentLink =
-  T.replace "src=\"attachments" "src=\"../attachments"
+  (T.replace "src=\"attachments" "src=\"../attachments") .
+  (T.replace "src=\"tikz" "src=\"../tikz")
+
+-- Hacky internal ref fix
+transformInternalHrefPure :: T.Text -> T.Text
+transformInternalHrefPure =
+  T.pack . go . T.unpack
+  where
+    go s =
+      case s =~ ("href=\"([^\"]+)\"" :: String) :: (String,String,String,[String]) of
+        (before, "", _, _)  -> before
+        (before, match, after, [url])
+          | any (`isPrefixOf` url) ["../", "./", "/", "#", "http"] -> before ++ match ++ go after
+          | otherwise -> before ++ "href=\"../" ++ url ++ "/\"" ++ go after
+
+
+
+
+
+
+
+  -- T.intercalate "href=\"" . map transformPart . T.splitOn "href=\""
+  -- where
+  --   transformPart :: T.Text -> T.Text
+  --   transformPart part =
+  --     case T.breakOn "\"" part of
+  --       (url, rest)
+  --         | shouldRelativize url ->
+  --           "../" <> url <> rest
+  --         | otherwise ->
+  --           url <> rest
+  --   shouldRelativize url =
+  --     not ("../" `T.isPrefixOf` url)
+  --     && not ("./" `T.isPrefixOf` url)
+  --     && not ("/" `T.isPrefixOf` url)
+  --     && not ("#" `T.isPrefixOf` url)
+  --     && not ("http" `T.isPrefixOf` url)
+
+transformInternalHref :: T.Text -> IO T.Text
+transformInternalHref text = pure (transformInternalHrefPure text)
