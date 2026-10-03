@@ -92,12 +92,10 @@ main = hakyllWith hakyllConfiguration $ do
   match "css/style.scss" $ do
     route $ constRoute "css/style.css"
     compile $ compileSass
-      >>= relativizeUrls
 
   match "css/katex.min.css" $ do
     route $ constRoute "css/katex.min.css"
     compile copyFileCompiler
-      >>= relativizeUrls
 
   match "favicon/favicon-32x32.png" $ do
     route $ gsubRoute "^favicon/" (const "")
@@ -106,7 +104,6 @@ main = hakyllWith hakyllConfiguration $ do
   create ["css/syntax.css"] $ do
     route idRoute
     compile $ makeItem (styleToCss pandocCodeStyle)
-      >>= relativizeUrls
 
   -- Everything in roam/ is copied into _site/
   -- Start with .html files
@@ -130,14 +127,14 @@ main = hakyllWith hakyllConfiguration $ do
       >>= compressJpgCompiler 80
 
   -- jpg reference handling is werird...
-  -- match "roam/Photos.html" $ do
-  --   route $ const "Photos/index.html"
-  --   compile $ do
-  --     body <- getResourceBody
-  --     makeItem (T.unpack $ transformAttachmentLink $ T.pack (itemBody body) )
-  --       >>= loadAndApplyTemplate "templates/default.html" defaultContext
-  --       >>= relativizeUrls
-  --       -- >>= specializeJpgs
+  match "roam/Photos.html" $ do
+    route $ (const "Photos/index.html")
+    compile $ do
+      body <- getResourceBody
+      makeItem (T.unpack $ transformAttachmentLink $ T.pack (itemBody body) )
+        >>= loadAndApplyTemplate "templates/default.html" defaultContext
+        >>= relativizeUrls
+        -- >>= specializeJpgs
 
   notes ["Functional", "NixOS"]
   mvDir "NixOS" "notes/"

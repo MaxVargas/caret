@@ -4,7 +4,7 @@
     font-family: "mathfont";
 
     //src: url("/fonts/PL46-Math.otf") format("opentype");
-    src: url("/fonts/Euler-Math.otf") format("opentype");
+    src: url("../fonts/Euler-Math.otf") format("opentype");
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -12,7 +12,7 @@
 
 @font-face {
     font-family: "Fantasque";
-    src: url("/fonts/Fantasque.woff2") format("woff2");
+    src: url("../fonts/Fantasque.woff2") format("woff2");
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -21,7 +21,7 @@
 @font-face {
     font-family: "maintext";
     //src: url("/fonts/IBMPlexSans-VariableFont_wdth,wght.ttf") format("truetype");
-    src: url("/fonts/Sanchez-Regular.ttf") format("truetype");
+    src: url("../fonts/Sanchez-Regular.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -31,7 +31,7 @@
     font-family:KaTeX_AMS;
     font-style:normal;
     font-weight:400;
-    src:url(/fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(/fonts/KaTeX_AMS-Regular.woff) format("woff"),url(/fonts/KaTeX_AMS-Regular.ttf) format("truetype");
+    src:url(../fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../fonts/KaTeX_AMS-Regular.ttf) format("truetype");
 }
 
 :root {
