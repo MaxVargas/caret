@@ -16,5 +16,5 @@ _site/
 _cache/
 .sass-cache/
 dist-newstyle/
-result/
+result
 plop/

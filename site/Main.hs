@@ -91,7 +91,7 @@ main = hakyllWith hakyllConfiguration $ do
 
   match "css/style.scss" $ do
     route $ constRoute "css/style.css"
-    compile $ compileSass
+    compile compileSass
 
   match "css/katex.min.css" $ do
     route $ constRoute "css/katex.min.css"
