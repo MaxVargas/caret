@@ -46,7 +46,7 @@ siteConfiguration =
 feedConfiguration :: FeedConfiguration
 feedConfiguration =
   FeedConfiguration
-  { feedTitle = "wow"
+  { feedTitle = "lem"
   , feedDescription = "huh"
   , feedAuthorName = "max"
   , feedAuthorEmail = "blackhole@email.com"
@@ -127,14 +127,14 @@ main = hakyllWith hakyllConfiguration $ do
       >>= compressJpgCompiler 80
 
   -- jpg reference handling is werird...
-  -- match "roam/Photos.html" $ do
-  --   route $ (const "Photos/index.html")
-  --   compile $ do
-  --     body <- getResourceBody
-  --     makeItem (T.unpack $ transformAttachmentLink $ T.pack (itemBody body) )
-  --       >>= loadAndApplyTemplate "templates/default.html" defaultContext
-  --       >>= relativizeUrls
-  --       -- >>= specializeJpgs
+  match "roam/Photos.html" $ do
+    route $ constRoute "Photos/index.html"
+    compile $ do
+      body <- getResourceBody
+      makeItem (T.unpack $ transformAttachmentLink $ T.pack (itemBody body) )
+        >>= loadAndApplyTemplate "templates/default.html" defaultContext
+        >>= relativizeUrls
+        -- >>= specializeJpgs
 
   notes ["Functional", "NixOS"]
   mvDir "NixOS" "notes/"
@@ -474,4 +474,4 @@ transformTikZ svg =
 -- Hacky photo url fix
 transformAttachmentLink :: T.Text -> T.Text
 transformAttachmentLink =
-  T.replace "src=\"attachments" "src=\"/attachments"
+  T.replace "src=\"attachments" "src=\"../attachments"
