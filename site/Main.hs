@@ -91,7 +91,8 @@ main = hakyllWith hakyllConfiguration $ do
 
   match "css/style.scss" $ do
     route $ constRoute "css/style.css"
-    compile compileSass
+    compile $ compileSass
+      >>= relativizeUrls
 
   match "css/katex.min.css" $ do
     route $ constRoute "css/katex.min.css"
@@ -126,13 +127,23 @@ main = hakyllWith hakyllConfiguration $ do
       >>= scaleImageCompiler 450 225
       >>= compressJpgCompiler 80
 
+  -- jpg reference handling is werird...
+  -- match "roam/Photos.html" $ do
+  --   route $ const "Photos/index.html"
+  --   compile $ do
+  --     body <- getResourceBody
+  --     makeItem (T.unpack $ transformAttachmentLink $ T.pack (itemBody body) )
+  --       >>= loadAndApplyTemplate "templates/default.html" defaultContext
+  --       >>= relativizeUrls
+  --       -- >>= specializeJpgs
+
   notes ["Functional", "NixOS"]
   mvDir "NixOS" "notes/"
   nixos
   mvDir "Functional" "notes/"
   functional
 
-  mvRoot
+  mvDir "" ""
   miscellany
 
 miscellany :: Rules ()

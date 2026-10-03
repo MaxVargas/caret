@@ -24,7 +24,7 @@
       system = "x86_64-linux";
       pkgs   = import nixpkgs { inherit system; };
       hPkgs  = pkgs.haskellPackages.extend (self: super: {
-        site            = self.callCabal2nix "site" (haskellSourceFilter ./.) { };
+        site            = self.callCabal2nix "./site" (haskellSourceFilter ./site) { };
         hakyll = self.callCabal2nix "hakyll" (builtins.fetchGit {
           url = "https://github.com/jaspervdj/hakyll";
           rev = "92a5f884cbcfd9f2cd89d3e96f6c3f6ae3da7cec";
@@ -67,16 +67,28 @@
       };
 
       apps.${system} = {
-        default = flake-utils.lib.mkApp {
-          drv = hakyll-site;
-          exePath = "/bin/caret";
+        default = {
+          type = "app";
+          program = "${pkgs.writeShellApplication {
+            name = "caret";
+            runtimeInputs = [
+              hakyll-site
+              pkgs.dart-sass
+            ];
+            text = ''
+              caret  "$@"
+            '';
+          }}/bin/caret";
         };
       };
 
       # nix develop
       devShells.${system}.default = hPkgs.shellFor {
-        packages          = p: [ p.site ];
-        nativeBuildInputs = [ hPkgs.haskell-language-server ];
+        packages          = _: [ hakyll-site ];
+        nativeBuildInputs = [ hakyll-site ] ++ (with hPkgs; [
+          cabal-install
+          haskell-language-server
+        ]);
         buildInputs       = with pkgs; [
           optipng
           zlib
@@ -88,7 +100,6 @@
         ];
         shellHook = ''
           export PROJECT_ROOT="$(pwd)"
-          cabal run caret -- clean && cabal run caret -- build
         '';
       };
 
