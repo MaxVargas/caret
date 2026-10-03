@@ -97,6 +97,7 @@ main = hakyllWith hakyllConfiguration $ do
   match "css/katex.min.css" $ do
     route $ constRoute "css/katex.min.css"
     compile copyFileCompiler
+      >>= relativizeUrls
 
   match "favicon/favicon-32x32.png" $ do
     route $ gsubRoute "^favicon/" (const "")
@@ -105,6 +106,7 @@ main = hakyllWith hakyllConfiguration $ do
   create ["css/syntax.css"] $ do
     route idRoute
     compile $ makeItem (styleToCss pandocCodeStyle)
+      >>= relativizeUrls
 
   -- Everything in roam/ is copied into _site/
   -- Start with .html files
