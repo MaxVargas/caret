@@ -228,7 +228,7 @@ mvDir subdir dirname = do
         replaceCode (subbed)
       localHreffed <- recompilingUnsafeCompiler $
         transformInternalHref (highlighted)
-      makeItem (T.unpack localHreffed)
+      makeItem (T.unpack $ transformAttachmentLink localHreffed)
         >>= loadAndApplyTemplate "templates/default.html" defaultContext
         >>= relativizeUrls
 
@@ -489,29 +489,6 @@ transformInternalHrefPure =
         (before, match, after, [url])
           | any (`isPrefixOf` url) ["../", "./", "/", "#", "http"] -> before ++ match ++ go after
           | otherwise -> before ++ "href=\"../" ++ url ++ "/\"" ++ go after
-
-
-
-
-
-
-
-  -- T.intercalate "href=\"" . map transformPart . T.splitOn "href=\""
-  -- where
-  --   transformPart :: T.Text -> T.Text
-  --   transformPart part =
-  --     case T.breakOn "\"" part of
-  --       (url, rest)
-  --         | shouldRelativize url ->
-  --           "../" <> url <> rest
-  --         | otherwise ->
-  --           url <> rest
-  --   shouldRelativize url =
-  --     not ("../" `T.isPrefixOf` url)
-  --     && not ("./" `T.isPrefixOf` url)
-  --     && not ("/" `T.isPrefixOf` url)
-  --     && not ("#" `T.isPrefixOf` url)
-  --     && not ("http" `T.isPrefixOf` url)
 
 transformInternalHref :: T.Text -> IO T.Text
 transformInternalHref text = pure (transformInternalHrefPure text)
